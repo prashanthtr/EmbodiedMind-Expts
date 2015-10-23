@@ -223,7 +223,6 @@ require(
                             mouseDownState = 0;
                         });
 
-
                         cellularArray[i][j].hover(function(){
                             console.log("added click" + this.state);
 
@@ -246,10 +245,20 @@ require(
         }
 
         initArray();
-        setInterval(function(){
+
+        var run = setInterval(request , parseFloat(document.getElementById("loopTime").value)); // start setInterval as "run"
+        function request() {
+            //console.log(); // firebug or chrome log
+            clearInterval(run); // stop the setInterval()
             caUpdate();
             timer++;
-        }, 200);
+            run = setInterval(request, parseFloat(document.getElementById("loopTime").value)); // start the setInterval()
+        }
+
+        // setInterval(function(){
+        //     caUpdate();
+        //     timer++;
+        // }, parseFloat(document.getElementById("loopTime").value));
 
         //initially it is not clear what ar the holes.
         function movement(){
