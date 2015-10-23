@@ -8,17 +8,27 @@ require(
 
         // Create the Raphael paper that we will use for drawing and creating graphical objects
         var paper = new Raphael(centerDiv);
+        var mouseDownState = 0;
+
+        paper.raphael.mousedown(function(){
+                mouseDownState = 1;
+        });
+
+        paper.raphael.mouseup( function(){
+            mouseDownState = 0;
+        })
+
 
         // put the width and heigth of the canvas into variables for our own convenience
         var pWidth = paper.canvas.offsetWidth;
         var pHeight = paper.canvas.offsetHeight;
         console.log("pWidth is " + pWidth + ", and pHeight is " + pHeight);
-        var xLen = 24, yLen = 12;
-
+        var xLen = 18, yLen = 9;
+        var xOffset = 1, yOffset = 3;
+        //24,12
         // Just create a nice black background
         var bgRect = paper.rect(0,0,pWidth, pHeight);
         bgRect.attr({"fill": "white"});
-
 
 
         function arrCmp(arr, obj){
@@ -31,50 +41,210 @@ require(
             return -1;
         }
 
-
         var listHoles = [];
         var listSubstrates = [];
         var products = [];
         var bonds = [];
         var links = [];
-        var listBoundaryProperties = [ [15,15], [15,14], [15,16], [14,15], [14,16], [14,14], [16,16], [16,15], [16,14]];
-        var catalyst = {};
+
+        var cellularArray = [];
+        var listBoundaryProperties = [ [14,14], [15,14], [16,14], [16,15], [16,16], [15,16], [14,16], [14,15] ];
+        var listNeighbours = [ [[13,14],[14,13]], [[15,13]], [[16,13],[17,14]], [[17,15]], [[17,16],[16,17]], [[15,17]], [[14,17],[13,16],], [[13,15]] ];
+
+        var caCells = listBoundaryProperties.map (function (arr,ind){
+            var obj = paper.circle((arr[0]+xOffset)*xLen+3,(arr[1]+yOffset)*yLen+3,4);
+            obj.type = "link";
+            obj.x = arr[0]%14;
+            obj.y = arr[1]%14;
+            obj.ind = ind;
+            //obj.attr({"fill": "red"});
+            obj.state = Math.floor(Math.random() + 0.6);
+            obj.neighbours = listNeighbours[ind];
+
+            //updates the states of the cell based on adjacent values and environmental values
+            obj.updateState = function(prev, cur, next, vals){
+
+                if( this.type == "link"){
+                    console.log("the world vals for" + this.ind+ "are" + vals);
+                    if( vals[0] == 0){
+                    }
+                    else{
+                        cur = vals[0];
+                    }
+
+                    var castate = prev + "" +  cur + ""+ next;
+                    //ca rule
+                    switch(castate){
+                    case "000": this.attr({"fill": "red"}); this.state = 1; break;
+                    case "001": this.attr({"fill": "white"}); this.state = 0; break;
+                    case "010": this.attr({"fill": "white"}); this.state = 0; break;
+                    case "011": this.attr({"fill": "red"}); this.state = 1;break;
+                    case "100": this.attr({"fill": "white"}); this.state = 0; break;
+                    case "101": this.attr({"fill": "white"}); this.state = 0; break;
+                    case "110": this.attr({"fill": "white"}); this.state = 0; break;
+                    case "111": this.attr({"fill": "white"}); this.state = 0; break;
+                    default: //no change
+                    };
+                }
+                else{
+                    this.attr({"fill": "green"});
+                }
+
+            }
+            obj.updateState(1,obj.state,1,[0]);
+            return obj;
+        });
+
+        var cnt = 0;
+        var timer = 0;
+
+        var bittorio = [];
+        var i = 0, len = 49; //25 time units are displayed
+        for(; ++i < len;){
+            cnt = 0;
+            var bittorioRow = listBoundaryProperties.map (function (arr,ind){
+                var obj = paper.rect((32 + cnt++)*xLen,((i+3)%53)*(yLen-3),5,5);
+                obj.type = "catalyst";
+                obj.x = arr[0]%14;
+                obj.y = arr[1]%14;
+                obj.ind = ind;
+                //obj.attr({"fill": "red"});
+                obj.state = caCells[ind].state;
+                //updates the states of the cell based on adjacent values and environmental values
+                obj.updateState = function(){
+                    if( this.state == 1 ){
+                        this.attr({"fill": "red"});
+                    }
+                    else{
+                        this.attr({"fill": "white"});
+                    }
+                }
+                obj.updateState();
+                return obj;
+            });
+            bittorio.push(bittorioRow);
+        }
+
+        //sense the value of adjacent cells in the CA
+        function senseIn (ca,ind){
+            var prev  = ca[Math.abs((ind-1)%8)].state,
+                next = ca[(ind+1)%8].state;
+            return [prev, next];
+        };
+
+        function senseOut( world, ca,ind ){
+            var neighbourInd = ca[ind].neighbours;
+            var neighbourStates = neighbourInd.map( function (arr){
+                return world[arr[0]][arr[1]].state;
+            });
+            return neighbourStates;
+        }
+
+        function caUpdate(){
+            console.log("updating");
+            bonding();
+            disintegration();
+            caCells = caCells.map( function (el,ind, arr){
+                var otherVals = senseIn(arr,ind);
+                var worldVals = senseOut(cellularArray, arr, ind);
+                var curVals = el.state;
+                el.updateState( otherVals[0], curVals, otherVals[1], worldVals);
+                return el;
+            });
+            console.log(timer%48);
+            bittorio[timer%48] = bittorio[timer%48].map( function (el,ind){
+                el.state = caCells[ind].state;
+                el.updateState();
+                return el;
+            });
+        }
+
+        //todo next - display bittorio with temporal running in the side
+        //in columns to see if Iam able to get what varela said
+
+        // then, autopoietic cells
 
         function initArray(){
 
-            var cellularArray = [];
             var i = 0, j=0, len = 30;
             for(i=0; i < len; i++){
                 cellularArray[i] = [];
-
                 for(j=0; j < len;j++){
 
                     var biasedRand = Math.floor(0.9 + Math.random());
 
-                    if( arrCmp( listBoundaryProperties, [i,j] ) == 1 ){
-                        cellularArray[i][j] = paper.rect(i*xLen,j*yLen,7,7);
-                        cellularArray[i][j].attr({"fill": "green"});
-                        cellularArray[i][j].type = "catalyst";
-                        cellularArray[i][j].x = 15;
-                        cellularArray[i][j].y = 15;
-
+                    if( arrCmp( listBoundaryProperties, [i,j] ) == 1 || (i ==15 && j == 15) ){
+                        //cellularArray[i][j] = paper.rect(i*xLen,j*yLen,7,7);
+                        //cellularArray[i][j].attr({"fill": "green"});
+                        //cellularArray[i][j].type = "catalyst";
+                        //cellularArray[i][j].x = 15;
+                        //cellularArray[i][j].y = 15;
                     }
                     // arrCmp(listHoles,[i,j]) != -1
-                    else if( biasedRand == 0) {
-                        console.log("here");
-                        cellularArray[i][j] = paper.rect(i*xLen,j*yLen,7,7);
-                        cellularArray[i][j].attr({"fill": "white"});
-                        cellularArray[i][j].x = i;
-                        cellularArray[i][j].y = j;
-                        cellularArray[i][j].type = "hole";
-                        listHoles.push([i,j]);
-                    }
+                    // else if( biasedRand == 0) {
+                    //     console.log("here");
+                    //     cellularArray[i][j] = paper.rect((i+xOffset)*xLen,(j+yOffset)*yLen,7,7);
+                    //     cellularArray[i][j].attr({"fill": "white"});
+                    //     cellularArray[i][j].x = i;
+                    //     cellularArray[i][j].y = j
+                    //     cellularArray[i][j].state = 0;
+                    //     cellularArray[i][j].type = "hole";
+
+                    //     cellularArray[i][j].mousedown(function(){
+                    //         mouseDownState = 1;
+                    //     });
+
+                    //     cellularArray[i][j].mouseup(function(){
+                    //         mouseDownState = 0;
+                    //     });
+
+                    //     cellularArray[i][j].hover(function(){
+                    //         console.log("added click" + this.state);
+
+                    //         if( mouseDownState == 1 ){
+                    //             this.state = (this.state + 1)%2; //cellularArray[i][j] = (cellularArray[i][j].state + 1)%2;
+                    //             if(this.state == 1){
+                    //                 this.attr({"fill": "green"})
+                    //             }
+                    //             else{
+                    //                 this.attr({"fill": "white"})
+                    //             }
+                    //         }
+
+                    //     });
+                    //     listHoles.push([i,j]);
+                    // }
+
                     else{
-                        cellularArray[i][j] = paper.rect(i*xLen,j*yLen,7,7);
+                        cellularArray[i][j] = paper.rect((i+xOffset)*xLen,(j+yOffset)*yLen,7,7);
                         cellularArray[i][j].attr({"fill": "green"});
                         cellularArray[i][j].x = i;
                         cellularArray[i][j].y = j;
-                        cellularArray[i][j].type = "reactant";
+                        cellularArray[i][j].state = 1;
+                        cellularArray[i][j].type = "substrate";
+
+                        cellularArray[i][j].mousedown(function(){
+                            mouseDownState = 1;
+                        });
+
+                        cellularArray[i][j].mouseup(function(){
+                            mouseDownState = 0;
+                        });
+
+                        cellularArray[i][j].hover(function(){
+                            console.log("added click" + this.state);
+
+                            if( mouseDownState == 1 ){
+                                this.state = (this.state + 1)%2; //cellularArray[i][j] = (cellularArray[i][j].state + 1)%2;
+                                if(this.state == 1){
+                                    this.attr({"fill": "green"})
+                                }
+                                else{
+                                    this.attr({"fill": "white"})
+                                }
+                            }
+
+                        });
                         listSubstrates.push([i,j]);
                     }
                 }
@@ -83,6 +253,72 @@ require(
         }
 
         initArray();
+        var run = setInterval(request , parseFloat(document.getElementById("loopTime").value)); // start setInterval as "run"
+        function request() {
+            //console.log(); // firebug or chrome log
+            clearInterval(run); // stop the setInterval()
+            caUpdate();
+            timer++;
+            run = setInterval(request, parseFloat(document.getElementById("loopTime").value)); // start the setInterval()
+        }
+
+        // setInterval(function(){
+        //     caUpdate();
+        //     timer++;
+        // }, parseFloat(document.getElementById("loopTime").value));
+
+        function disintegration (){
+
+            caCells = caCells.map(function(el){
+                var chance = Math.floor( parseFloat(document.getElementById("disintegration").value) + Math.random()  );
+                if( chance == 0 && el.type == "link" ){
+                    //break the bond
+                    //do nothing
+                }
+                else if(chance == 0 && el.type == "substrate" ){
+
+                }
+                // this is where the bond breaks and no update function
+                // can happen till new bond is formed
+                else if (chance == 1 && el.type == "link"){
+                    console.log("cells are distintegrating??");
+                    el.type = "substrate";
+                    el.attr({"fill": "green"});
+                    el.state = -1; //constant 0
+                }
+                else{
+                    //no do thing
+                }
+                return el;
+            });
+
+        }
+
+        //bonding assuming that the catalyst is always in the presence
+        function bonding(){
+            caCells = caCells.map(function(el){
+                var chance = Math.floor( parseFloat(document.getElementById("formation").value) + Math.random()  );
+                if( chance == 1 && el.type == "link" ){
+                    //break the bond
+                    //do nothing
+                }
+                else if(chance == 0 && el.type == "link" ){
+
+                }
+                // this is where the bond breaks and no update function
+                // can happen till new bond is formed
+                else if (chance == 1 && el.type == "substrate"){
+                    console.log("cells are integrating??");
+                    el.type = "link";
+                    el.attr({"fill": "red"});
+                    el.state = 1; //constant 0
+                }
+                else{
+                    //no do thing
+                }
+                return el;
+            });
+        }
 
         //initially it is not clear what ar the holes.
         function movement(){
@@ -170,70 +406,5 @@ require(
             }
 
         }
-
-        //continuuously determine the color of the CA cells, which can be black or white
-        function caRules(){
-
-        }
-
-
-
-        //setInterval(movement,500);
-        //-------------------
-
-        // Add some properties to dot just to keep track of it's "state"
-        /////////////////////////
-        // dot.xpos=pWidth/2;  //
-        // dot.ypos=pHeight/2; //
-        // dot.xrate=5;        //
-        // dot.yrate=5;        //
-        /////////////////////////
-
-        // For counting calls to the 'draw' routine
-        //var count=0;
-
-        // // our drawing routine, will use as a callback for the interval timer
-        // var draw = function(){
-
-        //     // Count and keep track of the number of times this function is called
-        //     count++;
-        //     //console.log("count = " + count);
-        //     //console.log("dot pos is ["+dot.xpos + "," + dot.ypos + "]");
-
-        //     // Update the position where we want our dot to be
-        //     dot.xpos += dot.xrate;
-        //     dot.ypos += dot.yrate;
-
-        //     // Now actually move the dot using our 'state' variables
-        //     dot.attr({'cx': dot.xpos, 'cy': dot.ypos});
-
-        //     //---------------------------------------------
-
-        //     // keep the object on the paper
-        //     // make a sound when the dot bounces on the edges
-        //     if (dot.xpos > pWidth) {
-        //         dot.xrate = -dot.xrate;
-        //         snd.setParam("play", 1);
-        //         snd.releaseAfter(.05);
-        //     }
-        //     if (dot.ypos > pHeight) {
-        //         dot.yrate = - dot.yrate;
-        //         snd.setParam("play", 1);
-        //         snd.releaseAfter(.05);
-        //     };
-        //     if (dot.xpos < 0) {
-        //         dot.xrate = -dot.xrate;
-        //         snd.setParam("play", 1);
-        //         snd.releaseAfter(.05);
-        //     }
-        //     if (dot.ypos < 0) {
-        //         dot.yrate = - dot.yrate;
-        //         snd.setParam("play", 1);
-        //         snd.releaseAfter(.05);
-        //     };
-        // }
-
-        // call draw() periodically
-        //setInterval(draw, 20);
 
 });

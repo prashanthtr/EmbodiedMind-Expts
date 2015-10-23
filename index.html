@@ -6,7 +6,7 @@
         <!--  Include the raphael library from the jslibs directory  -->
         <script type="text/javascript" src="jslibs/raphael.js"></script>
         <!--  Use the require.js module loader, and tell it where our main JavaScript file is  -->
-        <script type="text/javascript" data-main="appscripts/bittorio.js" src="jslibs/require.js"> </script>
+        <script type="text/javascript" data-main="appscripts/bittorio-oneDimension.js" src="jslibs/require.js"> </script>
         <title> Cellular autopoiesis implementations </title>
         <style type="text/css">
           ul { font-size: 12pt; }
@@ -36,6 +36,9 @@
             <li>
               To add: Movement of gestures in time.
             </li>
+            <li>
+              To add: 0s as distinct objects to interact with.
+            </li>
           </ul>
 
         </nav>
@@ -43,6 +46,9 @@
         <aside>Controls:...<br> <br>
 
           Run speed in milliseconds <input type="text" id="loopTime" value="200">  </input>
+          Bond disintegration factor <input type="text" id="disintegration" value="0.2">  </input>
+          Bond formation factor <input type="text" id="formation" value="0.6">  </input>
+
         </aside>
 
     </div>
