@@ -93,7 +93,7 @@ require(
                 case "001": this.state = 0; this.attr({"fill": "white"}); break;
                 case "010": this.state = 0; this.attr({"fill": "white"}); break;
                 case "011": this.state = 1; this.attr({"fill": "black"});break;
-               c ase "100": this.state = 0; this.attr({"fill": "white"});break;
+                case "100": this.state = 0; this.attr({"fill": "white"});break;
                 case "101": this.state = 0; this.attr({"fill": "white"}); break;
                 case "110": this.state = 0; this.attr({"fill": "white"}); break;
                 case "111": this.state = 0; this.attr({"fill": "white"}); break;
