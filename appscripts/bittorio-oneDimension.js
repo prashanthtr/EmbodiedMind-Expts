@@ -57,7 +57,7 @@ require(
         //bittorio display on which display happens
         var bittorio = [];
         var row = 0, col = 0, len = 60; //len-1 time units are displayed
-        var colLength = 50;
+        var colLength = 80;
         for(row = 0; row < len-1; row++){
             bittorio[row] = [];
             for(col=0; col< colLength; col++){
