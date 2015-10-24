@@ -23,8 +23,8 @@ require(
         var pWidth = paper.canvas.offsetWidth;
         var pHeight = paper.canvas.offsetHeight;
         console.log("pWidth is " + pWidth + ", and pHeight is " + pHeight);
-        var xLen = 8, yLen = 6;
-        var xOffset = 1, yOffset = 1;
+        var xLen = 10, yLen = 9;
+        var xOffset = 1, yOffset = 1, size=9;
         //24,12
         // Just create a nice black background
         var bgRect = paper.rect(0,0,pWidth, pHeight);
@@ -48,121 +48,194 @@ require(
         var links = [];
 
         var cellularArray = [];
-        var listBoundaryProperties = [ [14,14], [15,14], [16,14], [16,15], [16,16], [15,16], [14,16], [14,15] ];
-        var listNeighbours = [ [[13,14],[14,13]], [[15,13]], [[16,13],[17,14]], [[17,15]], [[17,16],[16,17]], [[15,17]], [[14,17],[13,16],], [[13,15]] ];
 
         var cnt = 0;
         var timer = 1;
 
-        //bittorio display on which display happens
-        var bittorio = [];
-        var row = 0, col = 0, len = 60; //len-1 time units are displayed
-        var colLength = 80;
-        for(row = 0; row < len-1; row++){
-            bittorio[row] = [];
-            for(col=0; col< colLength; col++){
-                bittorio[row][col] = paper.rect((col+xOffset)*xLen,(row+yOffset)*yLen,7,7);
-                bittorio[row][col].attr({"fill": "white"});
-                bittorio[row][col].state = 0;
-                bittorio[row][col].update = function(){
-                    if( this.state == 0){
-                        this.attr({"fill": "white"});
-                    }
-                    else{
-                        this.attr({"fill": "black"});
-                    }
-                }
-            }
+        // thiknk about the clamps later
+
+        // the cellular automaton rules that each object uses to compute
+        // their states.
+        function caRules (prev, cur, next){
+            var castate = prev + "" +  cur + ""+ next;
+            console.log(castate);
+            //ca rule
+            var ret = -1;
+            switch(castate){
+            case "000": ret = 1; break;
+            case "001": ret = 0;  break;
+            case "010": ret = 0;  break;
+            case "011": ret = 1;  break;
+            case "100": ret = 0; break;
+            case "101": ret = 0;  break;
+            case "110": ret = 0;  break;
+            case "111": ret = 0;  break;
+            default: ret = -1; break;
+            };
+            return ret;
         }
 
-        bittorio[len-1] = [];
-        for(col=0; col< colLength; col++){
+        // document.getElementById('setInitConfig').addEventListener('click',function(){
+        //     if(document.getElementById('setInitConfig').value == "set the configuration"){
+        //         document.getElementById('setInitConfig').value = "Fixed initial configuration";
+        //     }
+        //     else{
+        //         document.getElementById('setInitConfig').value = "set the configuration";
+        //     }
+        // });
 
-            bittorio[len-1][col] = paper.rect((col+xOffset)*xLen,(len+1+yOffset)*yLen,8,8);
-            bittorio[len-1][col].type = "link";
-            bittorio[len-1][col].state = 1;
 
-            //console.log(bittorio[len-1][col].state);
-            //updates the states of the cell based on adjacent values and environmental values
-            bittorio[len-1][col].updateState = function(prev, cur, next){
-                var castate = prev + "" +  cur + ""+ next;
-                console.log(castate);
-                //ca rule
-                switch(castate){
-                case "000": this.state = 1; this.attr({"fill": "black"}); break;
-                case "001": this.state = 0; this.attr({"fill": "white"}); break;
-                case "010": this.state = 0; this.attr({"fill": "white"}); break;
-                case "011": this.state = 1; this.attr({"fill": "black"});break;
-                case "100": this.state = 0; this.attr({"fill": "white"});break;
-                case "101": this.state = 0; this.attr({"fill": "white"}); break;
-                case "110": this.state = 0; this.attr({"fill": "white"}); break;
-                case "111": this.state = 0; this.attr({"fill": "white"}); break;
-                };
+        //x,y, - positions, side - of the square
+        function bitObject(x,y,s,timeOccur){
+
+            var obj = paper.rect(x*xLen,y*yLen,s,s);
+            obj.type = "link";
+            obj.state = -1;
+            //calculates the state of an object using internal relation
+            //between ca cells
+            obj.updateState = caRules;
+
+            obj.changeColor = function(){
+
+                if(this.state == -1){
+                    this.attr({"fill": "grey"});
+                }
+                else if(this.state == 0){
+                    this.attr({"fill": "white"});
+                }
+                else{
+                    this.attr({"fill": "black"});
+                }
             }
-            //bittorio[len-1][col].updateState(0,bittorio[len-1][col].state,0);
 
-            bittorio[len-1][col].mousedown(function(){
+            obj.changeColor();
+
+            obj.mousedown(function(){
                 mouseDownState = 1;
             });
 
-            bittorio[len-1][col].mouseup(function(){
-                mouseDownState = 0;
+            obj.mouseup(function(){
+                    mouseDownState = 0;
             });
 
             //toggle state
-            bittorio[len-1][col].hover(function(){
-                console.log("added click" + this.state);
-                this.state = (this.state + 1)%2; //bittorio[len-1][col] = (bittorio[len-1][col].state + 1)%2;
-                if(this.state == 1){
-                    this.attr({"fill": "white"})
+            obj.hover(function(){
+                if( mouseDownState == 1){
+                    console.log("added click" + this.state);
+                    this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
+                    this.changeColor();
                 }
-                else{
-                    this.attr({"fill": "black"})
-                }
+
             });
 
+            return obj;
         }
+
+        //bittorio display on which display happens
+        var bittorio = [];
+        var row = 0, col = 0, rowLength = 50; //len-1 time units are displayed
+        var colLength = 60;
+
+        // top most row is the initialization row
+        // this has to be initialized and cannot changed afterwards
+        for(row = 0; row < rowLength; row++){
+            bittorio[row] = [];
+            for(col=0; col< colLength; col++){
+                bittorio[row][col] = new bitObject(col+xOffset,row+yOffset,size,row);
+                bittorio[row][col].changeColor();
+            }
+        }
+
+        function init(){
+            row = 0;
+            for(col=0; col< colLength; col++){
+                bittorio[row][col] = new bitObject(col+xOffset,row+yOffset,size,row);
+                bittorio[row][col].state = 0;
+                bittorio[row][col].changeColor();
+            }
+        }
+
+        init();
+
+        // //looks ahead to update the current slide based on the perturbation
+        // function lookahead (cur, next){
+
+        //     var newArr = next.map( function (el,ind,arr){
+
+        //         if( el.state != -1){
+        //             cur = el.state;
+        //             obj.changeColor();
+        //         }
+        //     });
+        // }
 
         //entering the function once, it updates the state of the
         //bittorio and stores in the new bittorio row.
         function caUpdate(){
 
-            //creating the new array from the last array
-            var newArr = bittorio[len-1].map( function (el,ind,arr){
-                var prev = [];
+            //creating the new array from the first array
+            bittorio[timer-1].map( function (el,ind,arr){
+
+                var nextCell = bittorio[timer][ind];
+
+                var prev =-1, next=-1, cur = -1;
                 if( ind - 1 < 0){
                     prev = arr[arr.length-1].state; //turn around
                 }
                 else {
                     prev = arr[ Math.abs(ind-1)%arr.length].state; //turn around
                 }
-                var next = arr[ Math.abs(ind+1)%arr.length].state;
+                next = arr[ Math.abs(ind+1)%arr.length].state;
+                cur = el.state;
+
+                // // as opposed to the CA encountering the accepted state,
+                // // changing its current state (with no time lag), and
+                // // using the changed states to generate new state
+
+                if( nextCell.state != -1){
+                    console.log("perturb");
+                    // then the cell is a perturbation that has to be carried over
+                    cur = nextCell.state;
+                    // once carried, then color has to change
+                    el.state = nextCell.state;
+                    el.changeColor();
+                }
+                else {
+                    console.log("previous object state")
+                    cur = el.state; //previous object state
+                }
+
+                nextCell.state = nextCell.updateState(prev,cur,next);
+                nextCell.changeColor();
+
                 //console.log("ind is" + ind + "," + prev + ", " + next);
-                el.updateState( prev , el.state, next);
-                return el;
+                //upddating the state of the new object.
             });
 
-            //updating all the previous arrays
-            var row = 0;
-            while( row < bittorio.length-1 ){
+            // none of this business needed
+            // //updating all the previous arrays
+            // var row = bittorio.length-1;
+            // while( row > 1 ){
 
-                for(col=0; col < bittorio[row].length; col++){
-                    bittorio[row][col].state = bittorio[row+1][col].state;
-                    bittorio[row][col].update();
-                }
-                row++;
-            }
+            //     for(col=0; col < bittorio[row].length; col++){
+            //         bittorio[row][col].state = bittorio[row-1][col].state;
+            //         bittorio[row][col].changeColor();
+            //     }
+            //     row++;
+            // }
 
-            //updating the last array
-            for(col=0; col < bittorio[row].length; col++){
-                bittorio[bittorio.length-1][col] = newArr[col];
-            }
+            // // updating from the first array
+            // for(col=0; col < bittorio[row].length; col++){
+            //     bittorio[bittorio.length-1][col] = newArr[col];
+            // }
+
+            //increment timer
             console.log(timer);
+            timer++;
         }
 
         //current timer - or the now row
         var run = null;
-
         document.getElementById('start').addEventListener("click", function(){
             if(run == null){
                 run = setInterval(request , parseFloat(document.getElementById("loopTime").value)); // start setInterval as "run";
@@ -180,11 +253,15 @@ require(
 
         function request() {
             //console.log(); // firebug or chrome log
-            clearInterval(run); // stop the setInterval()
-            caUpdate();
-            timer++;
-            run = setInterval(request, parseFloat(document.getElementById("loopTime").value)); // start the setInterval()
-        }
 
+            if(timer > rowLength-1){
+                clearInterval(run); // stop the setInterval()
+            }
+            else{
+                clearInterval(run); // stop the setInterval()
+                caUpdate();
+                run = setInterval(request, parseFloat(document.getElementById("loopTime").value)); // start the setInterval()
+            }
+        }
 
 });
