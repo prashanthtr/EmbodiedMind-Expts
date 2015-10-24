@@ -9,7 +9,7 @@
         <script type="text/javascript" data-main="appscripts/bittorio-oneDimension.js" src="jslibs/require.js"> </script>
         <title> Cellular autopoiesis implementations </title>
         <style type="text/css">
-          ul { font-size: 12pt; }
+          ul { font-size: 11pt; }
           aside {font-size: 12pt;}
          </style>
 
@@ -21,31 +21,52 @@
 
         <div id="centerDiv">
 
-
         </div>  <!--  <article>   article  </article> -->
 
-        <nav> Info
+        <nav>
           <ul >
-            <li>To the right is an interactive cellular automaton grid
-              on which mouse can be dragged to draw a gesture and change
-              the state of the cells.</li>
-            <li> Bittorio is the center most grid of 9 circles that can
-            blink in red.
-            <li> The grid on the extreme right, shows the changes in the
-            cellular automaton bittorio, over 50 time units.
+            <li> To the right is an interactive cellular automaton grid.
+              that resembles, Bittorio.
+            </li>
+            <li> <b> States of CA: </b>
+            <ol>
+              <li> The first row is the initial configuration of the
+                CA. </li>
+              <li> Subsequent row of black and whites, are past states
+                of the CA, </li>
+                <li> grey cells are future states, </li>
+                <li> The black-white cell just preceding grey cell is
+                  the current state of the CA. </li>
+              </ol>
+            <li>  <b> User actions: </b> drag on the current cells to perturb
+            them. Or, drag on the grey cells to select them as
+            perturbations of future states.
             </li>
           </ul>
 
         </nav>
 
-        <aside>Controls:...<br> <br>
+        <aside>Controls:<br> <br>
 
-          Click to fix initial configuration <input type="button" id="setInitConfig" value="set the configuration">  </input> <br>
-          Start <input type="button" id="start" value="Start">  </input> <br>
-          Stop <input type="button" id="stop" value="stop">  </input> <br>
-          Run speed in milliseconds <input type="text" id="loopTime" value="200">  </input>
+          <!-- Click the initial configuration <input type="button" id="setInitConfig" value="fix!"> </input> <br> -->
+          Run speed in milliseconds <input type="text" id="loopTime" value="200">  </input> <br>
 
+          <input type="button" id="start" value="Start">  </input>
+          <input type="button" id="stop" value="stop">  </input>
+          <input type="button" id="reset" value="Reset">  </input> <br>
 
+          <h5> CA </h5>
+          Initial config (0-2^60) <input type="text" id="configNum" value="0">  </input> <br>
+          CA Rule Number (0-255) <input type="text" id="carule" value="0"> <br>
+          CA Rule Binary <input type="text" id="carulebinary" value="00000000"> <br>
+
+          <h5> Preset configurations </h5>
+
+          <select>
+            <option value="None"> ---- </option>
+            <option value="odd sequence recognizer"> Odd sequence recognizer </option>
+            <option value="even sequence recognizer"> Even sequence recognizer </option>
+          </select>
           <!-- Bond disintegration factor <input type="text" id="disintegration" value="0.2">  </input> -->
           <!-- Bond formation factor <input type="text" id="formation" value="0.6">  </input> -->
 

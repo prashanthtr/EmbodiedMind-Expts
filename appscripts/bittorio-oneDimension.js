@@ -18,18 +18,20 @@ require(
             mouseDownState = 0;
         })
 
-
         // put the width and heigth of the canvas into variables for our own convenience
         var pWidth = paper.canvas.offsetWidth;
         var pHeight = paper.canvas.offsetHeight;
         console.log("pWidth is " + pWidth + ", and pHeight is " + pHeight);
-        var xLen = 10, yLen = 9;
-        var xOffset = 1, yOffset = 1, size=9;
+
+        var colLength = 40, rowLength = 20; //len-1 time units are displayed
+        var xLen = 0.9*pWidth/colLength, yLen = 0.9*pWidth/colLength, size= pWidth/colLength;
+
+        var xOffset = 1, yOffset = 1;
         //24,12
         // Just create a nice black background
         var bgRect = paper.rect(0,0,pWidth, pHeight);
-        bgRect.attr({"fill": "white"});
-
+        bgRect.attr({"fill": "black"});
+        bgRect.attr({"stroke-opacity": "0"});
 
         function arrCmp(arr, obj){
             var i = 0, len = arr.length;
@@ -41,14 +43,6 @@ require(
             return -1;
         }
 
-        var listHoles = [];
-        var listSubstrates = [];
-        var products = [];
-        var bonds = [];
-        var links = [];
-
-        var cellularArray = [];
-
         var cnt = 0;
         var timer = 1;
 
@@ -57,19 +51,26 @@ require(
         // the cellular automaton rules that each object uses to compute
         // their states.
         function caRules (prev, cur, next){
+
+            var rule = document.getElementById('carulebinary').value;
+            rule = rule.split("");
+            rule = rule.map(function(r){ return parseInt(r);});
+
+            console.log("carule is" + rule);
+
             var castate = prev + "" +  cur + ""+ next;
             console.log(castate);
             //ca rule
             var ret = -1;
             switch(castate){
-            case "000": ret = 1; break;
-            case "001": ret = 0;  break;
-            case "010": ret = 0;  break;
-            case "011": ret = 1;  break;
-            case "100": ret = 0; break;
-            case "101": ret = 0;  break;
-            case "110": ret = 0;  break;
-            case "111": ret = 0;  break;
+            case "000": ret = rule[0]; break;
+            case "001": ret = rule[1];  break;
+            case "010": ret = rule[2];  break;
+            case "011": ret = rule[3];  break;
+            case "100": ret = rule[4]; break;
+            case "101": ret = rule[5];  break;
+            case "110": ret = rule[6];  break;
+            case "111": ret = rule[7];  break;
             default: ret = -1; break;
             };
             return ret;
@@ -84,11 +85,12 @@ require(
         //     }
         // });
 
-
         //x,y, - positions, side - of the square
         function bitObject(x,y,s,timeOccur){
 
             var obj = paper.rect(x*xLen,y*yLen,s,s);
+            obj.attr({"stroke-opacity": 0.2, "stroke-width": 1});
+
             obj.type = "link";
             obj.state = -1;
             //calculates the state of an object using internal relation
@@ -133,8 +135,7 @@ require(
 
         //bittorio display on which display happens
         var bittorio = [];
-        var row = 0, col = 0, rowLength = 50; //len-1 time units are displayed
-        var colLength = 60;
+        var row = 0, col = 0;
 
         // top most row is the initialization row
         // this has to be initialized and cannot changed afterwards
@@ -142,7 +143,8 @@ require(
             bittorio[row] = [];
             for(col=0; col< colLength; col++){
                 bittorio[row][col] = new bitObject(col+xOffset,row+yOffset,size,row);
-                bittorio[row][col].changeColor();
+                bittorio[row][col].state = 0; //state change without color
+                //bittorio[row][col].changeColor();
             }
         }
 
@@ -154,6 +156,29 @@ require(
                 bittorio[row][col].changeColor();
             }
         }
+
+        function reset(){
+
+            for(row = 1; row < rowLength; row++){
+                for(col=0; col< colLength; col++){
+                    bittorio[row][col].state = -1;
+                    bittorio[row][col].changeColor();
+                    bittorio[row][col].state = 0;
+
+                }
+            }
+
+
+            row = 0;
+            for(col=0; col< colLength; col++){
+                bittorio[row][col].state = 0;
+                bittorio[row][col].changeColor();
+            }
+
+            timer = 1;
+
+        }
+
 
         init();
 
@@ -234,9 +259,61 @@ require(
             timer++;
         }
 
+        //converts to binary of suitable,length
+        function convertBinary (num, len){
+
+            var str = "";
+            var rem = 0;
+
+            while( num > 1 ){
+                rem = num % 2;
+                str += rem;
+                num = parseInt(num/2);
+            }
+            if( num == 0){
+                str+=0;
+            }
+            else str+=1;
+
+            var i = str.length;
+            while( i < len ){
+                str+=0;
+                i++;
+            }
+
+            str = str.split("").reverse().join("");
+            return str;
+        }
+
+        document.getElementById('configNum').onchange = function (){
+
+            //convert to binary
+            var num = parseInt(document.getElementById('configNum').value);
+            var str = convertBinary (num, colLength);
+            str = str.split(""); //has to be an array
+
+            row = 0;
+            for(col=0; col< colLength; col++){
+                bittorio[row][col] = new bitObject(col+xOffset,row+yOffset,size,row);
+                bittorio[row][col].state = parseInt(str[col]);
+                bittorio[row][col].changeColor();
+            }
+        };
+
+        document.getElementById('carule').onchange = function (){
+
+            //convert to binary
+            var num = parseInt(document.getElementById('carule').value);
+            var str = convertBinary (num, 8);
+            document.getElementById('carulebinary').value = str;
+        };
+
+
+
         //current timer - or the now row
         var run = null;
         document.getElementById('start').addEventListener("click", function(){
+            console.log("here after reset");
             if(run == null){
                 run = setInterval(request , parseFloat(document.getElementById("loopTime").value)); // start setInterval as "run";
             }
@@ -249,6 +326,15 @@ require(
                 run = null;
             }
         },true);
+
+        document.getElementById('reset').addEventListener("click", function(){
+            if(run != null){
+                clearInterval(run); // stop the setInterval()
+            }
+            run = null;
+            reset();
+        },true);
+
 
 
         function request() {
