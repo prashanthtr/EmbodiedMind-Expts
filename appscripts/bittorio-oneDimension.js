@@ -91,6 +91,7 @@ require(
             var obj = paper.rect(x*xLen,y*yLen,s,s);
             obj.attr({"stroke-opacity": 0.2, "stroke-width": 1});
 
+            obj.stateChanged = -1;
             obj.type = "link";
             obj.state = -1;
             //calculates the state of an object using internal relation
@@ -126,6 +127,7 @@ require(
                     console.log("added click" + this.state);
                     this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
                     this.changeColor();
+                    obj.stateChanged = 1;
                 }
 
             });
@@ -198,11 +200,13 @@ require(
         //bittorio and stores in the new bittorio row.
         function caUpdate(){
 
-            //creating the new array from the first array
-            bittorio[timer-1].map( function (el,ind,arr){
+            var arr = bittorio[timer-1];
+            var ind = 0;
 
+            while( ind < arr.length ){
+
+                var el = bittorio[timer-1][ind];
                 var nextCell = bittorio[timer][ind];
-
                 var prev =-1, next=-1, cur = -1;
                 if( ind - 1 < 0){
                     prev = arr[arr.length-1].state; //turn around
@@ -217,7 +221,7 @@ require(
                 // // changing its current state (with no time lag), and
                 // // using the changed states to generate new state
 
-                if( nextCell.state != -1){
+                if( nextCell.state != -1 && nextCell.stateChanged == 1 ){
                     console.log("perturb");
                     // then the cell is a perturbation that has to be carried over
                     cur = nextCell.state;
@@ -233,26 +237,14 @@ require(
                 nextCell.state = nextCell.updateState(prev,cur,next);
                 nextCell.changeColor();
 
+                ind++;
+            }
+            //            bittorio[timer-1].map( function (el,ind,arr){
+
+            //return el;
                 //console.log("ind is" + ind + "," + prev + ", " + next);
                 //upddating the state of the new object.
-            });
-
-            // none of this business needed
-            // //updating all the previous arrays
-            // var row = bittorio.length-1;
-            // while( row > 1 ){
-
-            //     for(col=0; col < bittorio[row].length; col++){
-            //         bittorio[row][col].state = bittorio[row-1][col].state;
-            //         bittorio[row][col].changeColor();
-            //     }
-            //     row++;
-            // }
-
-            // // updating from the first array
-            // for(col=0; col < bittorio[row].length; col++){
-            //     bittorio[bittorio.length-1][col] = newArr[col];
-            // }
+//            });
 
             //increment timer
             console.log(timer);
@@ -260,7 +252,7 @@ require(
         }
 
         //converts to binary of suitable,length
-        function convertBinary (num, len){
+        function convert2Binary (num, len){
 
             var str = "";
             var rem = 0;
@@ -285,11 +277,21 @@ require(
             return str;
         }
 
-        document.getElementById('configNum').onchange = function (){
+        function convert2Decimal( binArr ){
+
+            var sum = 0;
+            var i = binArr.length;
+            while( i -- ){
+                sum+= binArr[i]*Math.pow(2, binArr.length-i-1);
+            }
+            return sum;
+        }
+
+        document.getElementById('configFix').onclick = function (){
 
             //convert to binary
             var num = parseInt(document.getElementById('configNum').value);
-            var str = convertBinary (num, colLength);
+            var str = convert2Binary (num, colLength);
             str = str.split(""); //has to be an array
 
             row = 0;
@@ -304,16 +306,24 @@ require(
 
             //convert to binary
             var num = parseInt(document.getElementById('carule').value);
-            var str = convertBinary (num, 8);
+            var str = convert2Binary (num, 8);
             document.getElementById('carulebinary').value = str;
         };
 
-
+        function findInitConfigVal(){
+            row = 0;
+            var arr = [];
+            for(col=0; col< colLength; col++){
+                arr[col] = bittorio[row][col].state;
+            }
+            return convert2Decimal(arr);
+        }
 
         //current timer - or the now row
         var run = null;
         document.getElementById('start').addEventListener("click", function(){
             console.log("here after reset");
+            document.getElementById('configNum').value  = findInitConfigVal();
             if(run == null){
                 run = setInterval(request , parseFloat(document.getElementById("loopTime").value)); // start setInterval as "run";
             }
