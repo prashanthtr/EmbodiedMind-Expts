@@ -351,6 +351,15 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
             }
         };
 
+        document.getElementById('carulebinary').onchange = function(){
+            //convert to decimal
+            var num = document.getElementById('carulebinary').value;
+            num = num.split("").map(function(n){ return parseInt(n);});
+            var dec = convert2Decimal (num);
+            console.log("here");
+            document.getElementById('carule').value = dec;
+        };
+
         document.getElementById('carule').onchange = function (){
 
             //convert to binary
