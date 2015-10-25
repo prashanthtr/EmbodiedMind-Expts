@@ -20,7 +20,7 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
         var mouseDownState = 0;
 
         paper.raphael.mousedown(function(){
-                mouseDownState = 1;
+            //mouseDownState = 1;
         });
 
         paper.raphael.mouseup( function(){
@@ -92,7 +92,6 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
             var obj = paper.rect(x*xLen,y*yLen,s,s);
             obj.attr({"stroke-opacity": 0.2, "stroke-width": 1});
 
-            obj.stateChanged = -1;
             obj.type = "link";
             obj.state = -1;
             //calculates the state of an object using internal relation
@@ -119,12 +118,11 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
                 mouseDownState = 1;
                 this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
                 this.changeColor();
-                obj.stateChanged = 1;
             });
 
-            //obj.mouseup(function(){
-            //     mouseDownState = 0;
-            // });
+            obj.mouseup(function(){
+                mouseDownState = 0;
+            });
 
 
 
@@ -134,7 +132,6 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
                     console.log("added click" + this.state);
                     this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
                     this.changeColor();
-                    obj.stateChanged = 1;
                 }
 
             });
@@ -152,7 +149,6 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
             bittorio[row] = [];
             for(col=0; col< colLength; col++){
                 bittorio[row][col] = new bitObject(col+xOffset,row+yOffset,size,row);
-                bittorio[row][col].state = 0; //state change without color
                 //bittorio[row][col].changeColor();
             }
         }
@@ -186,11 +182,8 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
                 for(col=0; col< colLength; col++){
                     bittorio[row][col].state = -1;
                     bittorio[row][col].changeColor();
-                    bittorio[row][col].state = 0;
-
                 }
             }
-
 
             row = 0;
             for(col=0; col< colLength; col++){
@@ -220,6 +213,7 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
         //bittorio and stores in the new bittorio row.
         function caUpdate(){
 
+            // this whole update happes at timer-1 always
             var arr = bittorio[timer-1];
             var ind = 0;
 
@@ -227,44 +221,41 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
 
                 var el = bittorio[timer-1][ind];
                 var nextCell = bittorio[timer][ind];
-                var prev =-1, next=-1, cur = -1;
-                if( ind - 1 < 0){
-                    prev = arr[arr.length-1].state; //turn around
-                }
-                else {
-                    prev = arr[ Math.abs(ind-1)%arr.length].state; //turn around
-                }
-                next = arr[ Math.abs(ind+1)%arr.length].state;
-                cur = el.state;
 
                 // // as opposed to the CA encountering the accepted state,
                 // // changing its current state (with no time lag), and
                 // // using the changed states to generate new state
 
-                if( nextCell.state != -1 && nextCell.stateChanged == 1 ){
+                if( nextCell.state != -1){
                     console.log("perturb");
                     // then the cell is a perturbation that has to be carried over
-                    cur = nextCell.state;
-                    // once carried, then color has to change
+
+                    // once carried, the carryover has to show
                     el.state = nextCell.state;
                     el.changeColor();
+                    //nextCell.state = -1;
+                    //nextCell.changeColor();
                 }
-                else {
-                    console.log("previous object state")
-                    cur = el.state; //previous object state
-                }
-
-                nextCell.state = nextCell.updateState(prev,cur,next);
-                nextCell.changeColor();
 
                 ind++;
             }
-            //            bittorio[timer-1].map( function (el,ind,arr){
 
-            //return el;
-                //console.log("ind is" + ind + "," + prev + ", " + next);
-                //upddating the state of the new object.
-//            });
+            //now, change happens at the timer
+            bittorio[timer].map( function (el,ind,arr){
+                var prevCell =  bittorio[timer-1];
+                //three values
+                var prev =-1, next=-1, cur = -1;
+                if( ind - 1 < 0){
+                    prev = prevCell[arr.length-1].state; //turn around
+                }
+                else {
+                    prev = prevCell[ Math.abs(ind-1)%arr.length].state; //turn around
+                }
+                next = prevCell[ Math.abs(ind+1)%arr.length].state;
+                cur = prevCell[ind].state;
+                el.state = el.updateState(prev,cur,next);
+                el.changeColor();
+            });
 
             //increment timer
             console.log(timer);
