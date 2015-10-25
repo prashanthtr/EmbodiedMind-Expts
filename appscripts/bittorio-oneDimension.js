@@ -33,13 +33,17 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
         var pHeight = paper.canvas.offsetHeight;
         console.log("pWidth is " + pWidth + ", and pHeight is " + pHeight);
 
-        var colLength = 40, rowLength = 20; //len-1 time units are displayed
+        var colLength = 40, rowLength = 80; //len-1 time units are displayed
         var xLen = 0.9*pWidth/colLength, yLen = 0.9*pWidth/colLength, size= pWidth/colLength;
 
         var xOffset = 1, yOffset = 1;
         //24,12
+
+        console.log("rectangle is " + pWidth + ", " + rowLength*yLen);
+
+        paper.setSize(pWidth, rowLength*yLen);
         // Just create a nice black background
-        var bgRect = paper.rect(0,0,pWidth, pHeight);
+        var bgRect = paper.rect(0,0,pWidth, rowLength*yLen);
         bgRect.attr({"fill": "black"});
         bgRect.attr({"stroke-opacity": "0"});
 
