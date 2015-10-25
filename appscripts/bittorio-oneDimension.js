@@ -77,16 +77,17 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
             //ca rule
             var ret = -1;
             switch(castate){
-            case "000": ret = rule[0]; break;
-            case "001": ret = rule[1];  break;
-            case "010": ret = rule[2];  break;
-            case "011": ret = rule[3];  break;
-            case "100": ret = rule[4]; break;
-            case "101": ret = rule[5];  break;
-            case "110": ret = rule[6];  break;
-            case "111": ret = rule[7];  break;
+            case "111": ret = rule[0]; break;
+            case "110": ret = rule[1];  break;
+            case "101": ret = rule[2];  break;
+            case "100": ret = rule[3];  break;
+            case "011": ret = rule[4]; break;
+            case "010": ret = rule[5];  break;
+            case "001": ret = rule[6];  break;
+            case "000": ret = rule[7];  break;
             default: ret = -1; break;
             };
+            console.log("ret is" + ret);
             return ret;
         }
 
@@ -109,10 +110,10 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
                     this.attr({"fill": "grey"});
                 }
                 else if(this.state == 1){
-                    this.attr({"fill": "white"});
+                    this.attr({"fill": "black"});
                 }
                 else{
-                    this.attr({"fill": "black"});
+                    this.attr({"fill": "white"});
                 }
             }
 
@@ -191,7 +192,7 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
             row = 0;
             for(col=0; col< colLength; col++){
                 bittorio[row][col] = new bitObject(col+xOffset,row+yOffset,size,row);
-                bittorio[row][col].state = 1;
+                bittorio[row][col].state = 0;
                 bittorio[row][col].changedState = 1;
                 bittorio[row][col].changeColor();
             }
@@ -223,7 +224,7 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
 
             row = 0;
             for(col=0; col< colLength; col++){
-                bittorio[row][col].state = 1;
+                bittorio[row][col].state = 0;
                 bittorio[row][col].changeColor();
                 bittorio[row][col].changedState = 1;
             }
