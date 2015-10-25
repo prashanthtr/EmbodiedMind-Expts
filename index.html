@@ -7,16 +7,19 @@
         <script type="text/javascript" src="jslibs/raphael.js"></script>
         <!--  Use the require.js module loader, and tell it where our main JavaScript file is  -->
         <script type="text/javascript" data-main="appscripts/bittorio-oneDimension.js" src="jslibs/require.js"> </script>
-        <title> Cellular autopoiesis implementations </title>
+        <title> 1D cellular automata </title>
         <style type="text/css">
           ul { font-size: 11pt; }
+          ol { font-size: 11pt; }
+          p { font-size: 11pt; }
           aside {font-size: 12pt;}
+          nav {overflow:scroll;}
          </style>
 
     </head>
 
   <body bg-color="#000000">
-    <header> Bittorio - odd perturbation recognizer </header>
+    <header> 1D cellular automata - explorations in operational closure and structural coupling </header>
     <div id='main'>
 
         <div id="centerDiv">
@@ -24,25 +27,29 @@
         </div>  <!--  <article>   article  </article> -->
 
         <nav>
-          <ul >
-            <li> This simulation presents an interactive cellular
-              automaton (CA) grid, that resembles, Bittorio.
-            </li>
-            <li> <b> States of CA: </b>
-            <ol>
-              <li> The first row is the initial configuration of the
-                CA. </li>
-              <li> Subsequent row of black and whites, are past states
-                of the CA, </li>
-                <li> grey cells are future states, </li>
-                <li> The black-white cell just preceding grey cell is
-                  the current state of the CA. </li>
-              </ol>
-            <li>  <b> User actions: </b> drag on the current cells to perturb
-            them. Or, drag on the grey cells to select them as
-            perturbations of future states.
-            </li>
-          </ul>
+
+          <p id="userGuide">
+
+          </p>
+          <!-- <ul > -->
+          <!--   <li> This simulation presents an interactive cellular -->
+          <!--     automaton (CA) grid, that resembles, Bittorio. -->
+          <!--   </li> -->
+          <!--   <li> <b> States of CA: </b> -->
+          <!--   <ol> -->
+          <!--     <li> The first row is the initial configuration of the -->
+          <!--       CA. </li> -->
+          <!--     <li> Subsequent row of black and whites, are past states -->
+          <!--       of the CA, </li> -->
+          <!--       <li> grey cells are future states, </li> -->
+          <!--       <li> The black-white cell just preceding grey cell is -->
+          <!--         the current state of the CA. </li> -->
+          <!--     </ol> -->
+          <!--   <li>  <b> User actions: </b> drag on the current cells to perturb -->
+          <!--   them. Or, drag on the grey cells to select them as -->
+          <!--   perturbations of future states. -->
+          <!--   </li> -->
+          <!-- </ul> -->
 
         </nav>
 
