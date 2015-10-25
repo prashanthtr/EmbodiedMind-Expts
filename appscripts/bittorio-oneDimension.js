@@ -9,7 +9,7 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
 
         document.getElementById('userGuide').innerHTML += "<p>CA rules:</p> <ol> <li>Usually, the state of a cell is computed based on its state and the state of its immediate neighbors during the previous time-step</li> <li>If, however, a cell encounters a “perturbation”, that cell is replaced by the state of the perturbing cell.</li> </ol>";
 
-        document.getElementById('userGuide').innerHTML += "<p>User actions:</p> <ol> <li>Initial configuration: user can click the cells on or off or drag (click and move) the mouse over them. </li> <li>Rules: user can enter a particular rule (in binary or decimal) or select certain rules from the pull-down menu. Note: the rules in the pull-down menu result in specific kinds of interesting structural coupling (eg, “odd sequence recognizer”)</li> <li>Perturbations: user can create perturbations by clicking cells on or off (or) dragging (click and move) over them.</li> </ol>";
+        document.getElementById('userGuide').innerHTML += "<p>User actions:</p> <ol> <li>Initial configuration: user can click the cells on or off </li> <li>Rules: user can enter a particular rule (in binary or decimal) or select certain rules from the pull-down menu. Note: the rules in the pull-down menu result in specific kinds of interesting structural coupling (eg, “odd sequence recognizer”)</li> <li>Perturbations: user can create perturbations by clicking cells on or off</li> </ol>";
 
         console.log("Yo, I am alive!");
         // Grab the div where we will put our Raphael paper
@@ -20,11 +20,11 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
         var mouseDownState = 0;
 
         paper.raphael.mousedown(function(){
-            //mouseDownState = 1;
+            mouseDownState = 1;
         });
 
         paper.raphael.mouseup( function(){
-            console.log("reset because of this function");
+            //console.log("reset because of this function");
             mouseDownState = 0;
         })
 
@@ -33,8 +33,8 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
         var pHeight = paper.canvas.offsetHeight;
         console.log("pWidth is " + pWidth + ", and pHeight is " + pHeight);
 
-        var colLength = 40, rowLength = 80; //len-1 time units are displayed
-        var xLen = 0.9*pWidth/colLength, yLen = 0.9*pWidth/colLength, size= pWidth/colLength;
+        var colLength = 40, rowLength = 45; //len-1 time units are displayed
+        var xLen = 0.95*pWidth/colLength, yLen = 0.9*pWidth/colLength, size= pWidth/colLength;
 
         var xOffset = 1, yOffset = 1;
         //24,12
@@ -43,9 +43,9 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
 
         paper.setSize(pWidth, rowLength*yLen);
         // Just create a nice black background
-        var bgRect = paper.rect(0,0,pWidth, rowLength*yLen);
+        var bgRect = paper.rect(0,0,pWidth, pHeight);
         bgRect.attr({"fill": "black"});
-        bgRect.attr({"stroke-opacity": "0"});
+        //bgRect.attr({"stroke-opacity": "2", "stroke-width": "1", "stroke": "#FFFFFF" });
 
         function arrCmp(arr, obj){
             var i = 0, len = arr.length;
@@ -97,17 +97,18 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
             obj.attr({"stroke-opacity": 0.2, "stroke-width": 1});
 
             obj.type = "link";
-            obj.state = -1;
+            obj.state = 2;
             //calculates the state of an object using internal relation
             //between ca cells
             obj.updateState = caRules;
+            obj.changedState = 0;
 
             obj.changeColor = function(){
 
-                if(this.state == -1){
+                if(this.state == 2){
                     this.attr({"fill": "grey"});
                 }
-                else if(this.state == 0){
+                else if(this.state == 1){
                     this.attr({"fill": "white"});
                 }
                 else{
@@ -117,28 +118,57 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
 
             obj.changeColor();
 
-            obj.mousedown(function(){
-                console.log("console" + mouseDownState);
-                mouseDownState = 1;
-                this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
-                this.changeColor();
-            });
+            obj.click(function(){
 
-            obj.mouseup(function(){
-                mouseDownState = 0;
-            });
-
-
-
-            //toggle state
-            obj.hover(function(){
-                if( mouseDownState == 1){
-                    console.log("added click" + this.state);
-                    this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
+                if(this.changedState == 1){
+                    this.state = (this.state + 1)%2 //obj = (obj.state + 1)%2;
+                    console.log("clicking" + this.state);
+                    this.changeColor();
+                }
+                else{
+                    this.state = (this.state + 1)%3; //obj = (obj.state + 1)%2;
                     this.changeColor();
                 }
 
             });
+
+            // obj.mousedown(function(){
+
+            //     if(obj.changedState == 1){
+            //         console.log("console" + mouseDownState);
+            //         mouseDownState = 1;
+            //         this.state = (this.state + 1)%2 + 1; //obj = (obj.state + 1)%2;
+            //         this.changeColor();
+            //     }
+            //     else{
+            //         console.log("console" + mouseDownState);
+            //         mouseDownState = 1;
+            //         this.state = (this.state + 1)%3; //obj = (obj.state + 1)%2;
+            //         this.changeColor();
+            //     }
+
+            // });
+
+            // obj.mouseup(function(){
+            //     mouseDownState = 0;
+            // });
+
+            //toggle state
+            // obj.hover(function(){
+            //     if( mouseDownState == 1){
+            //         if(obj.changedState == 1){
+            //             this.state = (this.state + 1)%2 + 1; //obj = (obj.state + 1)%2;
+            //             this.changeColor();
+            //         }
+            //         else{
+            //             console.log("added click" + this.state);
+            //             this.state = (this.state + 1)%3; //obj = (obj.state + 1)%2;
+            //             this.changeColor();
+            //         }
+
+            //     }
+
+            // });
 
             return obj;
         }
@@ -161,7 +191,8 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
             row = 0;
             for(col=0; col< colLength; col++){
                 bittorio[row][col] = new bitObject(col+xOffset,row+yOffset,size,row);
-                bittorio[row][col].state = 0;
+                bittorio[row][col].state = 1;
+                bittorio[row][col].changedState = 1;
                 bittorio[row][col].changeColor();
             }
         }
@@ -172,6 +203,7 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
             for(col=0; col< colLength; col++){
                 bittorio[row][col].state = Math.floor( 0.4 + Math.random());
                 bittorio[row][col].changeColor();
+                bittorio[row][col].changedState = 1;
             }
             //also sets the value of the corresponding decimal number
             document.getElementById('configNum').value  = findInitConfigVal();
@@ -179,20 +211,21 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
 
         document.getElementById('randomConfig').onclick = randomInit;
 
-
         function reset(){
 
             for(row = 1; row < rowLength; row++){
                 for(col=0; col< colLength; col++){
-                    bittorio[row][col].state = -1;
+                    bittorio[row][col].state = 2;
                     bittorio[row][col].changeColor();
+                    bittorio[row][col].changedState = 0;
                 }
             }
 
             row = 0;
             for(col=0; col< colLength; col++){
-                bittorio[row][col].state = 0;
+                bittorio[row][col].state = 1;
                 bittorio[row][col].changeColor();
+                bittorio[row][col].changedState = 1;
             }
 
             timer = 1;
@@ -230,7 +263,7 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
                 // // changing its current state (with no time lag), and
                 // // using the changed states to generate new state
 
-                if( nextCell.state != -1){
+                if( nextCell.state != 2){
                     console.log("perturb");
                     // then the cell is a perturbation that has to be carried over
 

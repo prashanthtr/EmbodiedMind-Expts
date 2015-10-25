@@ -4,20 +4,20 @@ html, body {  /* Select and size the outermost elements so other elements can be
 }
 
 body {
-   font: 24px Helvetica;
+   font: 12px Helvetica;
    background-color: grey;
   }
 
-  #main {  /* select element with id="main" */ 
+  #main {  /* select element with id="main" */
    min-height: 70%;
-   max-height: 70%;
+   max-height: 95%;
    margin: 0px;
    padding: 0px;
    display:  flex;
    flex-flow: row;
    }
- 
-  #main > article { /* select articles (if they are inside the element with id="main") */ 
+
+  #main > article { /* select articles (if they are inside the element with id="main") */
    margin: 4px;
    padding: 5px;
    border: 1px solid #cccc33;
@@ -25,20 +25,14 @@ body {
    background: #dddd88;
    flex: 3 1 50%;
    order: 2;
-   overflow: scroll;
+   font: 10px Helvetica;
    }
 
   #main > #centerDiv {
-   margin: 4px;
-   padding: 5px;
-   border: 1px solid #cccc33;
-   border-radius: 7pt;
-   background: #dddd88;
+   background: #000000;
    flex: 3 1 50%;
    order: 2;
-   overflow: scroll;
-   text-align: center;
-   }
+  }
 
   #main > nav {
    margin: 4px;
@@ -46,26 +40,27 @@ body {
    border: 1px solid #8888bb;
    border-radius: 7pt;
    background: #ccccff;
-           flex: 1 6 15%;
-           order: 1;
+   flex: 1 6 15%;
+   order: 1;
+   font: 7.2pt Helvetica;
    }
-  
+
   #main > aside {
    margin: 4px;
    padding: 5px;
    border: 1px solid #8888bb;
    border-radius: 7pt;
    background: #ccccff;
-           flex: 1 6 15%;
-           order: 3;
-
+   flex: 1 6 20%;
+   order: 3;
+   font: 12pt Helvetica;
    }
 
 #player {
     width: 200px;
    }
- 
-  header, footer {  /* select all header and footer elements */
+
+  header {  /* select all header and footer elements */
    display: block;
    margin: 4px;
    padding: 5px;
@@ -74,19 +69,15 @@ body {
    border-radius: 7pt;
    background: #ffeebb;
    text-align: center;
-   }
-
-  footer {    /* override these attributes just for the footer elements */
-   font-size: 10pt;
-   text-align: left;
+   font: 24px Helvetica;
    }
 
 
- 
+
   /* Changes layout under these conditions : Too narrow to support three columns */
-  /* "at-rules" using the '@' sign is an "advanced" feature */ 
+  /* "at-rules" using the '@' sign is an "advanced" feature */
   @media all and (max-width: 640px) {
-  
+
    #main, #page {
     flex-flow: column;
     flex-direction: column;
@@ -96,11 +87,10 @@ body {
     /* Return them to document order */
             order: 0;
    }
-  
+
    #main > nav, #main > aside, header, footer {
     min-height: 50px;
     max-height: 50px;
    }
-  
-};
 
+};
