@@ -86,15 +86,6 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
             return ret;
         }
 
-        // document.getElementById('setInitConfig').addEventListener('click',function(){
-        //     if(document.getElementById('setInitConfig').value == "set the configuration"){
-        //         document.getElementById('setInitConfig').value = "Fixed initial configuration";
-        //     }
-        //     else{
-        //         document.getElementById('setInitConfig').value = "set the configuration";
-        //     }
-        // });
-
         //x,y, - positions, side - of the square
         function bitObject(x,y,s,timeOccur){
 
@@ -175,6 +166,20 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
             }
         }
 
+        function randomInit(){
+            reset();
+            row = 0;
+            for(col=0; col< colLength; col++){
+                bittorio[row][col].state = Math.floor( 0.4 + Math.random());
+                bittorio[row][col].changeColor();
+            }
+            //also sets the value of the corresponding decimal number
+            document.getElementById('configNum').value  = findInitConfigVal();
+        }
+
+        document.getElementById('randomConfig').onclick = randomInit;
+
+
         function reset(){
 
             for(row = 1; row < rowLength; row++){
@@ -194,7 +199,6 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
             }
 
             timer = 1;
-
         }
 
 

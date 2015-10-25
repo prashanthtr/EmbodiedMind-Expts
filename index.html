@@ -29,7 +29,6 @@
         <nav>
 
           <p id="userGuide">
-
           </p>
           <!-- <ul > -->
           <!--   <li> This simulation presents an interactive cellular -->
@@ -53,23 +52,31 @@
 
         </nav>
 
-        <aside>Controls:<br> <br>
+        <aside>
 
+          <b> Controls: </b> <br>
           <!-- Click the initial configuration <input type="button" id="setInitConfig" value="fix!"> </input> <br> -->
           Run speed in milliseconds <input type="text" id="loopTime" value="200">  </input> <br>
 
           <input type="button" id="start" value="Start">  </input>
           <input type="button" id="stop" value="stop">  </input>
-          <input type="button" id="reset" value="Reset">  </input> <br>
+          <input type="button" id="reset" value="Reset">  </input> <br> <br>
 
-          <h5> CA </h5>
-          Initial config (0-2^60) <input type="text" id="configNum" value="0">  </input>
-          <input type="button" id="configFix" value="fix">  </input> <br>
+          <b> CA states </b> <br>
+
+          <input type="button" id="randomConfig" value="Select random configuration">  </input> <br>
+
+          <input type="button" id="configFix" value="setConfig">  </input> <input type="text" id="configNum" value="0" size="14">  </input>
           <br>
-          CA Rule Number (0-255) <input type="text" id="carule" value="0"> <br>
-          CA Rule Binary <input type="text" id="carulebinary" value="00000000"> <br>
 
-          <h5> Preset configurations </h5>
+
+          <br>
+
+          <b> CA rules </b> <br>
+          CA Rule Number (0-255) <input type="text" id="carule" value="0"> <br>
+          CA Rule Binary <input type="text" id="carulebinary" value="00000000"> <br> <br>
+
+          <b> Preset configurations </b>
 
           <select>
             <option value="None"> ---- </option>
