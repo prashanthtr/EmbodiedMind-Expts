@@ -19,10 +19,6 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
         var paper = new Raphael(centerDiv);
         var mouseDownState = 0;
 
-        paper.raphael.mousedown(function(){
-            mouseDownState = 1;
-        });
-
         paper.raphael.mouseup( function(){
             //console.log("reset because of this function");
             mouseDownState = 0;
@@ -35,24 +31,20 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
 
         //var colLength = 40, rowLength = 40; //len-1 time units are displayed
         var colLength = 40;
-        var rowLength = Math.ceil((pHeight * colLength)/(0.95*pWidth));
+        var rowLength = Math.ceil((pHeight * colLength)/pWidth);
 
         //xLen and yLen have to be equal to size
-        var xLen = 0.95*pWidth/colLength, yLen = pHeight/rowLength;
+        var xLen = pWidth/colLength, yLen = pHeight/rowLength;
         var size = xLen;
 
         console.log("size is" + size + "ratio is");
         console.log("length is is " + xLen + ", " + yLen);
-        var xOffset = 1, yOffset = 0;
+        var xOffset = 0, yOffset = 0;
 
         console.log("rectangle is " + pWidth + ", " + rowLength*yLen);
 
-
+        colLength = colLength-1;
         paper.setSize(pWidth, rowLength*yLen);
-        // Just create a nice black background
-        var bgRect = paper.rect(0,0,pWidth, pHeight);
-        bgRect.attr({"fill": "blue"});
-        bgRect.attr({"stroke-opacity": "0", "stroke-width": "0", "stroke": "#FFFFFF" });
 
         function arrCmp(arr, obj){
             var i = 0, len = arr.length;
@@ -126,57 +118,58 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
 
             obj.changeColor();
 
-            obj.click(function(){
+            // obj.click(function(){
 
-                if(this.changedState == 1){
-                    this.state = (this.state + 1)%2 //obj = (obj.state + 1)%2;
-                    console.log("clicking" + this.state);
-                    this.changeColor();
-                }
-                else{
-                    this.state = (this.state + 1)%3; //obj = (obj.state + 1)%2;
-                    this.changeColor();
-                }
-
-            });
-
-            // obj.mousedown(function(){
-
-            //     if(obj.changedState == 1){
-            //         console.log("console" + mouseDownState);
-            //         mouseDownState = 1;
-            //         this.state = (this.state + 1)%2 + 1; //obj = (obj.state + 1)%2;
+            //     console.log("then click");
+            //     if(this.changedState == 1){
+            //         this.state = (this.state + 1)%2 //obj = (obj.state + 1)%2;
+            //         console.log("clicking" + this.state);
             //         this.changeColor();
             //     }
             //     else{
-            //         console.log("console" + mouseDownState);
-            //         mouseDownState = 1;
             //         this.state = (this.state + 1)%3; //obj = (obj.state + 1)%2;
             //         this.changeColor();
             //     }
 
             // });
 
-            // obj.mouseup(function(){
-            //     mouseDownState = 0;
-            // });
+            obj.mousedown(function(){
+
+                console.log("first mousedown");
+                if(obj.changedState == 1){
+                    console.log("console" + mouseDownState);
+                    mouseDownState = 1;
+                    this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
+                    this.changeColor();
+                }
+                else{
+                    console.log("console" + mouseDownState);
+                    mouseDownState = 1;
+                    this.state = (this.state + 1)%3; //obj = (obj.state + 1)%2;
+                    this.changeColor();
+                }
+
+            });
+
+            obj.mouseup(function(){
+                mouseDownState = 0;
+            });
 
             //toggle state
-            // obj.hover(function(){
-            //     if( mouseDownState == 1){
-            //         if(obj.changedState == 1){
-            //             this.state = (this.state + 1)%2 + 1; //obj = (obj.state + 1)%2;
-            //             this.changeColor();
-            //         }
-            //         else{
-            //             console.log("added click" + this.state);
-            //             this.state = (this.state + 1)%3; //obj = (obj.state + 1)%2;
-            //             this.changeColor();
-            //         }
+            obj.hover(function(){
+                if( mouseDownState == 1){
+                    if(obj.changedState == 1){
+                        this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
+                        this.changeColor();
+                    }
+                    else{
+                        console.log("added click" + this.state);
+                        this.state = (this.state + 1)%3; //obj = (obj.state + 1)%2;
+                        this.changeColor();
+                    }
 
-            //     }
-
-            // });
+                }
+            });
 
             return obj;
         }
@@ -206,7 +199,7 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
         }
 
         function randomInit(){
-            reset();
+            //reset();
             row = 0;
             for(col=0; col< colLength; col++){
                 bittorio[row][col].state = Math.floor( 0.4 + Math.random());
@@ -220,7 +213,6 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
         document.getElementById('randomConfig').onclick = randomInit;
 
         function reset(){
-
             for(row = 1; row < rowLength; row++){
                 for(col=0; col< colLength; col++){
                     bittorio[row][col].state = 2;
@@ -228,16 +220,21 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
                     bittorio[row][col].changedState = 0;
                 }
             }
-
-            // row = 0;
-            // for(col=0; col< colLength; col++){
-            //     bittorio[row][col].state = 0;
-            //     bittorio[row][col].changeColor();
-            //     bittorio[row][col].changedState = 1;
-            // }
-
             timer = 1;
         }
+
+        function clear(){
+
+            row = 0;
+            for(col=0; col< colLength; col++){
+                bittorio[row][col].state = 0;
+                bittorio[row][col].changeColor();
+                bittorio[row][col].changedState = 1;
+            }
+
+        }
+
+        document.getElementById('clearFirst').onclick = clear;
 
 
         init();

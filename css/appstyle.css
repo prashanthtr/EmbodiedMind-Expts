@@ -29,9 +29,12 @@ body {
    }
 
   #main > #centerDiv {
-   background: #0000FF;
-   flex: 3 1 50%;
-   order: 2;
+      margin: 4px;
+      padding: 7px;
+      border: 2px solid #8888bb;
+      background: #0000FF;
+      flex: 3 1 50%;
+      order: 2;
   }
 
   #main > nav {
