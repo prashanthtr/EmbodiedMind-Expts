@@ -33,19 +33,26 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
         var pHeight = paper.canvas.offsetHeight;
         console.log("pWidth is " + pWidth + ", and pHeight is " + pHeight);
 
-        var colLength = 40, rowLength = 45; //len-1 time units are displayed
-        var xLen = 0.95*pWidth/colLength, yLen = 0.9*pWidth/colLength, size= pWidth/colLength;
+        //var colLength = 40, rowLength = 40; //len-1 time units are displayed
+        var colLength = 40;
+        var rowLength = Math.ceil((pHeight * colLength)/(0.95*pWidth));
 
-        var xOffset = 1, yOffset = 1;
-        //24,12
+        //xLen and yLen have to be equal to size
+        var xLen = 0.95*pWidth/colLength, yLen = pHeight/rowLength;
+        var size = xLen;
+
+        console.log("size is" + size + "ratio is");
+        console.log("length is is " + xLen + ", " + yLen);
+        var xOffset = 1, yOffset = 0;
 
         console.log("rectangle is " + pWidth + ", " + rowLength*yLen);
+
 
         paper.setSize(pWidth, rowLength*yLen);
         // Just create a nice black background
         var bgRect = paper.rect(0,0,pWidth, pHeight);
-        bgRect.attr({"fill": "black"});
-        //bgRect.attr({"stroke-opacity": "2", "stroke-width": "1", "stroke": "#FFFFFF" });
+        bgRect.attr({"fill": "blue"});
+        bgRect.attr({"stroke-opacity": "0", "stroke-width": "0", "stroke": "#FFFFFF" });
 
         function arrCmp(arr, obj){
             var i = 0, len = arr.length;
@@ -222,12 +229,12 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
                 }
             }
 
-            row = 0;
-            for(col=0; col< colLength; col++){
-                bittorio[row][col].state = 0;
-                bittorio[row][col].changeColor();
-                bittorio[row][col].changedState = 1;
-            }
+            // row = 0;
+            // for(col=0; col< colLength; col++){
+            //     bittorio[row][col].state = 0;
+            //     bittorio[row][col].changeColor();
+            //     bittorio[row][col].changedState = 1;
+            // }
 
             timer = 1;
         }
