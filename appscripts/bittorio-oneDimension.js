@@ -251,6 +251,16 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
         //     });
         // }
 
+        document.getElementById('wrapCells').onclick = function(){
+            if( this.value == "YES" ){
+                this.value = "NO";
+            }
+            else{
+                this.value = "YES";
+            }
+        };
+
+
         //entering the function once, it updates the state of the
         //bittorio and stores in the new bittorio row.
         function caUpdate(){
@@ -282,21 +292,49 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
                 ind++;
             }
 
+
+            //clamping the CA
+
             //now, change happens at the timer
             bittorio[timer].map( function (el,ind,arr){
-                var prevCell =  bittorio[timer-1];
-                //three values
-                var prev =-1, next=-1, cur = -1;
-                if( ind - 1 < 0){
-                    prev = prevCell[arr.length-1].state; //turn around
+
+                var wrapping = document.getElementById('wrapCells').value;
+
+                if( wrapping == "NO"){
+
+                    var prevCell =  bittorio[timer-1];
+                    var prev =-1, next=-1, cur = -1;
+                    if(ind == 0 ||  ind == arr.length -1 ){
+                        el.state = prevCell[ind].state;
+                        el.changeColor();
+
+                    }
+                    else{
+                        prev = prevCell[ind-1].state; //no turn around
+                        next = prevCell[ind+1].state;
+                        cur = prevCell[ind].state;
+                        el.state = el.updateState(prev,cur,next);
+                        el.changeColor();
+
+                    }
+
                 }
-                else {
-                    prev = prevCell[ Math.abs(ind-1)%arr.length].state; //turn around
+                else{
+                    //wrapping around
+                    var prevCell =  bittorio[timer-1];
+                    //three values
+                    var prev =-1, next=-1, cur = -1;
+                    if( ind - 1 < 0){
+                        prev = prevCell[arr.length-1].state; //turn around
+                    }
+                    else {
+                        prev = prevCell[ Math.abs(ind-1)%arr.length].state; //turn around
+                    }
+                    next = prevCell[ Math.abs(ind+1)%arr.length].state;
+                    cur = prevCell[ind].state;
+                    el.state = el.updateState(prev,cur,next);
+                    el.changeColor();
                 }
-                next = prevCell[ Math.abs(ind+1)%arr.length].state;
-                cur = prevCell[ind].state;
-                el.state = el.updateState(prev,cur,next);
-                el.changeColor();
             });
 
             //increment timer
