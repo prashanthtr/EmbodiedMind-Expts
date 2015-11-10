@@ -1,6 +1,26 @@
+// To use the sound on a web page with its current parameters (and without the slider box):
+require.config({
+    paths: {"jsaSound": "http://animatedsoundworks.com:8001"}
+});
+
 require(
-    [],
-    function () {
+    ["jsaSound/jsaModels/pentTone"],
+    function (pentaTonicFactory) {
+
+
+        function initSoundModel (notenum){
+            // using the model loaded from jsasound
+
+            var pentatonic = pentaTonicFactory();
+            pentatonic.setParam("play", 0);    //or// pentatonic.setParamNorm("play", 0.000);
+            pentatonic.setParam("Note Number", notenum);    //or// pentatonic.setParamNorm("Note Number", 0.469);
+            pentatonic.setParam("Modulation Index", 75);    //or// pentatonic.setParamNorm("Modulation Index", 0.750);
+            pentatonic.setParam("Gain", 0.25);    //or// pentatonic.setParamNorm("Gain", 0.250);
+            pentatonic.setParam("Attack Time", 0.22);    //or// pentatonic.setParamNorm("Attack Time", 0.220);
+            pentatonic.setParam("Release Time", 1);    //or// pentatonic.setParamNorm("Release Time", 0.333);
+
+            return pentatonic;
+        }
 
         //introductory text
         document.getElementById('userGuide').innerHTML = "<p>This is an app for exploring operational closure and structural coupling in a 1D cellular automaton (CA) CA states:</p>" ;
@@ -24,13 +44,16 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
             mouseDownState = 0;
         })
 
+        var audioContext, oscillator;
+        audioContext = new webkitAudioContext();
+
         // put the width and heigth of the canvas into variables for our own convenience
         var pWidth = paper.canvas.offsetWidth;
         var pHeight = paper.canvas.offsetHeight;
         console.log("pWidth is " + pWidth + ", and pHeight is " + pHeight);
 
         //var colLength = 40, rowLength = 40; //len-1 time units are displayed
-        var colLength = 40;
+        var colLength = 14; // 3 octaves from 110 to 440
         var rowLength = Math.ceil((pHeight * colLength)/pWidth);
 
         //xLen and yLen have to be equal to size
@@ -102,17 +125,22 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
             //between ca cells
             obj.updateState = caRules;
             obj.changedState = 0;
+            obj.ind = x - xOffset;
 
             obj.changeColor = function(){
 
                 if(this.state == 2){
                     this.attr({"fill": "grey"});
+                    console.log(tone[this.ind] + "" + this.ind);
+                    tone[obj.ind].setParam("play", 0);
                 }
                 else if(this.state == 1){
                     this.attr({"fill": "black"});
+                    tone[obj.ind].play();
                 }
                 else{
                     this.attr({"fill": "white"});
+                    tone[obj.ind].setParam("play", 0);
                 }
             }
 
@@ -175,8 +203,17 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
         }
 
         //bittorio display on which display happens
-        var bittorio = [];
+        var bittorio = [], tone = [];
+        var bitOsc = [];
         var row = 0, col = 0;
+
+
+        var col = 0;
+        while( col < colLength ){
+            tone[col] = initSoundModel(col); // for each row number create a note with that note num
+            col++;
+        }
+
 
         // top most row is the initialization row
         // this has to be initialized and cannot changed afterwards
@@ -188,7 +225,9 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
             }
         }
 
+
         function init(){
+
             row = 0;
             for(col=0; col< colLength; col++){
                 bittorio[row][col] = new bitObject(col+xOffset,row+yOffset,size,row);
@@ -196,7 +235,10 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
                 bittorio[row][col].changedState = 1;
                 bittorio[row][col].changeColor();
             }
+
+
         }
+
 
         function randomInit(){
             //reset();
@@ -221,6 +263,7 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
                 }
             }
             timer = 1;
+            stopAllSounds();
         }
 
         function clear(){
@@ -235,7 +278,6 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
         }
 
         document.getElementById('clearFirst').onclick = clear;
-
 
         init();
 
@@ -266,74 +308,85 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
         function caUpdate(){
 
             // this whole update happes at timer-1 always
-            var arr = bittorio[timer-1];
-            var ind = 0;
+            // var arr = bittorio[timer-1];
+            // var ind = 0;
 
-            while( ind < arr.length ){
+            // while( ind < arr.length ){
 
-                var el = bittorio[timer-1][ind];
-                var nextCell = bittorio[timer][ind];
+            //     var el = bittorio[timer-1][ind];
+            //     var nextCell = bittorio[timer][ind];
 
-                // // as opposed to the CA encountering the accepted state,
-                // // changing its current state (with no time lag), and
-                // // using the changed states to generate new state
+            //     // // as opposed to the CA encountering the accepted state,
+            //     // // changing its current state (with no time lag), and
+            //     // // using the changed states to generate new state
 
-                if( nextCell.state != 2){
-                    console.log("perturb");
-                    // then the cell is a perturbation that has to be carried over
+            //     if( nextCell.state != 2){
+            //         console.log("perturb");
+            //         // then the cell is a perturbation that has to be carried over
 
-                    // once carried, the carryover has to show
-                    el.state = nextCell.state;
-                    el.changeColor();
-                    //nextCell.state = -1;
-                    //nextCell.changeColor();
-                }
+            //         // once carried, the carryover has to show
+            //         el.state = nextCell.state;
+            //         el.changeColor();
+            //         //nextCell.state = -1;
+            //         //nextCell.changeColor();
+            //     }
 
-                ind++;
-            }
+            //     //because of the sloppy 2 step change, this has to be done.
+            //     // this is where the changes in the cells are connected to the music
+            //     ind++;
+            // }
 
-
-            //clamping the CA
 
             //now, change happens at the timer
             bittorio[timer].map( function (el,ind,arr){
 
+                //initialized to the current value of the element
+                var cur = el.state;
+
                 var wrapping = document.getElementById('wrapCells').value;
 
-                if( wrapping == "NO"){
+                if( cur != 2){
+                    el.state = cur;
+                    el.changeColor();
+                }
+                else{
 
-                    var prevCell =  bittorio[timer-1];
-                    var prev =-1, next=-1, cur = -1;
-                    if(ind == 0 ||  ind == arr.length -1 ){
-                        el.state = prevCell[ind].state;
-                        el.changeColor();
+                    if( wrapping == "NO"){
 
+                        var prevCell =  bittorio[timer-1];
+                        var prev =-1, next=-1;
+                        //when the next cell is a grey
+                        if( ind == 0 ||  ind == arr.length -1 ){
+                            el.state = prevCell[ind].state;
+                            el.changeColor();
+                        }
+                        else{
+                            prev = prevCell[ind-1].state; //no turn around
+                            next = prevCell[ind+1].state;
+                            //only get the previous value if cur value is not a perturbation
+                            cur = prevCell[ind].state;
+                            el.state = el.updateState(prev,cur,next);
+                            el.changeColor();
+                        }
                     }
                     else{
-                        prev = prevCell[ind-1].state; //no turn around
-                        next = prevCell[ind+1].state;
+                        //wrapping around
+                        var prevCell =  bittorio[timer-1];
+                        //three values
+                        var prev =-1, next=-1, cur = el.state;
+                        if( ind - 1 < 0){
+                            prev = prevCell[arr.length-1].state; //turn around
+                        }
+                        else {
+                            prev = prevCell[ Math.abs(ind-1)%arr.length].state; //turn around
+                        }
+                        next = prevCell[ Math.abs(ind+1)%arr.length].state;
+                        //only if cur value is not a pertrubation, use the last state of the system.
                         cur = prevCell[ind].state;
                         el.state = el.updateState(prev,cur,next);
                         el.changeColor();
-
                     }
 
-                }
-                else{
-                    //wrapping around
-                    var prevCell =  bittorio[timer-1];
-                    //three values
-                    var prev =-1, next=-1, cur = -1;
-                    if( ind - 1 < 0){
-                        prev = prevCell[arr.length-1].state; //turn around
-                    }
-                    else {
-                        prev = prevCell[ Math.abs(ind-1)%arr.length].state; //turn around
-                    }
-                    next = prevCell[ Math.abs(ind+1)%arr.length].state;
-                    cur = prevCell[ind].state;
-                    el.state = el.updateState(prev,cur,next);
-                    el.changeColor();
                 }
             });
 
@@ -410,6 +463,12 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
             document.getElementById('carulebinary').value = str;
         };
 
+        function stopAllSounds (){
+            tone.map(function(el){
+                el.release();
+            });
+        }
+
         function findInitConfigVal(){
             row = 0;
             var arr = [];
@@ -433,6 +492,7 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
         document.getElementById('stop').addEventListener("click", function(){
             if(run != null){
                 clearInterval(run); // stop the setInterval()
+                stopAllSounds();
                 run = null;
             }
         },true);
@@ -445,13 +505,12 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
             reset();
         },true);
 
-
-
         function request() {
             //console.log(); // firebug or chrome log
 
             if(timer > rowLength-1){
                 clearInterval(run); // stop the setInterval()
+                stopAllSounds();
             }
             else{
                 clearInterval(run); // stop the setInterval()
