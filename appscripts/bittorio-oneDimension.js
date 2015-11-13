@@ -201,7 +201,7 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
             //toggle state
             obj.hover(function(){
                 if( mouseDownState == 1){
-                    if(obj.changedState == 1){
+                    if(obj.changedState == 1 || this.row < timer){
                         this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
                         this.changeColor();
                     }
