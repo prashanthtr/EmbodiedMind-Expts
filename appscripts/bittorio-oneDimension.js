@@ -16,8 +16,8 @@ require(
             pentatonic.setParam("Note Number", notenum);    //or// pentatonic.setParamNorm("Note Number", 0.469);
             pentatonic.setParam("Modulation Index", 75);    //or// pentatonic.setParamNorm("Modulation Index", 0.750);
             pentatonic.setParam("Gain", 0.25);    //or// pentatonic.setParamNorm("Gain", 0.250);
-            pentatonic.setParam("Attack Time", 0.22);    //or// pentatonic.setParamNorm("Attack Time", 0.220);
-            pentatonic.setParam("Release Time", 1);    //or// pentatonic.setParamNorm("Release Time", 0.333);
+            pentatonic.setParam("Attack Time", 0.1);    //or// pentatonic.setParamNorm("Attack Time", 0.220);
+            pentatonic.setParam("Release Time", 0.12);    //or// pentatonic.setParamNorm("Release Time", 0.333);
 
             return pentatonic;
         }
@@ -56,6 +56,9 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
         var colLength = 14; // 3 octaves from 110 to 440
         var rowLength = Math.ceil((pHeight * colLength)/pWidth);
 
+        //adding a now line that is center of the
+        var now = 6;
+
         //xLen and yLen have to be equal to size
         var xLen = pWidth/colLength, yLen = pHeight/rowLength;
         var size = xLen;
@@ -80,7 +83,8 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
         }
 
         var cnt = 0;
-        var timer = 1;
+        var timer = 0;
+        var updateRow = 0;
 
         // thiknk about the clamps later
 
@@ -126,6 +130,7 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
             obj.updateState = caRules;
             obj.changedState = 0;
             obj.ind = x - xOffset;
+            obj.row = y - yOffset;
 
             obj.changeColor = function(){
 
@@ -164,17 +169,27 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
             obj.mousedown(function(){
 
                 console.log("first mousedown");
-                if(obj.changedState == 1){
+                //past states can have black or white values only
+                if(obj.changedState == 1 || this.row < timer){
                     console.log("console" + mouseDownState);
                     mouseDownState = 1;
                     this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
                     this.changeColor();
                 }
+                //only future states have grey states
                 else{
                     console.log("console" + mouseDownState);
                     mouseDownState = 1;
                     this.state = (this.state + 1)%3; //obj = (obj.state + 1)%2;
                     this.changeColor();
+                }
+
+                // if the cell is in the past, then trigger changes in all the future states
+                console.log("ind is " + this.ind + " Timer is" + timer);
+                if( this.row < timer){
+                    console.log("this is true");
+                    updateRow = this.row+1;
+                    recalcFuture();
                 }
 
             });
@@ -302,42 +317,102 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
             }
         };
 
+        var futureLoop = null;
+        // recalculates all the future states from current index of change
+        //called everytime a row in the past is changed
+        //starts a loop that quickly refurbishes all the rows till the timer (which is the most future state that the system has calculated
+
+        function recalcFuture(){
+
+            //run a fresh loop till timer
+            if( futureLoop == null){
+                futureLoop = setInterval(function(){
+                    console.log("row is" + updateRow);
+                    changeFuture(updateRow);
+                    updateRow++;
+                    if(updateRow == timer){
+                        clearInterval(futureLoop);
+                    }
+                }, 40);
+            }
+            //stop existing loop and run a fresh loop till timer if its a valid number less than the timer
+            else if(updateRow < timer){
+                console.log("clearing timer");
+                clearInterval(futureLoop);
+                futureLoop = setInterval(function(){
+                    changeFuture(updateRow);
+                    updateRow++;
+                    if(updateRow == timer){
+                        clearInterval(futureLoop);
+                    }
+
+                }, 40);
+
+            }
+            else{
+                clearInterval(futureLoop);
+            }
+
+        }
+
+        //changes the current row number given as input, same function as caupdate but does not change the timer
+        function changeFuture (row){
+
+            bittorio[row].map( function (el,ind,arr){
+
+                //initialized to the current value of the element
+                var cur = el.state;
+
+                var wrapping = document.getElementById('wrapCells').value;
+
+                if( wrapping == "NO"){
+
+                    var prevCell =  bittorio[row-1];
+                    var prev =-1, next=-1;
+                    //when the next cell is a grey
+                    if( ind == 0 ||  ind == arr.length -1 ){
+                        el.state = prevCell[ind].state;
+                        el.changeColor();
+                    }
+                    else{
+                        prev = prevCell[ind-1].state; //no turn around
+                        next = prevCell[ind+1].state;
+                        //only get the previous value if cur value is not a perturbation
+
+                        cur = prevCell[ind].state;
+                        el.state = el.updateState(prev,cur,next);
+                        el.changeColor();
+                    }
+                }
+                else{
+                    //wrapping around
+                    var prevCell =  bittorio[row-1];
+                    //three values
+                    var prev =-1, next=-1, cur = el.state;
+                    if( ind - 1 < 0){
+                        prev = prevCell[arr.length-1].state; //turn around
+                    }
+                    else {
+                        prev = prevCell[ Math.abs(ind-1)%arr.length].state; //turn around
+                    }
+                    next = prevCell[ Math.abs(ind+1)%arr.length].state;
+                    //only if cur value is not a pertrubation, use the last state of the system.
+                    cur = prevCell[ind].state;
+                    el.state = el.updateState(prev,cur,next);
+                    el.changeColor();
+                }
+            });
+
+
+        }
+
 
         //entering the function once, it updates the state of the
         //bittorio and stores in the new bittorio row.
         function caUpdate(){
 
-            // this whole update happes at timer-1 always
-            // var arr = bittorio[timer-1];
-            // var ind = 0;
-
-            // while( ind < arr.length ){
-
-            //     var el = bittorio[timer-1][ind];
-            //     var nextCell = bittorio[timer][ind];
-
-            //     // // as opposed to the CA encountering the accepted state,
-            //     // // changing its current state (with no time lag), and
-            //     // // using the changed states to generate new state
-
-            //     if( nextCell.state != 2){
-            //         console.log("perturb");
-            //         // then the cell is a perturbation that has to be carried over
-
-            //         // once carried, the carryover has to show
-            //         el.state = nextCell.state;
-            //         el.changeColor();
-            //         //nextCell.state = -1;
-            //         //nextCell.changeColor();
-            //     }
-
-            //     //because of the sloppy 2 step change, this has to be done.
-            //     // this is where the changes in the cells are connected to the music
-            //     ind++;
-            // }
-
-
-            //now, change happens at the timer
+            // it changes the ne
+            //change happens at the timer
             bittorio[timer].map( function (el,ind,arr){
 
                 //initialized to the current value of the element
@@ -345,6 +420,7 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
 
                 var wrapping = document.getElementById('wrapCells').value;
 
+                //simple replace the cells value as the perturbation
                 if( cur != 2){
                     el.state = cur;
                     el.changeColor();
@@ -518,5 +594,14 @@ document.getElementById('userGuide').innerHTML += "<ol> <li>The first (top) row 
                 run = setInterval(request, parseFloat(document.getElementById("loopTime").value)); // start the setInterval()
             }
         }
+
+        paper.path("M0," + now*yLen + "L" + colLength*xLen + "," + now*yLen).attr({
+            stroke: "red"
+        });
+
+        paper.path("M0," + (now-1)*yLen + "L" + colLength*xLen + "," + (now-1)*yLen).attr({
+            stroke: "red"
+        });
+
 
 });
