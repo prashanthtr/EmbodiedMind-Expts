@@ -1,0 +1,147 @@
+#+LaTeX_CLASS_OPTIONS: [colorlinks=true,linkcolor=black,citecolor=blue,plainpages=false,hyperfootnotes=false,hypertexnames=false,a4paper]
+#+LaTeX_CLASS: article
+
+
+#+LATEX_HEADER: \setcounter{secnumdepth}{5}
+
+#+LATEX_HEADER: \usepackage{lipsum}
+
+#+TITLE: Studies on musical co-improvisation: 1D cellular automata and anticipatory score interface
+
+#+AUTHOR: Prashanth Thattai Ravikumar
+
+#+BEGIN_ABSTRACT
+
+The central focus of this document is to raise possible research
+questions on musical co-improvisation, at the intersection of 1D
+interactive cellular automata and anticipatory score interface.
+
+#+END_ABSTRACT
+
+
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  en
+#+OPTIONS:   H:4 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+STARTUP: hideblocks
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:
+#+LINK_HOME:
+#+XSLT:
+
+
+* Introduction:
+
+The document is divided into three parts: the first part raises research
+questions related to 1D interactive cellular automata applied to musical
+interaction, the second part on anticipatory score interface applied to
+problems of musical co-improvisation, and third part on questions at the
+intersection of the two.
+
+
+* 1D cellular automaton
+
+The central focus here is to raise research questions at the
+intersection of interactive self-organized cellular automata and musical
+interactions with users.
+
+The cellular automata is an embodied self-organized interactive system.
+It is embodied because its behavior is observed as changes in it's state
+in a finite space over a period of time. It is self-organized because,
+the changes in state are a result of internal rules of
+self-organization. It is interactive because, the user can affect the
+states that the system can be in, through structural coupling. These
+changes are called perturbations.
+
+Prediction: Interaction with embodied self-organized interactive system
+(ESIS) will be qualitatively different from interaction with rule-based,
+random, or semi-random systems.
+
+Possible research question:
+
+Given an ESIS along with three other systems, a rule-based automata, a
+random, and a semi-random system, applied to musical interaction (like,
+odd sequence identification), will the user qualitatively distinguish
+the interaction with ESIS compared to the interactions with other
+systems?
+
+The systems are applied it to musical improvisation, because, there are
+specific criteria in musical improvisation (like, repetitive, boring,
+deterministic), that can be used to characterize the behavior of
+systems. For example, rule based systems are likely to to get repetitive
+quickly in musical interactions, random systems are likely to produce
+non coherent improvisations.
+
+Possible things to test for: (either as exploratory/confirmatory)
+
+ - Do users perceive more actions available for themselves when
+   interacting with ESIS?
+ - Do users perceive more actions available to the system in terms of
+   playing?
+ - Do users think that the ESIS is more robust and flexible compared to
+   other systems?
+ - Will users want to engage with an ESIS more often than other systems?
+ - How do users qualitatively describe repeated interaction with the
+   different systems (repetitive, interesting, boring, machine-like,
+   deterministic, refreshing)?
+
+Method: Most likely to be qualitative/explorative studies.
+
+
+* Anticipatory score system
+
+The central focus here is to raise questions at the intersection of
+anticipatory score interface and co-improvised interactions.
+
+The anticipatory score interface is an interface for collaborative music
+making. The distinctive feature is that, at any time in the
+collaboration, users can have a snapshot of the future plans of other
+users or AIs involved in the interaction. This feature resembles the
+"next block" feature of Tetris.
+
+Prediction: Interaction with an AI in the anticipatory score system, is
+likely to generate co-improvisation experiences similar to experiences
+of playing Tetris.
+
+Possible research questions:
+
+Will user's get into "flow" like experiences, while interacting with
+anticipatory score with a single future event (like, in classic Tetris)?
+
+Possible things to test for: (either as exploratory/confirmatory)
+
+- Testing for "flow" in one-future anticipatory score system using DFS,
+  flow questionnaire, experience sampling method.
+- Do users produce qualitatively different interactions with both
+  anticipatory score interfaces (with one future event, and no future
+  events)
+    - How do users qualitatively describe repeated interaction with the
+      different systems (repetitive, interesting, boring, machine-like,
+      deterministic, refreshing)?
+    - Do users perceive more control over their own actions / actions of
+      the system in one-future event state ?
+    - Do users understand the mental model of the interacting AI?
+
+Method: Both qualitative/confirmatory studies.
+
+
+* Combining ESIS with anticipatory score [needs more development]
+
+The central focus here is to raise research questions about musical
+co-improvisation using an ESIS in the anticipatory score interface.
+
+Prediction: Interaction with an ESIS in the anticipatory score system,
+is likely to be characterized in terms of co-improvisation experiences
+generated by ESIS systems in terms of other experiences observed in the
+anticipatory score interface (eg, flow)?
+
+Possible research questions:
+
+- Will the users still qualitatively distinguish the interaction with
+  ESIS compared to the interactions with other systems (rule-based,
+  random, and semi-random)? Does having a future event affect this?
+
+- Do users get into "flow" like experiences, while interacting with an
+  ESIS in the anticipatory score with a single future event?
