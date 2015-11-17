@@ -75,12 +75,12 @@
           CA Rule Number (0-255) <input type="text" id="carule" value="0"> <br>
           CA Rule Binary <input type="text" id="carulebinary" value="00000000"> <br> <br>
 
-          <b> Preset configurations </b>
+          <b> Preset rules </b>
 
-          <select>
+          <select id="preset">
             <option value="None"> ---- </option>
-            <option value="odd sequence recognizer"> Odd sequence recognizer </option>
-            <option value="even sequence recognizer"> Even sequence recognizer </option>
+            <option value="oddSequence"> Odd sequence recognizer(Rule 132) </option>
+            <option value="localChanges"> Only local changes(Rule 204) </option>
           </select>
           <!-- Bond disintegration factor <input type="text" id="disintegration" value="0.2">  </input> -->
           <!-- Bond formation factor <input type="text" id="formation" value="0.6">  </input> -->

@@ -1,6 +1,6 @@
 require(
-    ["grid","utils","userGuide"],
-    function (grid,utils,userGuide) {
+    ["grid","utils","userGuide","loadConfig"],
+    function (grid,utils,userGuide,loadConfig) {
 
         // --------------- Inits ------------------------------
 
@@ -228,6 +228,20 @@ require(
 
         /// ------------ Events on buttons ---------------------------
 
+        document.getElementById('preset').onchange = function(){
+
+            var val = document.getElementById('preset').value;
+            console.log(val);
+            if(val == "None"){
+                //
+            }
+            else{
+                loadConfig(val);
+            }
+
+        }
+
+
         document.getElementById('randomConfig').onclick = function(){
             utils.randomInit(bittorio, colLength);
         }
@@ -268,6 +282,7 @@ require(
 
         document.getElementById('carule').onchange = function (){
 
+            console.log("changed");
             //convert to binary
             var num = parseInt(document.getElementById('carule').value);
             var str = utils.convert2Binary (num, 8);
