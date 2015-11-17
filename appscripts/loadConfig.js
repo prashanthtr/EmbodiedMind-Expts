@@ -14,8 +14,8 @@ define(
 
             }
             else if( str == "localChanges"){
-                document.getElementById('carule').value = 204;
-                var str2 = utils.convert2Binary (204, 8);
+                document.getElementById('carule').value = 133;
+                var str2 = utils.convert2Binary (133, 8);
                 document.getElementById('carulebinary').value = str2;
 
             }
