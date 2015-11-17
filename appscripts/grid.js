@@ -5,8 +5,10 @@ define(
         return function (paper, rowLength, colLength, objSize){
 
             // put the width and heigth of the canvas into variables for our own convenience
-            var pWidth = paper.canvas.offsetWidth;
-            var pHeight = paper.canvas.offsetHeight;
+            console.log(paper);
+
+            var pWidth = paper.width;
+            var pHeight = paper.height;
             console.log("pWidth is " + pWidth + ", and pHeight is " + pHeight);
 
             //var colLength = 40, rowLength = 40; //len-1 time units are displayed

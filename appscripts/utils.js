@@ -84,7 +84,7 @@ define(
                     bittorio[row][col].changedState = 0;
                 }
             }
-            stopAllSounds(bittorio[0]);
+            //stopAllSounds(bittorio[0]);
         }
 
         function clear (bittorio, colLength){
@@ -106,12 +106,12 @@ define(
             }
         }
 
-        function stopAllSounds (tone){
-            console.log("tone lengt is " + tone.length);
-            tone.map(function(el){
-                el.tone.release();
-            });
-        }
+        // function stopAllSounds (tone){
+        //     console.log("tone lengt is " + tone.length);
+        //     tone.map(function(el){
+        //         el.tone.release();
+        //     });
+        // }
 
 
         //resets all the cells except the initial cell
@@ -155,7 +155,7 @@ define(
         exports.clear = clear;
         exports.setConfig = setConfig;
         exports.findInitConfigVal = findInitConfigVal;
-        exports.stopAllSounds = stopAllSounds;
+        //exports.stopAllSounds = stopAllSounds;
         exports.updateTimers = updateTimers;
         exports.updateChange = updateChange;
         exports.mouseBroadcast = mouseBroadcast;

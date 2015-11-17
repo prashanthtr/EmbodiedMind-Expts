@@ -22,26 +22,27 @@ define(
 
             obj.mouseDownState = {value: 0};
             obj.updateRow = { value: -1};
-            obj.tone = pentaTonicFactory(x);
+
+            //obj.tone = pentaTonicFactory(x);
 
 
-            obj.play = function(){
+            // obj.play = function(){
 
-                if(this.state == 2){
-                    this.tone.setParam("play", 0);
-                }
-                else if(this.state == 1 && this.row == this.timer){
-                    console.log("going to play");
-                    this.tone.play();
-                }
-                else if(this.state == 1){
-                    this.tone.release();
-                }
-                else{
-                    this.tone.setParam("play", 0);
-                }
+            //     if(this.state == 2){
+            //         this.tone.setParam("play", 0);
+            //     }
+            //     else if(this.state == 1 && this.row == this.timer){
+            //         console.log("going to play");
+            //         this.tone.play();
+            //     }
+            //     else if(this.state == 1){
+            //         this.tone.release();
+            //     }
+            //     else{
+            //         this.tone.setParam("play", 0);
+            //     }
 
-            }
+            // }
 
             //object events, declared
             obj.changeColor = function(){
@@ -55,7 +56,7 @@ define(
                 else{
                     this.attr({"fill": "white"});
                 }
-                obj.play();
+                //obj.play();
             }
 
             obj.changeColor();
@@ -89,7 +90,7 @@ define(
             obj.updateTimer = function(nowTimer){
                 this.timer = nowTimer;
                 this.changeColor();
-                this.play();
+                //this.play();
             }
 
             //consider adding these events later
