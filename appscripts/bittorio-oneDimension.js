@@ -10,8 +10,8 @@ require(
 
         // These are parameters to pass to the grid
         var id = "centerDiv",
-            rowLength = 14,
-            colLength = 14,
+            rowLength = 46,
+            colLength = 46,
             objSize = 5;
 
         // Create the Raphael paper that we will use for drawing and creating graphical objects
