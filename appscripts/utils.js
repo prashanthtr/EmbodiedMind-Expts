@@ -140,7 +140,26 @@ define(
             for(row = 0; row < rowLength; row++){
                 for(col=0; col< colLength; col++){
                     //assigning a pointer to the object
-                    bittorio.mouseDownState.value = mouse;
+                    bittorio[row][col].mouseDownState.value = mouse;
+                }
+            }
+        }
+
+        //mutes all cells
+        function mute (bittorio, rowLength, colLength){
+            for(row = 0; row < rowLength; row++){
+                for(col=0; col< colLength; col++){
+                    //assigning a pointer to the object
+                    bittorio[row][col].tone.setParam("Gain", 0);
+                }
+            }
+        }
+
+        //unmutes all cells
+        function unmute (bittorio, rowLength, colLength){
+            for(row = 0; row < rowLength; row++){
+                for(col=0; col< colLength; col++){
+                    bittorio[row][col].tone.setParam("Gain", 1);
                 }
             }
         }
@@ -149,7 +168,7 @@ define(
         var exports = {};
         exports.init = init;
         exports.randomInit = randomInit;
-        exports.convert2Binary = convert2Binary
+        exports.convert2Binary = convert2Binary;
         exports.convert2Decimal = convert2Decimal;
         exports.reset = reset;
         exports.clear = clear;
@@ -159,6 +178,8 @@ define(
         exports.updateTimers = updateTimers;
         exports.updateChange = updateChange;
         exports.mouseBroadcast = mouseBroadcast;
+        exports.mute = mute;
+        exports.unmute = unmute;
         return exports;
 
     });

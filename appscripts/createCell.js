@@ -26,7 +26,7 @@ define(
             obj.tone = pentaTonicFactory(x);
 
             obj.play = function(){
-
+                // play should sense the sound toggle button to play
                 if(this.state == 2){
                     this.tone.setParam("play", 0);
                 }

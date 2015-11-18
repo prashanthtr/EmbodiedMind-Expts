@@ -10,8 +10,8 @@ require(
 
         // These are parameters to pass to the grid
         var id = "centerDiv",
-            rowLength = 46,
-            colLength = 46,
+            rowLength = 14,
+            colLength = 14,
             objSize = 5;
 
         // Create the Raphael paper that we will use for drawing and creating graphical objects
@@ -53,18 +53,8 @@ require(
         //     utils.mouseBroadcast(bittorio, rowLength, colLength, mouseDownState.value);
         // }, 1000);
 
-        //right now, this starts listening as soon as program starts
-        var listenVariable = setInterval(function(){
-            console.log("the true value is update" + updateRow.value);
-
-            if(updateRow.value != -1){
-                console.log("coming here");
-                recalcFuture();
-            }
-            else{
-                //nothing
-            }
-        }, 200);
+        //right now, this starts listening for mouse clicks on previous cells soon as program starts
+        var listenVariable = null;
 
         var futureLoop = null;
         // recalculates all the future states from current index of change
@@ -86,15 +76,15 @@ require(
             }
             //stop existing loop and run a fresh loop till timer if its a valid number less than the timer
             else if(updateRow.value < timer){
-                console.log("clearing timer");
+                console.log("clearing previous timer");
                 clearInterval(futureLoop);
                 futureLoop = setInterval(function(){
-                    changeFuture(updateRow.value);
+                    console.log("running");
                     updateRow.value++;
+                    changeFuture(updateRow.value);
                     if(updateRow.value == timer){
                         clearInterval(futureLoop);
                     }
-
                 }, 40);
 
             }
@@ -222,7 +212,6 @@ require(
             timer++;
 
             utils.updateTimers(bittorio, rowLength, colLength,timer);
-
         }
 
 
@@ -256,6 +245,45 @@ require(
             }
             else{
                 this.value = "YES";
+            }
+        };
+
+        document.getElementById('soundToggle').onclick = function(){
+            if( this.value == "ON" ){
+                this.value = "OFF";
+                //mute all the cells
+                utils.mute(bittorio, rowLength, colLength);
+            }
+            else{
+                this.value = "ON";
+                utils.unmute(bittorio, rowLength, colLength);
+            }
+        };
+
+
+        document.getElementById('live').onclick = function(){
+            if( this.value == "YES" ){
+                this.value = "NO";
+                //mute all the cells
+                if(listenVariable != null){
+                    clearInterval(listenVariable);
+                }
+            }
+            else{
+                this.value = "YES";
+
+                //only listens when live is on
+                listenVariable = setInterval(function(){
+                    console.log("the true value is update" + updateRow.value);
+                    if(updateRow.value != -1){
+                        console.log("coming here");
+                        recalcFuture();
+                    }
+                    else{
+                        //nothing
+                    }
+                }, 20);
+
             }
         };
 
