@@ -307,11 +307,11 @@ require(
         document.getElementById('stop').addEventListener("click", function(){
             if(run != null){
                 clearInterval(run); // stop the setInterval()
-                //utils.stopAllSounds(bittorio[timer]);
+                utils.stopAllSounds(bittorio[timer]);
                 run = null;
             }
             //also unconditionally stop playing everything
-            //utils.stopAllSounds(bittorio[timer]);
+            utils.stopAllSounds(bittorio[timer]);
         },true);
 
         document.getElementById('reset').addEventListener("click", function(){
@@ -328,7 +328,7 @@ require(
 
             if(timer > rowLength-1){
                 clearInterval(run); // stop the setInterval()
-                //utils.stopAllSounds(bittorio[timer-1]);
+                utils.stopAllSounds(bittorio[timer-1]);
             }
             else{
                 clearInterval(run); // stop the setInterval()
