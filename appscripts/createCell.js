@@ -26,6 +26,7 @@ define(
             obj.tone = pentaTonicFactory(x);
 
             obj.release = function(){
+
                 obj.tone.release();
             }
 
@@ -37,7 +38,7 @@ define(
                 else if(this.state == 1){
                     console.log("going to play");
                     this.tone.play();
-                    setTimeout(obj.release, 50);
+                    setTimeout(obj.release, 150);
                 }
                 else{
                     //
