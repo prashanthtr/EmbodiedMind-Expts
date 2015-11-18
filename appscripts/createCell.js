@@ -25,6 +25,10 @@ define(
 
             obj.tone = pentaTonicFactory(x);
 
+            obj.release = function(){
+                obj.tone.release();
+            }
+
             obj.play = function(){
                 // play should sense the sound toggle button to play
                 if(this.state == 2){
@@ -33,8 +37,10 @@ define(
                 else if(this.state == 1){
                     console.log("going to play");
                     this.tone.play();
+                    setTimeout(obj.release, 50);
                 }
                 else{
+                    //
                 }
             }
 

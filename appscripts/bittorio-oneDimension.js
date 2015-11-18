@@ -217,7 +217,7 @@ require(
         // scrolls the CA every step
         function caScroll (){
 
-            utils.stopAllSounds(bittorio[now]);
+            //utils.stopAllSounds(bittorio[now]);
             console.log("timer is" + timer);
 
             //moving the cells back from the now line
