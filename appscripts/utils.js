@@ -3,9 +3,9 @@ define(
     function(){
 
         // initializes the first row of bittorio
-        function init ( bittorio, colLength){
+        function init ( bittorio, colLength,now){
 
-            var row = 0, col=0;
+            var row = now, col=0;
             for(col=0; col< colLength; col++){
                 bittorio[row][col].state = 0;
                 bittorio[row][col].changedState = 1;
@@ -25,9 +25,9 @@ define(
         }
 
 
-        function randomInit (bittorio, colLength){
+        function randomInit (bittorio, colLength, now){
             //reset();
-            var row = 0, col=0;
+            var row = now, col=0;
             for(col=0; col< colLength; col++){
                 bittorio[row][col].state = Math.floor( 0.4 + Math.random());
                 bittorio[row][col].changeColor();
@@ -64,7 +64,6 @@ define(
             return str;
         }
 
-
         function convert2Decimal ( binArr ){
 
             var sum = 0;
@@ -76,20 +75,22 @@ define(
         }
 
         //resets all the cells except the initial cell
-        function reset (bittorio, rowLength, colLength){
-            for(row = 1; row < rowLength; row++){
+        function reset (bittorio, rowLength, colLength, now){
+            for(row = 0; row < rowLength; row++){
                 for(col=0; col< colLength; col++){
-                    bittorio[row][col].state = 2;
-                    bittorio[row][col].changeColor();
-                    bittorio[row][col].changedState = 0;
+                    if( row != now){
+                        bittorio[row][col].state = 2;
+                        bittorio[row][col].changeColor();
+                        bittorio[row][col].changedState = 0;
+                    }
                 }
             }
-            stopAllSounds(bittorio[0]);
+            stopAllSounds(bittorio[now]);
         }
 
-        function clear (bittorio, colLength){
+        function clear (bittorio, colLength, now){
 
-            row = 0;
+            row = now;
             for(col=0; col< colLength; col++){
                 bittorio[row][col].state = 0;
                 bittorio[row][col].changeColor();
@@ -113,8 +114,14 @@ define(
             });
         }
 
+        function playAllSounds(arr){
+            //console.log("tone lengt is " + arr.length);
+            arr.map(function(el){
+                el.play();
+            });
+        }
 
-        //resets all the cells except the initial cell
+
         function updateTimers (bittorio, rowLength, colLength,timer){
             for(row = 0; row < rowLength; row++){
                 for(col=0; col< colLength; col++){
@@ -180,6 +187,7 @@ define(
         exports.mouseBroadcast = mouseBroadcast;
         exports.mute = mute;
         exports.unmute = unmute;
+        exports.playAllSounds = playAllSounds;
         return exports;
 
     });

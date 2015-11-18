@@ -28,19 +28,14 @@ define(
             obj.play = function(){
                 // play should sense the sound toggle button to play
                 if(this.state == 2){
-                    this.tone.setParam("play", 0);
+                    //this.tone.release();
                 }
-                else if(this.state == 1 && this.row == this.timer){
+                else if(this.state == 1){
                     console.log("going to play");
                     this.tone.play();
                 }
-                else if(this.state == 1){
-                    this.tone.release();
-                }
                 else{
-                    this.tone.setParam("play", 0);
                 }
-
             }
 
             //object events, declared
@@ -55,7 +50,6 @@ define(
                 else{
                     this.attr({"fill": "white"});
                 }
-                obj.play();
             }
 
             obj.changeColor();
@@ -86,10 +80,10 @@ define(
 
             });
 
+            //updates the timer and does different actions on the timer
             obj.updateTimer = function(nowTimer){
                 this.timer = nowTimer;
                 this.changeColor();
-                this.play();
             }
 
             //consider adding these events later
