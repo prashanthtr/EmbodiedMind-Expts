@@ -5,7 +5,7 @@ define(
         return function (paper, rowLength, colLength, objSize){
 
             // put the width and heigth of the canvas into variables for our own convenience
-            console.log(paper);
+            //console.log(paper);
 
             var pWidth = paper.width;
             var pHeight = paper.height;

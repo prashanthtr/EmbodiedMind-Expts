@@ -10,10 +10,10 @@ define(
             rule = rule.split("");
             rule = rule.map(function(r){ return parseInt(r);});
 
-            console.log("carule is" + rule);
+            //console.log("carule is" + rule);
 
             var castate = prev + "" +  cur + ""+ next;
-            console.log(castate);
+            //console.log(castate);
             //ca rule
             var ret = -1;
             switch(castate){
@@ -27,7 +27,7 @@ define(
             case "000": ret = rule[7];  break;
             default: ret = -1; break;
             };
-            console.log("ret is" + ret);
+            //console.log("ret is" + ret);
             return ret;
         }
 

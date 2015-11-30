@@ -6,13 +6,18 @@ require(
 
         //bittorio display on which display happens
         var bittorio = [];
-        var timer = 0;
+        var timer = 5;
 
         // These are parameters to pass to the grid
+        //Initialization for anticipatory score interface
+
+
         var id = "centerDiv",
-            rowLength = 14,
-            colLength = 14,
-            objSize = 5;
+            rowLength = 30,
+            colLength = 30,
+            objSize = 5,
+            now = 15,
+            initNum = 0;
 
         // Create the Raphael paper that we will use for drawing and creating graphical objects
 
@@ -32,7 +37,6 @@ require(
         // this has to be initialized and cannot changed afterwards
         bittorio = grid(paper, rowLength,colLength,objSize);
 
-
         // adds a new property
         utils.updateChange (bittorio, rowLength, colLength, updateRow, mouseDownState);
 
@@ -40,8 +44,6 @@ require(
         window.AudioContext = window.AudioContext || window.webkitAudioContext;
         audioContext = new AudioContext();
 
-        //Initialization for anticipatory score interface
-        var now = 6;
 
         userGuide();
         utils.init(bittorio,colLength,now);
@@ -67,7 +69,7 @@ require(
             //run a fresh loop till timer
             if( futureLoop == null){
                 futureLoop = setInterval(function(){
-                    console.log("row is" + updateRow.value);
+                    //console.log("row is" + updateRow.value);
                     changeFuture(updateRow.value);
                     updateRow.value++;
                     if(updateRow.value == timer){
@@ -77,10 +79,10 @@ require(
             }
             //stop existing loop and run a fresh loop till timer if its a valid number less than the timer
             else if(updateRow.value < timer){
-                console.log("clearing previous timer");
+                //console.log("clearing previous timer");
                 clearInterval(futureLoop);
                 futureLoop = setInterval(function(){
-                    console.log("running");
+                    //console.log("running");
                     updateRow.value++;
                     changeFuture(updateRow.value);
                     if(updateRow.value == timer){
@@ -96,84 +98,27 @@ require(
 
         }
 
-        //changes the current row number given as input, same function as caupdate but does not change the timer
+        //updates the CA cells in a given row, using the values of the
+        //previous row
+
         function changeFuture (row){
 
-            console.log("calling this");
+            console.log("Changing future of row" + row);
             bittorio[row].map( function (el,ind,arr){
 
-                //initialized to the current value of the element
-                var cur = el.state;
-
                 var wrapping = document.getElementById('wrapCells').value;
-
-                if( wrapping == "NO"){
-
-                    var prevCell =  bittorio[row-1];
-                    var prev =-1, next=-1;
-                    //when the next cell is a grey
-                    if( ind == 0 ||  ind == arr.length -1 ){
-                        el.state = prevCell[ind].state;
-                        el.changeColor();
-                    }
-                    else{
-                        prev = prevCell[ind-1].state; //no turn around
-                        next = prevCell[ind+1].state;
-                        //only get the previous value if cur value is not a perturbation
-
-                        cur = prevCell[ind].state;
-                        el.state = el.updateState(prev,cur,next);
-                        el.changeColor();
-                    }
-                }
-                else{
-                    //wrapping around
-                    var prevCell =  bittorio[row-1];
-                    //three values
-                    var prev =-1, next=-1, cur = el.state;
-                    if( ind - 1 < 0){
-                        prev = prevCell[arr.length-1].state; //turn around
-                    }
-                    else {
-                        prev = prevCell[ Math.abs(ind-1)%arr.length].state; //turn around
-                    }
-                    next = prevCell[ Math.abs(ind+1)%arr.length].state;
-                    //only if cur value is not a pertrubation, use the last state of the system.
-                    cur = prevCell[ind].state;
-                    el.state = el.updateState(prev,cur,next);
-                    el.changeColor();
-                }
-            });
-
-        }
-
-        // --------------- CA UPDATE ------------------------------
-
-        //entering the function once, it updates the state of the
-        //bittorio and stores in the new bittorio row.
-        function caUpdate(){
-
-            // it changes the ne
-            //change happens at the timer
-            bittorio[timer].map( function (el,ind,arr){
-
-                //initialized to the current value of the element
                 var cur = el.state;
-
-                var wrapping = document.getElementById('wrapCells').value;
-
-                //simple replace the cells value as the perturbation
-                if( cur != 2){
+                if( el.userChange == 1 && row != now + 1){
+                    // state change
                     el.state = cur;
                     el.changeColor();
                 }
                 else{
-
                     if( wrapping == "NO"){
 
-                        var prevCell =  bittorio[timer-1];
+                        var prevCell =  bittorio[row-1];
                         var prev =-1, next=-1;
-                        //when the next cell is a grey
+
                         if( ind == 0 ||  ind == arr.length -1 ){
                             el.state = prevCell[ind].state;
                             el.changeColor();
@@ -182,6 +127,7 @@ require(
                             prev = prevCell[ind-1].state; //no turn around
                             next = prevCell[ind+1].state;
                             //only get the previous value if cur value is not a perturbation
+
                             cur = prevCell[ind].state;
                             el.state = el.updateState(prev,cur,next);
                             el.changeColor();
@@ -189,7 +135,7 @@ require(
                     }
                     else{
                         //wrapping around
-                        var prevCell =  bittorio[timer-1];
+                        var prevCell =  bittorio[row-1];
                         //three values
                         var prev =-1, next=-1, cur = el.state;
                         if( ind - 1 < 0){
@@ -199,20 +145,82 @@ require(
                             prev = prevCell[ Math.abs(ind-1)%arr.length].state; //turn around
                         }
                         next = prevCell[ Math.abs(ind+1)%arr.length].state;
-                        //only if cur value is not a pertrubation, use the last state of the system.
+                        //force the CA rule to compute
                         cur = prevCell[ind].state;
                         el.state = el.updateState(prev,cur,next);
                         el.changeColor();
                     }
-
                 }
+
             });
 
-            //increment timer
-            console.log(timer);
-            timer++;
-            utils.updateTimers(bittorio, rowLength, colLength,timer);
         }
+
+        // --------------- CA UPDATE ------------------------------
+
+        // //entering the function once, it updates the state of the
+        // //bittorio and stores in the new bittorio row.
+        // function caUpdate(){
+
+        //     // it changes the ne
+        //     //change happens at the timer
+        //     bittorio[timer].map( function (el,ind,arr){
+
+        //         //initialized to the current value of the element
+        //         var cur = el.state;
+
+        //         var wrapping = document.getElementById('wrapCells').value;
+        //         //simple replace the cells value as the perturbation
+        //         if( cur != 2){
+        //             el.state = cur;
+        //             el.changeColor();
+        //         }
+        //         else{
+
+        //             if( wrapping == "NO"){
+
+        //                 var prevCell =  bittorio[timer-1];
+        //                 var prev =-1, next=-1;
+        //                 //when the next cell is a grey
+        //                 if( ind == 0 ||  ind == arr.length -1 ){
+        //                     el.state = prevCell[ind].state;
+        //                     el.changeColor();
+        //                 }
+        //                 else{
+        //                     prev = prevCell[ind-1].state; //no turn around
+        //                     next = prevCell[ind+1].state;
+        //                     //only get the previous value if cur value is not a perturbation
+        //                     cur = prevCell[ind].state;
+        //                     el.state = el.updateState(prev,cur,next);
+        //                     el.changeColor();
+        //                 }
+        //             }
+        //             else{
+        //                 //wrapping around
+        //                 var prevCell =  bittorio[timer-1];
+        //                 //three values
+        //                 var prev =-1, next=-1, cur = el.state;
+        //                 if( ind - 1 < 0){
+        //                     prev = prevCell[arr.length-1].state; //turn around
+        //                 }
+        //                 else {
+        //                     prev = prevCell[ Math.abs(ind-1)%arr.length].state; //turn around
+        //                 }
+        //                 next = prevCell[ Math.abs(ind+1)%arr.length].state;
+        //                 //only if cur value is not a pertrubation, use the last state of the system.
+        //                 cur = prevCell[ind].state;
+        //                 el.state = el.updateState(prev,cur,next);
+        //                 el.changeColor();
+        //             }
+
+        //         }
+        //     });
+
+        //     //increment timer
+        //     //console.log(timer);
+        //     timer++;
+        //     utils.updateTimers(bittorio, rowLength, colLength,timer);
+        // }
 
         // scrolls the CA every step
         function caScroll (){
@@ -220,83 +228,154 @@ require(
             //utils.stopAllSounds(bittorio[now]);
             console.log("timer is" + timer);
 
-            //moving the cells back from the now line
+            //compute all rows from now + 1 to the end after the new current line is computed
+
+            console.log("calculating the value of the future cells from the new current cell");
             var row = 0, col = 0;
-            for(row=0; row < now; row++){
-                for(col=0; col < colLength; col++){
-                    bittorio[row][col].state = bittorio[row+1][col].state;
-                    bittorio[row][col].changeColor();
-                    //utils.updateTimers(bittorio, rowLength, colLength,timer);
-                }
+            for(row=now+1; row < rowLength; row++){
+                changeFuture(row);
             }
 
-            // updating the now line
-            bittorio[now].map( function (el,ind,arr){
-
-                //initialized to the current value of the element
-                var cur = el.state;
-                var wrapping = document.getElementById('wrapCells').value;
-                var prevCell =  bittorio[now-1];
-                var nextCell =  bittorio[now+1];
-
-                //simple replace the cells value as the perturbation of the future cell
-                if( nextCell[ind].state != 2){
-                    el.state = nextCell[ind].state;
-                    el.changeColor();
+//            setTimeout ( function(){
+                //moving the cells back from the now line
+                console.log("moving cells back from now -1 back to beginning");
+                var row = 0, col = 0;
+                for(row=0; row < now; row++){
+                    for(col=0; col < colLength; col++){
+                        bittorio[row][col].state = bittorio[row+1][col].state;
+                        bittorio[row][col].changeColor();
+                        //this has to be state changed because, they influence the state of the current cell
+                    }
                 }
-                else{
-                    //do the calculation
-                    if( wrapping == "NO"){
 
-                        var prev =-1, next=-1;
-                        //when the next cell is a grey
-                        if( ind == 0 ||  ind == arr.length -1 ){
-                            el.state = prevCell[ind].state;
-                            el.changeColor();
+//            }, 0);
+
+            console.log("moving cells back from end to now + 1");
+//            setTimeout ( function(){
+                //update only the perturbations from the now+1 to the end
+                for(row=now+1; row < rowLength-1; row++){
+                    for(col=0; col < colLength; col++){
+
+                        if( bittorio[row+1][col].userChange == 1){
+                            //copying
+                            //change color by changing state
+                            bittorio[row][col].state = bittorio[row+1][col].state;
+                            bittorio[row][col].userChange = bittorio[row+1][col].userChange;
+                            //transfered
+                            bittorio[row+1][col].userChange = 0;
+
+                            bittorio[row][col].changeColor();
+
+                        }
+
+                        //else leave the computed values
+
+                        /*else{
+                            //change color without state change
+                            bittorio[row][col].colStr = bittorio[row+1][col].colStr;
+                            bittorio[row][col].attr({"fill": bittorio[row][col].colStr});
+
+                        }*/
+                    }
+                }
+
+            //}, 1000);
+
+//            setTimeout ( function(){
+                console.log("calculating the value of the current cell");
+                // updating the now line
+                bittorio[now].map( function (el,ind,arr){
+
+                    //initialized to the current value of the element
+                    var cur = el.state;
+                    var wrapping = document.getElementById('wrapCells').value;
+                    var prevCell =  bittorio[now-1];
+                    var nextCell =  bittorio[now+1];
+
+                    //Replace the cells value as the perturbation of the
+                    //future cell if user has changed the cell
+                    if( nextCell[ind].userChange == 1){
+                        el.state = nextCell[ind].state;
+                        el.changeColor();
+                    }
+                    else{
+                        //do the calculation
+                        if( wrapping == "NO"){
+
+                            var prev =-1, next=-1;
+                            //when the next cell is a grey
+                            if( ind == 0 ||  ind == arr.length -1 ){
+                                el.state = prevCell[ind].state;
+                                el.changeColor();
+                            }
+                            else{
+                                prev = prevCell[ind-1].state; //no turn around
+                                next = prevCell[ind+1].state;
+                                //only get the previous value if cur value is not a perturbation
+                                cur = prevCell[ind].state;
+                                el.state = el.updateState(prev,cur,next);
+                                el.changeColor();
+                            }
                         }
                         else{
-                            prev = prevCell[ind-1].state; //no turn around
-                            next = prevCell[ind+1].state;
-                            //only get the previous value if cur value is not a perturbation
+                            //wrapping around
+                            //three values
+                            var prev =-1, next=-1, cur = el.state;
+                            if( ind - 1 < 0){
+                                prev = prevCell[arr.length-1].state; //turn around
+                            }
+                            else {
+                                prev = prevCell[ Math.abs(ind-1)%arr.length].state; //turn around
+                            }
+                            next = prevCell[ Math.abs(ind+1)%arr.length].state;
+                            //only if cur value is not a pertrubation, use the last state of the system.
                             cur = prevCell[ind].state;
                             el.state = el.updateState(prev,cur,next);
                             el.changeColor();
                         }
+
                     }
-                    else{
-                        //wrapping around
-                        //three values
-                        var prev =-1, next=-1, cur = el.state;
-                        if( ind - 1 < 0){
-                            prev = prevCell[arr.length-1].state; //turn around
-                        }
-                        else {
-                            prev = prevCell[ Math.abs(ind-1)%arr.length].state; //turn around
-                        }
-                        next = prevCell[ Math.abs(ind+1)%arr.length].state;
-                        //only if cur value is not a pertrubation, use the last state of the system.
-                        cur = prevCell[ind].state;
-                        el.state = el.updateState(prev,cur,next);
-                        el.changeColor();
-                    }
+                });
 
-                }
-            });
+//           }, 1500);
 
-            //update all the rows from the now+1 to the end
-            for(row=now+1; row < rowLength-1; row++){
-                for(col=0; col < colLength; col++){
-                    bittorio[row][col].state = bittorio[row+1][col].state;
-                    bittorio[row][col].changeColor();
-                }
-            }
+//            setTimeout ( function(){
 
-            //make the new row unperturbed
-            //update all the rows from the now+1 to the end
-            for(col=0; col < colLength; col++){
-                bittorio[rowLength-1][col].state = 2;
-                bittorio[row][col].changeColor();
-            }
+                //discard the current now + 1 that was used to create
+                //the current now
+                bittorio[now + 1].map(function (el){
+                    //el.state = 2;
+                    el.userChange = 0;
+                    //el.changeColor();
+                });
+
+                //keeps the future changes that the user has created
+                //with some idea in mind
+
+                //before calculating the value of the next row, make the
+                //state of all the cells 2, except the user changed ones
+                // for(row=now+2; row < rowLength; row++){
+                //     bittorio[row].map(function (el){
+                //         if( el.userChange == 1){
+                //             //keep the state
+                //             //el.userChange = 0;
+                //         }
+                //         else{
+                //             //change to uncomputed
+                //             //el.state = 2;
+                //             //el.changeColor();
+                //         }
+                //     });
+                //}
+
+//            }, 1750);
+
+            // //make the new row unperturbed
+            // //update all the rows from the now+1 to the end
+            // for(col=0; col < colLength; col++){
+            //      bittorio[rowLength-1][col].state = 2;
+            //     //     bittorio[row][col].changeColor();
+            // }
 
             // bittorio[rowLength-1].map( function (el,ind,arr){
 
@@ -352,7 +431,7 @@ require(
         document.getElementById('preset').onchange = function(){
 
             var val = document.getElementById('preset').value;
-            console.log(val);
+            //console.log(val);
             if(val == "None"){
                 //
             }
@@ -364,6 +443,8 @@ require(
 
         document.getElementById('randomConfig').onclick = function(){
             utils.randomInit(bittorio, colLength,now);
+            initNum = document.getElementById('configNum').value;
+            console.log("init numer stored as" + initNum);
         }
 
         document.getElementById('clearFirst').onclick = function(){
@@ -405,9 +486,9 @@ require(
 
                 //only listens when live is on
                 listenVariable = setInterval(function(){
-                    console.log("the true value is update" + updateRow.value);
+                    //console.log("the true value is update" + updateRow.value);
                     if(updateRow.value != -1){
-                        console.log("coming here");
+                      //  console.log("coming here");
                         recalcFuture();
                     }
                     else{
@@ -427,7 +508,7 @@ require(
             var str = utils.convert2Binary (num, colLength);
             str = str.split(""); //has to be an array
 
-            utils.setConfig(str,bittorio,colLength)
+            utils.setConfig(str,bittorio,colLength, now);
         };
 
         document.getElementById('carulebinary').onchange = function(){
@@ -435,18 +516,23 @@ require(
             var num = document.getElementById('carulebinary').value;
             num = num.split("").map(function(n){ return parseInt(n);});
             var dec = utils.convert2Decimal (num);
-            console.log("here");
+            //console.log("here");
             document.getElementById('carule').value = dec;
         };
 
         document.getElementById('carule').onchange = function (){
 
-            console.log("changed");
+            //console.log("changed");
             //convert to binary
             var num = parseInt(document.getElementById('carule').value);
             var str = utils.convert2Binary (num, 8);
             document.getElementById('carulebinary').value = str;
         };
+
+        document.getElementById('step').addEventListener("click", function(){
+            caScroll();
+        });
+
 
 
         /// ------------ Timers -------------------------------
@@ -455,8 +541,10 @@ require(
         var run = null;
 
         document.getElementById('start').addEventListener("click", function(){
-            console.log("here after reset");
-            document.getElementById('configNum').value  = utils.findInitConfigVal();
+            //console.log("here after reset");
+            //document.getElementById('configNum').value  = utils.findInitConfigVal();
+            //initNum = document.getElementById('configNum').value;
+
             if(run == null){
                 run = setInterval(simulate , parseFloat(document.getElementById("loopTime").value)); // start setInterval as "run";
             }
@@ -477,10 +565,19 @@ require(
             if(run != null){
                 clearInterval(run); // stop the setInterval()
             }
+
             run = null;
             utils.reset(bittorio, rowLength, colLength, now);
+
+            var str = utils.convert2Binary (initNum, colLength);
+            str = str.split(""); //has to be an array
+            utils.setConfig(str,bittorio,colLength, now);
+            document.getElementById('configNum').value = initNum;
+
+
             timer = 0;
         },true);
+
 
         function simulate() {
             //console.log(); // firebug or chrome log
@@ -499,6 +596,7 @@ require(
             run = setInterval(simulate, parseFloat(document.getElementById("loopTime").value)); // start the setInterval()
 
         }
+
 
         var yLen = (paper.height/rowLength);
         var xLen = (paper.width/colLength);

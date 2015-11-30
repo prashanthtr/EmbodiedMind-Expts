@@ -11,10 +11,12 @@ define(
 
             obj.type = "link";
             obj.state = 2;
+            obj.colStr = "grey";
             //calculates the state of an object using internal relation
             //between ca cells
             obj.updateState = caRules;
             obj.changedState = 0;
+            obj.userChange = 0;
             obj.ind = x;
             obj.row = y;
 
@@ -36,7 +38,7 @@ define(
                     //this.tone.release();
                 }
                 else if(this.state == 1){
-                    console.log("going to play");
+                    //console.log("going to play");
                     this.tone.play();
                     setTimeout(obj.release, 150);
                 }
@@ -49,12 +51,15 @@ define(
             obj.changeColor = function(){
 
                 if(this.state == 2){
+                    this.colStr = "grey";
                     this.attr({"fill": "grey"});
                 }
                 else if(this.state == 1){
+                    this.colStr = "black";
                     this.attr({"fill": "black"});
                 }
                 else{
+                    this.colStr = "white";
                     this.attr({"fill": "white"});
                 }
             }
@@ -63,26 +68,31 @@ define(
 
             obj.mousedown(function(){
 
+                this.userChange = 1;
                 this.mouseDownState.value = 1;
-                console.log("first mousedown");
+                //console.log("first mousedown");
                 //past states can have black or white values only
-                if(obj.changedState == 1 || this.row < this.timer){
+
+                //if(obj.changedState == 1 || this.row < this.timer){
                     this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
                     this.changeColor();
-                }
+                //}
                 //only future states have grey states
-                else{
+                //no grey states
+
+                /*else{
                     this.state = (this.state + 1)%3; //obj = (obj.state + 1)%2;
                     this.changeColor();
 
-                }
+                }*/
 
                 // if the cell is in the past, then trigger changes in all the future states
-                if( this.row < this.timer){
-                    console.log("this is true");
+
+                /*if( this.row < this.timer){
+                    //console.log("this is true");
                     //making changes to the array location
                     this.updateRow.value = this.row+1;
-                }
+                 }*/
 
 
             });

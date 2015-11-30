@@ -99,8 +99,8 @@ define(
             document.getElementById('configNum').value  = findInitConfigVal(bittorio, colLength);
         }
 
-        function setConfig (str, bittorio, colLength){
-            row = 0;
+        function setConfig (str, bittorio, colLength,now){
+            var row = now;
             for(col=0; col< colLength; col++){
                 bittorio[row][col].state = parseInt(str[col]);
                 bittorio[row][col].changeColor();
@@ -108,7 +108,7 @@ define(
         }
 
         function stopAllSounds (tone){
-            console.log("tone lengt is " + tone.length);
+            //console.log("tone lengt is " + tone.length);
             tone.map(function(el){
                 el.tone.release();
             });
