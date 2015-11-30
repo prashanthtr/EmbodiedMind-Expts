@@ -16,7 +16,9 @@ define(
             pentatonic.setParam("Modulation Index", 75);    //or// pentatonic.setParamNorm("Modulation Index", 0.750);
             pentatonic.setParam("Gain", 0);    //or// pentatonic.setParamNorm("Gain", 0.250);
             pentatonic.setParam("Attack Time", 0.005);    //or// pentatonic.setParamNorm("Attack Time", 0.220);
-            pentatonic.setParam("Release Time", 0.01);    //or// pentatonic.setParamNorm("Release Time", 0.333);
+            pentatonic.setParam("Release Time", 0.005);    //or// pentatonic.setParamNorm("Release Time", 0.333);
+            pentatonic.setParam("Decay", 0.01);    //or// pentatonic.setParamNorm("Attack Time", 0.220);
+
 
             return pentatonic;
         }

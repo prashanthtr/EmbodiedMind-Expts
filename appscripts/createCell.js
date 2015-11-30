@@ -35,14 +35,15 @@ define(
             obj.play = function(){
                 // play should sense the sound toggle button to play
                 if(this.state == 2){
-                    //this.tone.release();
+                    this.tone.release();
                 }
                 else if(this.state == 1){
                     //console.log("going to play");
                     this.tone.play();
-                    setTimeout(obj.release, 150);
+                    //setTimeout(obj.release, 150);
                 }
                 else{
+                    this.tone.release();
                     //
                 }
             }

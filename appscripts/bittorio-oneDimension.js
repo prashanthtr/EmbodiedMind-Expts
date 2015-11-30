@@ -13,10 +13,10 @@ require(
 
 
         var id = "centerDiv",
-            rowLength = 30,
-            colLength = 30,
+            rowLength = 15,
+            colLength = 15,
             objSize = 5,
-            now = 15,
+            now = 7,
             initNum = 0;
 
         // Create the Raphael paper that we will use for drawing and creating graphical objects
