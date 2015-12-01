@@ -23,6 +23,7 @@ define(
             obj.timer = 0;
 
             obj.mouseDownState = {value: 0};
+
             obj.updateRow = { value: -1};
 
             obj.tone = pentaTonicFactory(x);
@@ -76,14 +77,16 @@ define(
 
             obj.mousedown(function(){
 
+                this.updateRow.value = this.row;
                 this.userChange = 1;
                 this.mouseDownState.value = 1;
-                //console.log("first mousedown");
+                console.log("first mousedown");
                 //past states can have black or white values only
 
                 //if(obj.changedState == 1 || this.row < this.timer){
                     this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
-                    this.changeColor();
+                this.changeColor();
+
                 //}
                 //only future states have grey states
                 //no grey states
