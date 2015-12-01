@@ -15,8 +15,8 @@ define(
         }
 
         // CA states to number
-        function findInitConfigVal(bittorio,colLength){
-            row = 0;
+        function findInitConfigVal(bittorio,colLength,now){
+            row = now;
             var arr = [];
             for(col=0; col< colLength; col++){
                 arr[col] = bittorio[row][col].state;
@@ -34,7 +34,7 @@ define(
                 bittorio[row][col].changedState = 1;
             }
             //also sets the value of the corresponding decimal number
-            document.getElementById('configNum').value  = findInitConfigVal(bittorio, colLength);
+            document.getElementById('configNum').value  = findInitConfigVal(bittorio, colLength, now);
             }
 
 
@@ -96,7 +96,7 @@ define(
                 bittorio[row][col].changeColor();
                 bittorio[row][col].changedState = 1;
             }
-            document.getElementById('configNum').value  = findInitConfigVal(bittorio, colLength);
+            document.getElementById('configNum').value  = findInitConfigVal(bittorio, colLength, now);
         }
 
         function setConfig (str, bittorio, colLength,now){
@@ -172,6 +172,17 @@ define(
         }
 
 
+        //unmutes all cells
+        function setGain (bittorio, rowLength, colLength, gain){
+            var row = 0, col = 0;
+            for(row = 0; row < rowLength; row++){
+                for(col=0; col< colLength; col++){
+                    bittorio[row][col].tone.setParam("Gain", gain);
+                }
+            }
+        }
+
+
         var exports = {};
         exports.init = init;
         exports.randomInit = randomInit;
@@ -187,6 +198,7 @@ define(
         exports.mouseBroadcast = mouseBroadcast;
         exports.mute = mute;
         exports.unmute = unmute;
+        exports.setGain = setGain;
         exports.playAllSounds = playAllSounds;
         return exports;
 

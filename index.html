@@ -51,28 +51,30 @@
 
           <b> Controls: </b> <br>
           <!-- Click the initial configuration <input type="button" id="setInitConfig" value="fix!"> </input> <br> -->
-          Run speed in milliseconds <input type="text" id="loopTime" value="200">  </input> <br>
+          Rate(in ms) <input type="text" id="loopTime" value="200">  </input>
 
-          <input type="button" id="step" value="step through">  </input> <br>
+          <input type="button" id="step" value="step">  </input>
 
           <input type="button" id="start" value="Start">  </input>
           <input type="button" id="stop" value="stop">  </input>
           <input type="button" id="reset" value="Reset">  </input>
-          <input type="button" id="clearFirst" value="Clear first row">  </input>
+          <input type="button" id="clearFirst" value="Clear">  </input>
           <br>
-          Sound toggle <input type="button" id="soundToggle" value="OFF">  </input> <br>
-          Live interaction <input type="button" id="live" value="NO">   </input>
-          <br> <br>
 
+          Rows <input type="range" id="gridRow" value="15" min="0" max="30"> <br>
+          Columns <input type="range" id="gridCol" value="15" min="0" max="30">
+          <br>
+
+          Turn sound <input type="button" id="soundToggle" value="OFF">  </input> <br>
+          Gain <input type="text" id="gain" value="0.25">  </input>
+          <br>
+          <!-- Live interaction <input type="button" id="live" value="NO">   </input> -->
 
           <b> CA states </b> <br>
 
           <input type="button" id="randomConfig" value="Select random configuration">  </input> <br>
 
           <input type="button" id="configFix" value="setConfig">  </input> <input type="text" id="configNum" value="0" size="14">  </input>
-          <br>
-
-
           <br>
 
           <b> CA rules </b> <br>

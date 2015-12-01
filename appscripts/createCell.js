@@ -39,6 +39,7 @@ define(
                 }
                 else if(this.state == 1){
                     //console.log("going to play");
+                    //this.tone.setParam("Gain", 0.25);
                     this.tone.play();
                     //setTimeout(obj.release, 150);
                 }

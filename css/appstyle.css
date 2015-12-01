@@ -25,13 +25,13 @@ body {
    background: #dddd88;
    flex: 3 1 50%;
    order: 2;
-   font: 10px Helvetica;
+   font: 9px Helvetica;
    }
 
   #main > #centerDiv {
-      margin: 4px;
-      padding: 7px;
-      border: 2px solid #8888bb;
+      margin: 1px;
+      padding: 4px;
+      border: 1px solid #8888bb;
       background: #0000FF;
       flex: 3 1 50%;
       order: 2;
@@ -45,14 +45,14 @@ body {
    background: #ccccff;
    flex: 1 6 15%;
    order: 1;
-   font: 7.2pt Helvetica;
+   font: 7pt Helvetica;
    }
 
   #main > aside {
-   margin: 4px;
-   padding: 5px;
+   margin: 3px;
+   padding: 7px;
    border: 1px solid #8888bb;
-   border-radius: 7pt;
+   border-radius: 5pt;
    background: #ccccff;
    flex: 1 6 20%;
    order: 3;

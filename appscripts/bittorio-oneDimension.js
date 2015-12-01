@@ -30,12 +30,27 @@ require(
             mouseDownState.value = 0;
         });
 
+
+        function drawNow (paper, rowLength, colLength){
+            var yLen = (paper.height/rowLength) * 0.985;
+            var xLen = (paper.width/colLength) * 0.99;
+
+            paper.path("M0," +  now*yLen + "L" + (colLength*xLen) + "," + now*yLen).attr({
+                stroke: "red"
+            });
+
+            paper.path("M0," + (now+1)*yLen + "L" + (colLength*xLen) + "," + (now+1)*yLen).attr({
+                stroke: "red"
+            });
+        }
+
         //initialization for the live update
         var updateRow = { value: -1};
 
         // top most row is the initialization row
         // this has to be initialized and cannot changed afterwards
         bittorio = grid(paper, rowLength,colLength,objSize);
+        drawNow(paper, rowLength, colLength);
 
         // adds a new property
         utils.updateChange (bittorio, rowLength, colLength, updateRow, mouseDownState);
@@ -441,7 +456,26 @@ require(
 
         }
 
+        document.getElementById('gridCol').onchange = function(){
+            colLength = parseInt(document.getElementById('gridCol').value);
+            paper.clear();
+            bittorio = grid(paper, rowLength,colLength,objSize);
+            utils.init(bittorio,colLength,now);
+            drawNow(paper, rowLength, colLength);
+        }
+
+        document.getElementById('gridRow').onchange = function(){
+            rowLength = parseInt(document.getElementById('gridRow').value);
+            now = Math.floor(rowLength / 2);
+            paper.clear();
+            bittorio = grid(paper, rowLength,colLength,objSize);
+            utils.init(bittorio,colLength,now);
+            drawNow(paper, rowLength, colLength);
+        }
+
+
         document.getElementById('randomConfig').onclick = function(){
+
             utils.randomInit(bittorio, colLength,now);
             initNum = document.getElementById('configNum').value;
             console.log("init numer stored as" + initNum);
@@ -473,31 +507,31 @@ require(
         };
 
 
-        document.getElementById('live').onclick = function(){
-            if( this.value == "YES" ){
-                this.value = "NO";
-                //mute all the cells
-                if(listenVariable != null){
-                    clearInterval(listenVariable);
-                }
-            }
-            else{
-                this.value = "YES";
+        // document.getElementById('live').onclick = function(){
+        //     if( this.value == "YES" ){
+        //         this.value = "NO";
+        //         //mute all the cells
+        //         if(listenVariable != null){
+        //             clearInterval(listenVariable);
+        //         }
+        //     }
+        //     else{
+        //         this.value = "YES";
 
-                //only listens when live is on
-                listenVariable = setInterval(function(){
-                    //console.log("the true value is update" + updateRow.value);
-                    if(updateRow.value != -1){
-                      //  console.log("coming here");
-                        recalcFuture();
-                    }
-                    else{
-                        //nothing
-                    }
-                }, 20);
+        //         //only listens when live is on
+        //         listenVariable = setInterval(function(){
+        //             //console.log("the true value is update" + updateRow.value);
+        //             if(updateRow.value != -1){
+        //               //  console.log("coming here");
+        //                 recalcFuture();
+        //             }
+        //             else{
+        //                 //nothing
+        //             }
+        //         }, 20);
 
-            }
-        };
+        //     }
+        // };
 
 
         // sets the configuration given a number
@@ -533,6 +567,11 @@ require(
             caScroll();
         });
 
+        document.getElementById('gain').onchange = function(){
+            var newGain = parseFloat(document.getElementById('gain').value);
+            utils.setGain(bittorio, rowLength, colLength, newGain);
+        };
+
 
 
         /// ------------ Timers -------------------------------
@@ -543,7 +582,7 @@ require(
         document.getElementById('start').addEventListener("click", function(){
             //console.log("here after reset");
             //document.getElementById('configNum').value  = utils.findInitConfigVal();
-            //initNum = document.getElementById('configNum').value;
+            //initNum = parseInt(document.getElementById('configNum').value);
 
             if(run == null){
                 run = setInterval(simulate , parseFloat(document.getElementById("loopTime").value)); // start setInterval as "run";
@@ -569,11 +608,13 @@ require(
             run = null;
             utils.reset(bittorio, rowLength, colLength, now);
 
+            console.log("utilNum is" + initNum);
             var str = utils.convert2Binary (initNum, colLength);
             str = str.split(""); //has to be an array
+            console.log("str is" + str);
+
             utils.setConfig(str,bittorio,colLength, now);
             document.getElementById('configNum').value = initNum;
-
 
             timer = 0;
         },true);
@@ -596,18 +637,6 @@ require(
             run = setInterval(simulate, parseFloat(document.getElementById("loopTime").value)); // start the setInterval()
 
         }
-
-
-        var yLen = (paper.height/rowLength);
-        var xLen = (paper.width/colLength);
-
-        paper.path("M0," +  now*yLen + "L" + (colLength*xLen-colLength) + "," + now*yLen).attr({
-            stroke: "red"
-        });
-
-        paper.path("M0," + (now+1)*yLen + "L" + (colLength*xLen-colLength) + "," + (now+1)*yLen).attr({
-            stroke: "red"
-        });
 
 
 });
