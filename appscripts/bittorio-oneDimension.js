@@ -169,6 +169,8 @@ require(
             else{
                 this.value = "YES";
             }
+            rowChange(now);
+
         };
 
         document.getElementById('soundToggle').onclick = function(){
@@ -219,6 +221,7 @@ require(
         };
 
         document.getElementById('step').addEventListener("click", function(){
+            rowChange(now);
             caScroll();
 
         });
