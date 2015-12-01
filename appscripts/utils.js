@@ -166,7 +166,7 @@ define(
         function unmute (bittorio, rowLength, colLength){
             for(row = 0; row < rowLength; row++){
                 for(col=0; col< colLength; col++){
-                    bittorio[row][col].tone.setParam("Gain", 1);
+                    bittorio[row][col].tone.setParam("Gain", parseFloat(document.getElementById('gain').value));
                 }
             }
         }
