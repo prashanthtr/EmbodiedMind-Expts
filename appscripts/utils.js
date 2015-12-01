@@ -78,11 +78,11 @@ define(
         function reset (bittorio, rowLength, colLength, now){
             for(row = 0; row < rowLength; row++){
                 for(col=0; col< colLength; col++){
-                    if( row != now){
-                        bittorio[row][col].state = 2;
-                        bittorio[row][col].changeColor();
-                        bittorio[row][col].changedState = 0;
-                    }
+                    bittorio[row][col].state = 2;
+                    bittorio[row][col].userChange = 0;
+                    bittorio[row][col].changeColor();
+                    bittorio[row][col].changedState = 0;
+
                 }
             }
             stopAllSounds(bittorio[now]);

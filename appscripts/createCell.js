@@ -52,6 +52,12 @@ define(
             //object events, declared
             obj.changeColor = function(){
 
+                // if (this.userChange == 1 && this.state == 0){
+                //     this.attr({"fill": "#ffcccc"});
+                // }
+                // else if(this.userChange == 1 && this.state == 1){
+                //     this.attr({"fill": "#b30000"});
+                // }
                 if(this.state == 2){
                     this.colStr = "grey";
                     this.attr({"fill": "grey"});

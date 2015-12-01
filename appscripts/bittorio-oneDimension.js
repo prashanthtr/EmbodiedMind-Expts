@@ -17,7 +17,9 @@ require(
             colLength = 15,
             objSize = 5,
             now = 7,
-            initNum = 0;
+            initNum = 0,
+            stepCount = 0;
+
 
         // Create the Raphael paper that we will use for drawing and creating graphical objects
 
@@ -123,7 +125,7 @@ require(
 
                 var wrapping = document.getElementById('wrapCells').value;
                 var cur = el.state;
-                if( el.userChange == 1 && row != now + 1){
+                if( el.userChange == 1){
                     // state change
                     el.state = cur;
                     el.changeColor();
@@ -236,6 +238,139 @@ require(
         //     timer++;
         //     utils.updateTimers(bittorio, rowLength, colLength,timer);
         // }
+
+
+        function scrollOp1(){
+
+            console.log("calculating the value of the future cells from the new current cell");
+            var row = 0, col = 0;
+            for(row=now+1; row < rowLength; row++){
+                changeFuture(row);
+            }
+
+        }
+
+        function scrollOp2(){
+            var row = 0, col = 0;
+            console.log("moving cells back from now -1 back to beginning");
+            var row = 0, col = 0;
+            for(row=0; row < now; row++){
+                for(col=0; col < colLength; col++){
+                    bittorio[row][col].state = bittorio[row+1][col].state;
+                    bittorio[row][col].changeColor();
+                    //this has to be state changed because, they influence the state of the current cell
+                }
+            }
+        }
+
+        function scrollOp3(){
+            var row = 0, col = 0;
+            console.log("moving cells back from end to now + 1");
+            //            setTimeout ( function(){
+            //update only the perturbations from the now+1 to the end
+            for(row=now; row < rowLength-1; row++){
+                for(col=0; col < colLength; col++){
+
+                    //if( bittorio[row+1][col].userChange == 1){
+                    //copying
+                    //change color by changing state
+                    bittorio[row][col].state = bittorio[row+1][col].state;
+                    bittorio[row][col].userChange = bittorio[row+1][col].userChange;
+                    //transfered
+                    //bittorio[row+1][col].userChange = 0;
+
+                    bittorio[row][col].changeColor();
+
+                    //}
+
+                }
+            }
+
+            //compute the new future after pushing up
+            for(col=0; col < colLength; col++){
+                bittorio[rowLength -1][col].state = 2;
+                bittorio[rowLength -1][col].userChange = 0;
+            }
+            changeFuture(rowLength - 1);
+
+        }
+
+        function scrollOp4(){
+            var row = 0, col = 0;
+
+            console.log("calculating the value of the current cell");
+            // updating the now line
+            bittorio[now].map( function (el,ind,arr){
+
+                //initialized to the current value of the element
+                var cur = el.state;
+                var wrapping = document.getElementById('wrapCells').value;
+                var prevCell =  bittorio[now-1];
+                var nextCell =  bittorio[now+1];
+
+                //Replace the cells value as the perturbation of the
+                //future cell if user has changed the cell
+                if( nextCell[ind].userChange == 1){
+                    el.state = nextCell[ind].state;
+                    el.changeColor();
+                }
+                else{
+                    //do the calculation
+                    if( wrapping == "NO"){
+
+                        var prev =-1, next=-1;
+                        //when the next cell is a grey
+                        if( ind == 0 ||  ind == arr.length -1 ){
+                            el.state = prevCell[ind].state;
+                            el.changeColor();
+                        }
+                        else{
+                            prev = prevCell[ind-1].state; //no turn around
+                            next = prevCell[ind+1].state;
+                            //only get the previous value if cur value is not a perturbation
+                            cur = prevCell[ind].state;
+                            el.state = el.updateState(prev,cur,next);
+                            el.changeColor();
+                        }
+                    }
+                    else{
+                        //wrapping around
+                        //three values
+                        var prev =-1, next=-1, cur = el.state;
+                        if( ind - 1 < 0){
+                            prev = prevCell[arr.length-1].state; //turn around
+                        }
+                        else {
+                            prev = prevCell[ Math.abs(ind-1)%arr.length].state; //turn around
+                        }
+                        next = prevCell[ Math.abs(ind+1)%arr.length].state;
+                        //only if cur value is not a pertrubation, use the last state of the system.
+                        cur = prevCell[ind].state;
+                        el.state = el.updateState(prev,cur,next);
+                        el.changeColor();
+                    }
+
+                }
+            });
+
+            //           }, 1500);
+
+            //            setTimeout ( function(){
+
+            //discard the current now + 1 that was used to create
+            //the current now
+            // bittorio[now + 1].map(function (el){
+            //     //el.state = 2;
+            //     el.userChange = 0;
+            //     //el.changeColor();
+            // });
+
+            utils.playAllSounds(bittorio[now]);
+            timer++;
+            utils.updateTimers(bittorio, rowLength, colLength,timer);
+
+        }
+
 
         // scrolls the CA every step
         function caScroll (){
@@ -564,8 +699,33 @@ require(
         };
 
         document.getElementById('step').addEventListener("click", function(){
-            caScroll();
+            //caScroll();
+            scrollOp1();
+            scrollOp2();
+            scrollOp3();
+
         });
+
+        document.getElementById('step1').addEventListener("click", function(){
+
+            if( stepCount == 0){
+                stepCount= (stepCount+1)%3;
+                scrollOp1();
+            }
+            else if( stepCount == 1){
+                stepCount= (stepCount+1)%3;
+                scrollOp2();
+            }
+            else if( stepCount == 2){
+                stepCount= (stepCount+1)%3;
+                scrollOp3();
+            }
+            // else if( stepCount == 3){
+            //     stepCount= (stepCount+1)%4;
+            //     scrollOp4();
+            // }
+        });
+
 
         document.getElementById('gain').onchange = function(){
             var newGain = parseFloat(document.getElementById('gain').value);
@@ -607,7 +767,7 @@ require(
 
             run = null;
             utils.reset(bittorio, rowLength, colLength, now);
-
+            stepCount = 0;
             console.log("utilNum is" + initNum);
             var str = utils.convert2Binary (initNum, colLength);
             str = str.split(""); //has to be an array
