@@ -13,10 +13,10 @@ require(
 
 
         var id = "centerDiv",
-            rowLength = 15,
-            colLength = 15,
+            rowLength = 30,
+            colLength = 30,
             objSize = 5,
-            now = 7,
+            now = rowLength/2,
             initNum = 0,
             stepCount = 0;
 
@@ -61,6 +61,7 @@ require(
             for( row = rc+1; row< rowLength; row++){
                 caupdate.changeFuture(bittorio, row);
             }
+            document.getElementById('configNum').value  = utils.findInitConfigVal(bittorio, colLength, now);
         }
 
         centerDiv.onclick = function (e){
@@ -238,7 +239,7 @@ require(
 
         document.getElementById('start').addEventListener("click", function(){
             //console.log("here after reset");
-            //document.getElementById('configNum').value  = utils.findInitConfigVal();
+            document.getElementById('configNum').value  = utils.findInitConfigVal(bittorio, colLength, now);
             //initNum = parseInt(document.getElementById('configNum').value);
             rowChange(now);
             if(run == null){

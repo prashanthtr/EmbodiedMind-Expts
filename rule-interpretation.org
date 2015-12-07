@@ -1,0 +1,145 @@
+We had discussed the interpretation of Varela's rules at our last meeting.
+By studying the displays in Fig 2 of the bittorio paper, I am pretty
+sure I understand them now.
+
+The rules are 8 bit numbers. The left-most 4 bits are the output when
+the cell's current state is '1', the right-most 4 bits are the outputs
+when the cell's current state is '0'. With in each 4-bit byte, the bits
+represent the output when the input is:
+
+00, 01, 10, 11
+
+in that order, left to right.
+
+
+Table of rules:
+
+|   Varela | Wolfram        |
+| 00010001 | 10100000 (160) |
+| 10010001 | 10100100 (164) |
+| 01101111 | 01111011 (123) |
+| 01101000 | 01001001 (73)  |
+| 00010110 | 10010010 (146) |
+| 10010000 | 10000100 (132) | Odd sequence recognizer
+| 01101110 | 01011011 (91)  | Even sequence recognizer -- not working!!
+
+Varela: 0001 0001
+Wolfram: 10100000 (160)
+
+Rule:
+
+| adjacent cells | State | Rule | output |
+|             00 |     0 |  000 |      0 |
+|             00 |     1 |  010 |      0 |
+|             01 |     0 |  001 |      0 |
+|             01 |     1 |  011 |      0 |
+|             10 |     0 |  100 |      0 |
+|             10 |     1 |  110 |      0 |
+|             11 |     0 |  101 |      1 |
+|             11 |     1 |  111 |      1 |
+
+000 0
+001 0
+010 0
+011 0
+100 0
+101 1
+110 0
+111 1
+
+Varela: 10010001
+Wolfram: 10100100 (164)
+
+| adjacent cells | State | Rule | output |
+|             00 |     0 |  000 |      0 |
+|             01 |     0 |  001 |      0 |
+|             10 |     0 |  100 |      0 |
+|             11 |     0 |  101 |      1 |
+|             00 |     1 |  010 |      1 |
+|             01 |     1 |  011 |      0 |
+|             10 |     1 |  110 |      0 |
+|             11 |     1 |  111 |      1 |
+
+
+Varela Rule: 01101111
+Wolfram: 01111011 (123)
+
+| adjacent cells | State | Rule | output |
+|             00 |     1 |  010 |      0 |
+|             01 |     1 |  011 |      1 |
+|             10 |     1 |  110 |      1 |
+|             11 |     1 |  111 |      0 |
+|             00 |     0 |  000 |      1 |
+|             01 |     0 |  001 |      1 |
+|             10 |     0 |  100 |      1 |
+|             11 |     0 |  101 |      1 |
+
+
+Varela Rule: 01101000
+Wolfram:  01001001 (73)
+
+| adjacent cells | State | Rule | output |
+|             00 |     1 |  010 |      0 |
+|             01 |     1 |  011 |      1 |
+|             10 |     1 |  110 |      1 |
+|             11 |     1 |  111 |      0 |
+|             00 |     0 |  000 |      1 |
+|             01 |     0 |  001 |      0 |
+|             10 |     0 |  100 |      0 |
+|             11 |     0 |  101 |      0 |
+
+Varela Rule: 00010110
+Wolfram:  10010010 (146)
+
+| adjacent cells | State | Rule | output |
+|             00 |     1 |  010 |      0 |
+|             01 |     1 |  011 |      0 |
+|             10 |     1 |  110 |      0 |
+|             11 |     1 |  111 |      1 |
+|             00 |     0 |  000 |      0 |
+|             01 |     0 |  001 |      1 |
+|             10 |     0 |  100 |      1 |
+|             11 |     0 |  101 |      0 |
+
+
+Varela Rule:  10010110
+Wolfram rule: 10010110
+
+| adjacent cells | State | Rule | output |
+|             00 |     1 |  010 |      1 |
+|             01 |     1 |  011 |      0 |
+|             10 |     1 |  110 |      0 |
+|             11 |     1 |  111 |      1 |
+|             00 |     0 |  000 |      0 |
+|             01 |     0 |  001 |      1 |
+|             10 |     0 |  100 |      1 |
+|             11 |     0 |  101 |      0 |
+
+
+
+Varela Rule: 10010000
+Wolfram:  10000100 (132)
+
+| adjacent cells | State | Rule | output |
+|             00 |     1 |  010 |      1 |
+|             01 |     1 |  011 |      0 |
+|             10 |     1 |  110 |      0 |
+|             11 |     1 |  111 |      1 |
+|             00 |     0 |  000 |      0 |
+|             01 |     0 |  001 |      0 |
+|             10 |     0 |  100 |      0 |
+|             11 |     0 |  101 |      0 |
+
+
+Varela Rule: 01101110
+Wolfram: 01011011 (91)
+
+| adjacent cells | State | Rule | output |
+|             00 |     1 |  010 |      0 |
+|             01 |     1 |  011 |      1 |
+|             10 |     1 |  110 |      1 |
+|             11 |     1 |  111 |      0 |
+|             00 |     0 |  000 |      1 |
+|             01 |     0 |  001 |      1 |
+|             10 |     0 |  100 |      1 |
+|             11 |     0 |  101 |      0 |

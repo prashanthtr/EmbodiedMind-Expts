@@ -24,7 +24,6 @@ define(
             return convert2Decimal(arr);
         }
 
-
         function randomInit (bittorio, colLength, now){
             //reset();
             var row = now, col=0;
