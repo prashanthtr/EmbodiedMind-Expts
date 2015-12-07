@@ -66,10 +66,13 @@ define(
         function convert2Decimal ( binArr ){
 
             var sum = 0;
+            //sum.toFixed(21);
             var i = binArr.length;
             while( i -- ){
                 sum+= binArr[i]*Math.pow(2, binArr.length-i-1);
+                //sum.toFixed(21);
             }
+            console.log(sum + "");
             return sum;
         }
 

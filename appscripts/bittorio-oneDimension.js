@@ -14,7 +14,7 @@ require(
 
         var id = "centerDiv",
             rowLength = 30,
-            colLength = 30,
+            colLength = 73,
             objSize = 5,
             now = rowLength/2,
             initNum = 0,
