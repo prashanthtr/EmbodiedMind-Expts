@@ -23,11 +23,11 @@ define(
                         var prev =-1, next=-1;
 
                         if( ind == 0){
-                            cur = prevCell[ind].state;
-                            next = prevCell[ind+1].state;
-                            prev = 0; //or 1, not sure
+                            //cur = prevCell[ind].state;
+                            //next = prevCell[ind+1].state;
+                            //prev = 0; //or 1, not sure
                             //updating with prev state is 0
-                            el.state = el.updateState(prev,cur,next);
+                            el.state = prevCell[ind].state;
                             el.changeColor();
                         }
                         else if(ind == arr.length -1 ){
