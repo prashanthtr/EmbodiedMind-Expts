@@ -27,17 +27,19 @@ define(
                             //next = prevCell[ind+1].state;
                             //prev = 0; //or 1, not sure
                             //updating with prev state is 0
+
                             el.state = prevCell[ind].state;
                             el.changeColor();
                         }
                         else if(ind == arr.length -1 ){
-                            cur = prevCell[ind].state;
-                            prev = prevCell[ind-1].state;
-                            next = 0; //or 1, its hard to say
 
-                            //updating with next state is 0
-                            el.state = el.updateState(prev,cur,next);
+                            el.state = prevCell[ind].state;
                             el.changeColor();
+
+                            // cur = prevCell[ind].state;
+                            // prev = prevCell[ind-1].state;
+                            // next = 0; //or 1, its hard to say
+
                         }
                         else{
                             prev = prevCell[ind-1].state; //no turn around
