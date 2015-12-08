@@ -26,7 +26,7 @@ define(
 
                             cur = prevCell[ind].state;
                             next = prevCell[ind+1].state;
-                            prev = 0; //or 1, not sure
+                            prev = 1; //or 1, not sure
 
                             //updating with prev state is 0
                             el.state = el.updateState(prev,cur,next);
@@ -37,7 +37,7 @@ define(
 
                             cur = prevCell[ind].state;
                             prev = prevCell[ind-1].state;
-                            next = 0; //or 1, its hard to say
+                            next = 1; //or 1, its hard to say
 
                             el.state = el.updateState(prev,cur,next);
                             //el.state = prevCell[ind].state;
