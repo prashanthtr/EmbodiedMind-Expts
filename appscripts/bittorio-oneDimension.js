@@ -13,10 +13,10 @@ require(
 
 
         var id = "centerDiv",
-            rowLength = 30,
-            colLength = 73,
+            rowLength = 16,
+            colLength = 30,
             objSize = 5,
-            now = rowLength/2,
+            now = parseInt(rowLength/2),
             initNum = 0,
             stepCount = 0;
 

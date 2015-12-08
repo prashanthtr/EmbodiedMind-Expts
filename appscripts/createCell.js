@@ -77,6 +77,7 @@ define(
 
             obj.mousedown(function(){
 
+                console.log("this row is" + this.row + "this col is" + this.ind);
                 this.updateRow.value = this.row;
                 this.userChange = 1;
                 this.mouseDownState.value = 1;
