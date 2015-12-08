@@ -16,7 +16,7 @@ require(
             rowLength = 18,
             colLength = 30,
             objSize = 5,
-            now = parseInt(rowLength/2),
+            now = Math.floor(rowLength/2),
             initNum = 0,
             stepCount = 0;
 
@@ -134,17 +134,24 @@ require(
 
         document.getElementById('gridCol').onchange = function(){
             colLength = parseInt(document.getElementById('gridCol').value);
+            //console.log("paper width before is" + paper.width);
             paper.clear();
+            //console.log("paper width after is" + paper.width);
             bittorio = grid(paper, rowLength,colLength,objSize);
             utils.init(bittorio,colLength,now);
             drawNow(paper, rowLength, colLength);
         }
 
         document.getElementById('gridRow').onchange = function(){
+            console.log("original now is" + "row" + rowLength + "now" + now);
             rowLength = parseInt(document.getElementById('gridRow').value);
-            now = Math.floor(rowLength / 2);
+            //console.log("paper height before is" + paper.height);
             paper.clear();
+            //console.log("paper heigth after is" + paper.height);
+            now = Math.floor(rowLength / 2);
+            console.log("original now is" + "row" + rowLength + "now" + now);
             bittorio = grid(paper, rowLength,colLength,objSize);
+            utils.reset(bittorio,rowLength, colLength,now)
             utils.init(bittorio,colLength,now);
             drawNow(paper, rowLength, colLength);
         }

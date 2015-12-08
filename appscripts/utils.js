@@ -8,10 +8,10 @@ define(
             var row = now, col=0;
             for(col=0; col< colLength; col++){
                 bittorio[row][col].state = 0;
-                bittorio[row][col].changedState = 1;
+                bittorio[row][col].userChange = 0;
                 bittorio[row][col].changeColor();
+                bittorio[row][col].changedState = 0;
             }
-
         }
 
         // CA states to number
