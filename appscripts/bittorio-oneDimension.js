@@ -47,7 +47,7 @@ require(
         }
 
         //initialization for the live update
-        var updateRow = { value: -1};
+        //var updateRow = { value: -1};
 
         // top most row is the initialization row
         // this has to be initialized and cannot changed afterwards
@@ -151,6 +151,8 @@ require(
             now = Math.floor(rowLength / 2);
             console.log("original now is" + "row" + rowLength + "now" + now);
             bittorio = grid(paper, rowLength,colLength,objSize);
+            updateRow.value = now;
+            utils.updateChange (bittorio, rowLength, colLength, updateRow, mouseDownState);
             utils.reset(bittorio,rowLength, colLength,now)
             utils.init(bittorio,colLength,now);
             drawNow(paper, rowLength, colLength);
