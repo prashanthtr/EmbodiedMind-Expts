@@ -13,8 +13,8 @@ require(
 
 
         var id = "centerDiv",
-            rowLength = 18,
-            colLength = 30,
+            rowLength = 15,
+            colLength = 15,
             objSize = 5,
             now = Math.floor(rowLength/2),
             initNum = 0,
@@ -140,6 +140,19 @@ require(
             bittorio = grid(paper, rowLength,colLength,objSize);
             utils.init(bittorio,colLength,now);
             drawNow(paper, rowLength, colLength);
+        }
+
+        document.getElementById('inputBit').onchange = function(){
+
+            var ip = document.getElementById('inputBit').value
+            if(ip == ""){
+
+            }
+            else{
+                var changeBit = parseInt(ip);
+                utils.setNthBit(bittorio, now, colLength, changeBit);
+                rowChange(now);
+            }
         }
 
         document.getElementById('gridRow').onchange = function(){

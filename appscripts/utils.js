@@ -24,6 +24,27 @@ define(
             return convert2Decimal(arr);
         }
 
+        //nth bit as specified by standard binary
+        function setNthBit (bittorio, now, colLength, n){
+            //reset();
+            var row = now, col=0;
+            for(col= 0; col < colLength; col++){
+                console.log("col is" + col);
+                if( col == colLength-1-n){
+                    bittorio[row][col].state = 1;
+                    bittorio[row][col].changeColor();
+                }
+                else{
+                    bittorio[row][col].state = 0;
+                    bittorio[row][col].changeColor();
+                    bittorio[row][col].changedState = 0;
+                }
+            }
+            //also sets the value of the corresponding decimal number
+            document.getElementById('configNum').value  = findInitConfigVal(bittorio, colLength, now);
+        }
+
+
         function randomInit (bittorio, colLength, now){
             //reset();
             var row = now, col=0;
@@ -199,6 +220,7 @@ define(
         exports.updateChange = updateChange;
         exports.mouseBroadcast = mouseBroadcast;
         exports.mute = mute;
+        exports.setNthBit = setNthBit;
         exports.unmute = unmute;
         exports.setGain = setGain;
         exports.playAllSounds = playAllSounds;
