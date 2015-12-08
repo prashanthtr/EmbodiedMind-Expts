@@ -10,6 +10,8 @@ define(
             bittorio[row].map( function (el,ind,arr){
 
                 var wrapping = document.getElementById('wrapCells').value;
+                var wrapCtrl = parseInt(document.getElementById('wrapSetting').value);
+
                 var cur = el.state;
                 if( el.userChange == 1){
                     // state change
@@ -22,30 +24,51 @@ define(
                         var prevCell =  bittorio[row-1];
                         var prev =-1, next=-1;
 
-                        if( ind == 0){
+                        if( ind == 0 || ind == arr.length -1){
 
-                            cur = prevCell[ind].state;
-                            next = prevCell[ind+1].state;
-                            prev = 1; //or 1, not sure
+                            if(wrapCtrl == 0){
+                                //no computation
+                                el.state = prevCell[ind].state;
+                                el.changeColor();
+                            }
+                            //clamp 0
+                            else if(wrapCtrl == 1){
+                                //compute with clamp 0
+                                if(ind == 0){
+                                    cur = prevCell[ind].state;
+                                    next = prevCell[ind+1].state;
+                                    prev = 0; //or 1, not sure
 
-                            //updating with prev state is 0
-                            el.state = el.updateState(prev,cur,next);
-                            //el.state = prevCell[ind].state;
-                            el.changeColor();
-                        }
-                        else if(ind == arr.length -1 ){
+                                    el.state = el.updateState(prev,cur,next);                               el.changeColor();
+                                }
+                                else if(ind == arr.length -1 ){
 
-                            cur = prevCell[ind].state;
-                            prev = prevCell[ind-1].state;
-                            next = 1; //or 1, its hard to say
+                                    cur = prevCell[ind].state;
+                                    prev = prevCell[ind-1].state;
+                                    next = 0;
+                                    el.state = el.updateState(prev,cur,next);
+                                    el.changeColor();
+                                }
+                            }
+                            //clamp 1
+                            else if(wrapCtrl == 2){
+                                if(ind == 0){
+                                    cur = prevCell[ind].state;
+                                    next = prevCell[ind+1].state;
+                                    prev = 1;
+                                    el.state = el.updateState(prev,cur,next);
+                                    el.changeColor();
+                                }
+                                else if(ind == arr.length -1 ){
 
-                            el.state = el.updateState(prev,cur,next);
-                            //el.state = prevCell[ind].state;
-                            el.changeColor();
+                                    cur = prevCell[ind].state;
+                                    prev = prevCell[ind-1].state;
+                                    next = 1;
+                                    el.state = el.updateState(prev,cur,next);
+                                    el.changeColor();
+                                }
 
-                            // cur = prevCell[ind].state;
-                            // prev = prevCell[ind-1].state;
-                            // next = 0; //or 1, its hard to say
+                            }
 
                         }
                         else{

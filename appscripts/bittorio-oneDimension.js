@@ -174,6 +174,11 @@ require(
 
         };
 
+        document.getElementById('wrapSetting').onchange = function(){
+            rowChange(now);
+        };
+
+
         document.getElementById('soundToggle').onclick = function(){
             if( this.value == "ON" ){
                 this.value = "OFF";
