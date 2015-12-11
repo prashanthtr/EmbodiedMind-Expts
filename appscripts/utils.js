@@ -2,6 +2,8 @@ define(
     [],
     function(){
 
+        var initState = [];
+
         // initializes the first row of bittorio
         function init ( bittorio, colLength,now){
 
@@ -12,6 +14,29 @@ define(
                 bittorio[row][col].changeColor();
                 bittorio[row][col].changedState = 0;
             }
+        }
+
+        //stores the initial state in array representation
+        // easier to store the init states for 80 columns
+        // and replicate Varela's results
+        function storeInitState (bittorio, colLength,now){
+            for(var col=0; col< colLength; col++){
+                initState.push(bittorio[now][col].state);
+            }
+        }
+
+        //restores the stored initial state to bittorio now
+        function restoreInitState (bittorio, colLength,now){
+            for(var col=0; col< colLength; col++){
+                bittorio[now][col].state = initState[col];
+                bittorio[now][col].userChange = 0;
+                bittorio[now][col].changeColor();
+            }
+        }
+
+        //clears the stored initial state in array representation
+        function clearInitState (){
+            initState = [];
         }
 
         // CA states to number
@@ -224,6 +249,9 @@ define(
         exports.unmute = unmute;
         exports.setGain = setGain;
         exports.playAllSounds = playAllSounds;
+        exports.storeInitState = storeInitState;
+        exports.restoreInitState = restoreInitState
+        exports.clearInitState = clearInitState;
         return exports;
 
     });

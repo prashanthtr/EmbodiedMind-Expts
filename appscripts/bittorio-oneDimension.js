@@ -150,10 +150,12 @@ require(
             }
             else{
                 var changeBit = parseInt(ip);
+                //utils.storeInitState(bittorio, colLength,now);
                 utils.setNthBit(bittorio, now, colLength, changeBit);
                 rowChange(now);
             }
         }
+
 
         document.getElementById('gridRow').onchange = function(){
             console.log("original now is" + "row" + rowLength + "now" + now);
@@ -174,6 +176,7 @@ require(
 
         document.getElementById('randomConfig').onclick = function(){
 
+            //utils.storeInitState(bittorio, colLength,now);
             utils.randomInit(bittorio, colLength,now);
             rowChange(now);
             initNum = document.getElementById('configNum').value;
@@ -212,6 +215,20 @@ require(
                 utils.unmute(bittorio, rowLength, colLength);
             }
         };
+
+        document.getElementById('clearConfig').onclick = function(){
+            utils.clearInitState(bittorio, colLength,now);
+        }
+
+        document.getElementById('restoreConfig').onclick = function(){
+            utils.restoreInitState(bittorio, colLength,now);
+        }
+
+
+        document.getElementById('storeConfig').onclick = function(){
+            utils.storeInitState(bittorio, colLength,now);
+        }
+
 
         // sets the configuration given a number
         document.getElementById('configFix').onclick = function (){
@@ -267,6 +284,8 @@ require(
         document.getElementById('start').addEventListener("click", function(){
             //console.log("here after reset");
             document.getElementById('configNum').value  = utils.findInitConfigVal(bittorio, colLength, now);
+            //utils.storeInitState(bittorio, colLength,now);
+
             //initNum = parseInt(document.getElementById('configNum').value);
             rowChange(now);
             if(run == null){
