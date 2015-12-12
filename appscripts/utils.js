@@ -23,6 +23,7 @@ define(
             for(var col=0; col< colLength; col++){
                 initState.push(bittorio[now][col].state);
             }
+            document.getElementById('initConfig').value = initState.join("");
         }
 
         //restores the stored initial state to bittorio now
