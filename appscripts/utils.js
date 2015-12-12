@@ -28,8 +28,10 @@ define(
 
         //restores the stored initial state to bittorio now
         function restoreInitState (bittorio, colLength,now){
+
+            var oldState = document.getElementById('initConfig').value.split("");
             for(var col=0; col< colLength; col++){
-                bittorio[now][col].state = initState[col];
+                bittorio[now][col].state = oldState[col];
                 bittorio[now][col].userChange = 0;
                 bittorio[now][col].changeColor();
             }
