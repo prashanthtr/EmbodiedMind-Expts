@@ -139,6 +139,28 @@ define(
             stopAllSounds(bittorio[now]);
         }
 
+        //toggles only a given state of row and column
+        function toggleState (bittorio, row, col){
+
+            if( bittorio[row][col].state == 2){
+                console.log("grey to white");
+                bittorio[row][col].state = 0;
+                bittorio[row][col].changeColor();
+            }
+            else if(bittorio[row][col].state == 0){
+                console.log("white to black");
+                bittorio[row][col].state = 1;
+                bittorio[row][col].changeColor();
+            }
+            else{
+                console.log("black to white");
+                bittorio[row][col].state = 0;
+                bittorio[row][col].changeColor();
+            }
+            bittorio[row][col].userChange = 1;
+            bittorio[row][col].changedState = 1;
+        }
+
         function clear (bittorio, colLength, now){
 
             row = now;
@@ -255,6 +277,7 @@ define(
         exports.storeInitState = storeInitState;
         exports.restoreInitState = restoreInitState
         exports.clearInitState = clearInitState;
+        exports.toggleState = toggleState;
         return exports;
 
     });
