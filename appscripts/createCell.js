@@ -115,11 +115,26 @@ define(
                 this.changeColor();
             }
 
-            //consider adding these events later
+            // //consider adding these events later
             // obj.mouseup(function(){
             //     this.mouseDownState.value = 0;
             // });
 
+            // obj.hover(function(){
+
+            //     if( this.mouseDownState.value == 1){
+            //         this.updateRow.value = this.row;
+            //         this.userChange = 1;
+            //         this.mouseDownState.value = 1;
+            //         console.log("first mousedown");
+            //         //past states can have black or white values only
+
+            //         //if(obj.changedState == 1 || this.row < this.timer){
+            //         this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
+            //         this.changeColor();
+
+            //     }
+            // });
 
             // //toggle state
             // obj.hover(function(){

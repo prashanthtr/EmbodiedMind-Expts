@@ -12,7 +12,7 @@ define(
 
             var pentatonic = pentaTonicFactory();
             pentatonic.setParam("play", 0);    //or// pentatonic.setParamNorm("play", 0.000);
-            //pentatonic.setParam("Note Number", notenum);    //or// pentatonic.setParamNorm("Note Number", 0.469);
+            pentatonic.setParam("Note Number", notenum);    //or// pentatonic.setParamNorm("Note Number", 0.469);
             pentatonic.setParam("Modulation Index", 75);    //or// pentatonic.setParamNorm("Modulation Index", 0.750);
             pentatonic.setParam("Gain", 0);    //or// pentatonic.setParamNorm("Gain", 0.250);
             pentatonic.setParam("Attack Time", 0.005);    //or// pentatonic.setParamNorm("Attack Time", 0.220);

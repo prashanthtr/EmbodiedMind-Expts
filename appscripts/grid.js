@@ -30,6 +30,31 @@ define(
             // //2d grid
             var matrix2d = [];
 
+
+            //arbitrary
+            function note (noteNum){
+                switch(noteNum){
+
+                case 0: return "G"; break;
+                case 1: return "A"; break;
+                case 2: return "C"; break;
+                case 3: return "D"; break;
+                case 4: return "E"; break;
+                case 5: return "G"; break;
+                case 6: return "A"; break;
+                case 7: return "C"; break;
+                case 8: return "D"; break;
+                case 9: return "E"; break;
+                case 10: return "G"; break;
+                case 11: return "A"; break;
+                case 12: return "C"; break;
+                case 13: return "D"; break;
+                case 14: return "E"; break;
+                default: return "C"
+
+                }
+            }
+
             //creates a cell in the 2D grid as a rapheal object
 
             //simply populate the matrix2d with the objects
@@ -38,6 +63,9 @@ define(
                 matrix2d[row] = [];
                 for(col=0; col< colLength; col++){
                     matrix2d[row][col] = new createCell(paper.rect(col*xLen,row*yLen,xLen,yLen),col,row,size);
+                    if( row == Math.floor(rowLength/2) ){
+                        paper.text(col*xLen+xLen/2,row*yLen+yLen/2, note(col)).attr({"fill": "red"});
+                    }
                 }
             }
             return matrix2d;
