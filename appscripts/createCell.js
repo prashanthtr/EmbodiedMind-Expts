@@ -29,7 +29,6 @@ define(
             obj.tone = pentaTonicFactory(x);
 
             obj.release = function(){
-
                 obj.tone.release();
             }
 
@@ -53,13 +52,14 @@ define(
             //object events, declared
             obj.changeColor = function(){
 
-                // if (this.userChange == 1 && this.state == 0){
-                //     this.attr({"fill": "#ffcccc"});
-                // }
-                // else if(this.userChange == 1 && this.state == 1){
-                //     this.attr({"fill": "#b30000"});
-                // }
-                if(this.state == 2){
+                //toggled states
+                if (this.userChange == 1 && this.state == 0){
+                    this.attr({"fill": "#ffdddd"});
+                }
+                else if(this.userChange == 1 && this.state == 1){
+                    this.attr({"fill": "#dd0000"});
+                }
+                else if(this.state == 2){
                     this.colStr = "grey";
                     this.attr({"fill": "grey"});
                 }

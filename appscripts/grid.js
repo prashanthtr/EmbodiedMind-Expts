@@ -35,21 +35,21 @@ define(
             function note (noteNum){
                 switch(noteNum){
 
-                case 0: return "G"; break;
-                case 1: return "A"; break;
-                case 2: return "C"; break;
-                case 3: return "D"; break;
+                case 0: return "C"; break;
+                case 1: return "C#"; break;
+                case 2: return "D"; break;
+                case 3: return "D#"; break;
                 case 4: return "E"; break;
-                case 5: return "G"; break;
-                case 6: return "A"; break;
-                case 7: return "C"; break;
-                case 8: return "D"; break;
-                case 9: return "E"; break;
-                case 10: return "G"; break;
-                case 11: return "A"; break;
-                case 12: return "C"; break;
-                case 13: return "D"; break;
-                case 14: return "E"; break;
+                case 5: return "F"; break;
+                case 6: return "F#"; break;
+                case 7: return "G"; break;
+                case 8: return "G#"; break;
+                case 9: return "A"; break;
+                case 10: return "A#"; break;
+                case 11: return "B"; break;
+                case 12: return "B#"; break;
+                case 13: return "C^"; break;
+                case 14: return "C#^"; break;
                 default: return "C"
 
                 }

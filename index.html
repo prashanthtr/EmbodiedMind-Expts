@@ -66,22 +66,15 @@
           Columns <input type="text" id="gridCol" value="15">
           <br>
 
-          Turn sound <input type="button" id="soundToggle" value="OFF">  </input> <br>
-          Gain <input type="text" id="gain" value="0.25">  </input>
-          <br>
-          <!-- Live interaction <input type="button" id="live" value="NO">   </input> -->
+          Wrap <input type="button" id="wrapCells" value="NO">
+          Ctrl <input type="text" id="wrapSetting" value="0" style = "width:20px"> <br>
 
-          <b> CA state menu </b> <br>
+          <b> Initial configuration </b> <br>
 
           <input type="button" id="storeConfig" value="store">  </input>
           <input type="button" id="clearConfig" value="clear">  </input>
           <input type="button" id="restoreConfig" value="restore">  </input> <br>
           <input type="text" id="initConfig" value="">  </input> <br>
-
-          <b> Manipulate states </b> <br>
-          <input type="button" id="toggle" value="Toggle">  </input>
-          Row <input type="text" id="r" value="31" size="2">  </input>
-          Col <input type="text" id="c" value="39" size="2">  </input>
 
           <input type="button" id="randomConfig" value="randomize">  </input> <br>
 
@@ -89,10 +82,13 @@
           Set nth bit <input type="text" id="inputBit" value="0" size="6">  </input>
           <br>
 
-          <b> CA rules </b> <br>
+          <b> Perturbations </b> <br>
+          <input type="button" id="toggle" value="Toggle">  </input>
+          Row <input type="text" id="r" value="31" size="2">  </input>
+          Col <input type="text" id="c" value="39" size="2">  </input>
+          <br>
 
-          Wrap <input type="button" id="wrapCells" value="NO">
-          Ctrl <input type="text" id="wrapSetting" value="0" style = "width:20px"> <br>
+          <b> CA rules </b> <br>
 
           CA Rule Number (0-255) <input type="text" id="carule" value="0"> <br>
           CA Rule Binary <input type="text" id="carulebinary" value="00000000"> <br> <br>
@@ -103,9 +99,25 @@
             <option value="None"> ---- </option>
             <option value="oddSequence"> Odd sequence recognizer(Rule 132) </option>
             <option value="doublePerturb"> Double perturbations recognizer(Rule 133) </option>
+            <option value="Rule204"> Imitation </option>
+            <option value="Rule160"> Varela Rule 00010001 </option>
+            <option value="Rule73"> Varela Rule 01101000 </option>
+            <option value="Rule146"> Varela Rule 000010110 </option>
+            <option value="Rule164"> Varela Rule 10010001 </option>
+            <option value="Rule123"> Varela Rule 01101111 </option>
+            <option value="Rule150"> Varela Rule 10010110 </option>
           </select>
           <!-- Bond disintegration factor <input type="text" id="disintegration" value="0.2">  </input> -->
           <!-- Bond formation factor <input type="text" id="formation" value="0.6">  </input> -->
+
+          <b> Sound controls </b> <br>
+
+          Turn sound <input type="button" id="soundToggle" value="OFF">  </input> <br>
+          Gain <input type="text" id="gain" value="0.25">  </input>
+          <br>
+          <!-- Live interaction <input type="button" id="live" value="NO">   </input> -->
+
+
 
         </aside>
 

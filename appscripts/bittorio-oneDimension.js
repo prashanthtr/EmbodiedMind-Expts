@@ -271,12 +271,12 @@ require(
 
         });
 
-        document.getElementById('toggle').addEventListener("click", function(){
+        document.getElementById('toggle').onclick = function(){
             var row = parseInt(document.getElementById('r').value);
             var col = parseInt(document.getElementById('c').value);
             utils.toggleState(bittorio, row, col);
             rowChange(now);
-        });
+        };
 
         document.getElementById('gain').onchange = function(){
             var newGain = parseFloat(document.getElementById('gain').value);
