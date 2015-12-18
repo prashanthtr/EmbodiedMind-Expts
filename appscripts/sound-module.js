@@ -4,6 +4,7 @@
 // });
 
 // To use the sound on a web page with its current parameters (and without the slider box):
+
 require.config({
     paths: {"jsaSound": "http://animatedsoundworks.com:8001"}
 });

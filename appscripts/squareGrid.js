@@ -88,8 +88,16 @@ define(
                 };
 
                 cell.onmouseover = function(){
-
+                    if(this.mouseDownState.value == 1){
+                        this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
+                        this.changeColor();
+                    }
                 }
+
+                cell.onmouseup = function(){
+                    this.mouseDownState.value = 0;
+                }
+
 
                 //function to update color of the cell based on state
                 cell.changeColor = function(){

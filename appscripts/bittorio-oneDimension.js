@@ -6,7 +6,7 @@ require(
 
         //bittorio display on which display happens
         var bittorio = [];
-        var timer = 5;
+        var timer = 0;
 
         // These are parameters to pass to the grid
         //Initialization for anticipatory score interface
@@ -67,7 +67,6 @@ require(
         bittorio = squareGrid("mysvg", rowLength,colLength);
         drawNowLine(rowLength, colLength);
 
-
         function rowChange (rc){
             console.log(caupdate);
             var row = rc;
@@ -77,6 +76,7 @@ require(
             document.getElementById('configNum').value  = utils.findInitConfigVal(bittorio, colLength, now);
         }
 
+        //arbitrary decision
         centerDiv.onclick = function (e){
             console.log("reset because of this function");
             rowChange(updateRow.value);
@@ -102,14 +102,10 @@ require(
             for(row=0; row < rowLength-1; row++){
                 for(col=0; col < colLength; col++){
 
-                    if( col== 0 || col== colLength-1){
-                        //structurally coupled with cell in nextRow
-                    }
-                    else{
-                        bittorio[row][col] = structuralCoupling(
-                            bittorio[row][col],
-                            [bittorio[row+1][col]]);
-                    }
+                    bittorio[row][col] = structuralCoupling(
+                        bittorio[row][col],
+                        [bittorio[row+1][col]]);
+
                     bittorio[row][col].changeColor();
                 }
             }
@@ -239,6 +235,7 @@ require(
 
         document.getElementById('restoreConfig').onclick = function(){
             utils.restoreInitState(bittorio, colLength,now);
+            rowChange(now);
         }
 
 
