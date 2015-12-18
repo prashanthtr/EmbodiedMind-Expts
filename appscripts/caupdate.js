@@ -39,14 +39,15 @@ define(
                                     next = prevCell[ind+1].state;
                                     prev = 0; //or 1, not sure
 
-                                    el.state = el.updateState(prev,cur,next);                               el.changeColor();
+                                    el.state = el.updateState([prev,cur,next]);
+                                    el.changeColor();
                                 }
                                 else if(ind == arr.length -1 ){
 
                                     cur = prevCell[ind].state;
                                     prev = prevCell[ind-1].state;
                                     next = 0;
-                                    el.state = el.updateState(prev,cur,next);
+                                    el.state = el.updateState([prev,cur,next]);
                                     el.changeColor();
                                 }
                             }
@@ -56,7 +57,7 @@ define(
                                     cur = prevCell[ind].state;
                                     next = prevCell[ind+1].state;
                                     prev = 1;
-                                    el.state = el.updateState(prev,cur,next);
+                                    el.state = el.updateState([prev,cur,next]);
                                     el.changeColor();
                                 }
                                 else if(ind == arr.length -1 ){
@@ -64,7 +65,7 @@ define(
                                     cur = prevCell[ind].state;
                                     prev = prevCell[ind-1].state;
                                     next = 1;
-                                    el.state = el.updateState(prev,cur,next);
+                                    el.state = el.updateState([prev,cur,next]);
                                     el.changeColor();
                                 }
 
@@ -77,25 +78,26 @@ define(
                             //only get the previous value if cur value is not a perturbation
 
                             cur = prevCell[ind].state;
-                            el.state = el.updateState(prev,cur,next);
+                            el.state = el.updateState([prev,cur,next]);
                             el.changeColor();
                         }
                     }
                     else{
                         //wrapping around
                         var prevCell =  bittorio[row-1];
+
                         //three values
                         var prev =-1, next=-1, cur = el.state;
                         if( ind - 1 < 0){
                             prev = prevCell[arr.length-1].state; //turn around
                         }
                         else {
-                            prev = prevCell[ Math.abs(ind-1)%arr.length].state; //turn around
+                            prev = prevCell[ (arr.length + ind-1)%arr.length].state; //wrongly turned around
                         }
-                        next = prevCell[ Math.abs(ind+1)%arr.length].state;
+                        next = prevCell[ (ind+1)%arr.length].state;
                         //force the CA rule to compute
                         cur = prevCell[ind].state;
-                        el.state = el.updateState(prev,cur,next);
+                        el.state = el.updateState([prev,cur,next]);
                         el.changeColor();
                     }
                 }

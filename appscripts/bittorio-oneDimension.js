@@ -1,6 +1,6 @@
 require(
-    ["grid","utils","userGuide","loadConfig","caupdate"],
-    function (grid,utils,userGuide,loadConfig, caupdate) {
+    ["squareGrid","utils","userGuide","loadConfig","caupdate","structuralCoupling"],
+    function (squareGrid,utils,userGuide,loadConfig, caupdate, structuralCoupling) {
 
         // --------------- Inits ------------------------------
 
@@ -24,26 +24,40 @@ require(
         // Create the Raphael paper that we will use for drawing and creating graphical objects
 
         var centerDiv = document.getElementById("centerDiv");
-        var paper = new Raphael(centerDiv);
+        //var paper = new Raphael(centerDiv);
+
+        //data structure for mouseState that is synchronnized across
+        //cells
         var mouseDownState = {value: 0};
+
+        //data structure for current row clicked, that is synchronnized
+        //across cells
         var updateRow = { value: now};
 
-        paper.raphael.mouseup( function(){
-            //console.log("reset because of this function");
-            mouseDownState.value = 0;
-        });
+        // paper.raphael.mouseup( function(){
+        //     //console.log("reset because of this function");
+        //     mouseDownState.value = 0;
+        // });
 
-        function drawNow (paper, rowLength, colLength){
-            var yLen = (paper.height/rowLength) * 0.985;
-            var xLen = (paper.width/colLength) * 0.99;
+        function drawNow (rowLength, colLength){
 
-            paper.path("M0," +  now*yLen + "L" + (colLength*xLen) + "," + now*yLen).attr({
-                stroke: "red"
-            });
+            var svg = document.getElementById('mysvg');
+            var rect = svg.getBoundingClientRect();
 
-            paper.path("M0," + (now+1)*yLen + "L" + (colLength*xLen) + "," + (now+1)*yLen).attr({
-                stroke: "red"
-            });
+            var yLen = (rect.height/rowLength) ;
+            var xLen = (rect.width/colLength);
+
+            var lineTop = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            var lineBottom = document.createElementNS("http://www.w3.org/2000/svg", "path");
+
+            lineTop.setAttribute("d", "M0 " + now*yLen + " L"+ (colLength*xLen) + " " + now*yLen + " Z");
+            lineTop.setAttribute("stroke", "red");
+
+            lineBottom.setAttribute("d", "M0 " + (now+1)*yLen + " L"+ (colLength*xLen) + " " + (now+1)*yLen + " Z");
+            lineBottom.setAttribute("stroke", "red");
+
+            svg.appendChild(lineTop);
+            svg.appendChild(lineBottom);
         }
 
         //initialization for the live update
@@ -51,8 +65,8 @@ require(
 
         // top most row is the initialization row
         // this has to be initialized and cannot changed afterwards
-        bittorio = grid(paper, rowLength,colLength,objSize);
-        drawNow(paper, rowLength, colLength);
+        bittorio = squareGrid("mysvg", rowLength,colLength);
+        drawNow(rowLength, colLength);
 
 
         function rowChange (rc){
@@ -66,7 +80,6 @@ require(
 
         centerDiv.onclick = function (e){
             console.log("reset because of this function");
-            //console.log("x + y" + e.x + " " + e.y);
             rowChange(updateRow.value);
         };
 
@@ -90,13 +103,14 @@ require(
             for(row=0; row < rowLength-1; row++){
                 for(col=0; col < colLength; col++){
 
-                    //copying
-                    //change color by changing state
-                    bittorio[row][col].state = bittorio[row+1][col].state;
-                    bittorio[row][col].userChange = bittorio[row+1][col].userChange;
-                    //transfered
-                    bittorio[row+1][col].userChange = 0;
-
+                    if( col== 0 || col== colLength-1){
+                        //structurally coupled with cell in nextRow
+                    }
+                    else{
+                        bittorio[row][col] = structuralCoupling(
+                            bittorio[row][col],
+                            [bittorio[row+1][col]]);
+                    }
                     bittorio[row][col].changeColor();
                 }
             }
@@ -108,11 +122,12 @@ require(
                 bittorio[rowLength -1][col].state = 2;
                 bittorio[rowLength -1][col].userChange = 0;
             }
+
             caupdate.changeFuture(bittorio, rowLength - 1);
 
             utils.playAllSounds(bittorio[now]);
             timer++;
-            utils.updateTimers(bittorio, rowLength, colLength,timer);
+            //utils.updateTimers(bittorio, rowLength, colLength,timer);
         }
 
 
@@ -134,12 +149,14 @@ require(
 
         document.getElementById('gridCol').onchange = function(){
             colLength = parseInt(document.getElementById('gridCol').value);
-            //console.log("paper width before is" + paper.width);
-            paper.clear();
+            var svg = document.getElementById('mysvg');
+            while (svg.firstChild) {svg.removeChild(svg.firstChild);}
+
             //console.log("paper width after is" + paper.width);
-            bittorio = grid(paper, rowLength,colLength,objSize);
+            //bittorio = grid(id, paper, rowLength,colLength,objSize);
+            bittorio = squareGrid("mysvg", rowLength,colLength);
             utils.init(bittorio,colLength,now);
-            drawNow(paper, rowLength, colLength);
+            drawNow(rowLength, colLength);
         }
 
         document.getElementById('inputBit').onchange = function(){
@@ -160,17 +177,19 @@ require(
         document.getElementById('gridRow').onchange = function(){
             console.log("original now is" + "row" + rowLength + "now" + now);
             rowLength = parseInt(document.getElementById('gridRow').value);
-            //console.log("paper height before is" + paper.height);
-            paper.clear();
+
+            var svg = document.getElementById('mysvg');
+            while (svg.firstChild) {svg.removeChild(svg.firstChild);}
+
             //console.log("paper heigth after is" + paper.height);
             now = Math.floor(rowLength / 2);
             console.log("original now is" + "row" + rowLength + "now" + now);
-            bittorio = grid(paper, rowLength,colLength,objSize);
+            bittorio = squareGrid("mysvg", rowLength,colLength);
             updateRow.value = now;
             utils.updateChange (bittorio, rowLength, colLength, updateRow, mouseDownState);
             utils.reset(bittorio,rowLength, colLength,now)
             utils.init(bittorio,colLength,now);
-            drawNow(paper, rowLength, colLength);
+            drawNow(rowLength, colLength);
         }
 
 

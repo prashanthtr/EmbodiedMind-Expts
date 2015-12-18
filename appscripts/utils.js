@@ -195,13 +195,13 @@ define(
         }
 
 
-        function updateTimers (bittorio, rowLength, colLength,timer){
-            for(row = 0; row < rowLength; row++){
-                for(col=0; col< colLength; col++){
-                    bittorio[row][col].updateTimer(timer);
-                }
-            }
-        }
+        // function updateTimers (bittorio, rowLength, colLength,timer){
+        //     for(row = 0; row < rowLength; row++){
+        //         for(col=0; col< colLength; col++){
+        //             bittorio[row][col].updateTimer(timer);
+        //         }
+        //     }
+        // }
 
         //updates changes on mouseclick
         function updateChange (bittorio, rowLength, colLength, upRow, mouseDown){
@@ -266,7 +266,7 @@ define(
         exports.setConfig = setConfig;
         exports.findInitConfigVal = findInitConfigVal;
         exports.stopAllSounds = stopAllSounds;
-        exports.updateTimers = updateTimers;
+        //exports.updateTimers = updateTimers;
         exports.updateChange = updateChange;
         exports.mouseBroadcast = mouseBroadcast;
         exports.mute = mute;

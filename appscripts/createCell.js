@@ -4,7 +4,7 @@ define(
 
         //.  x,y, - positions, side - of the square x,y, -
         //positions, side - of the square
-        return function (paperObj, x,y,s){
+        return function (paperObj, x,y){
 
             var obj = paperObj;
             obj.attr({"stroke-opacity": 0.2, "stroke-width": 1});
@@ -20,12 +20,8 @@ define(
             obj.ind = x;
             obj.row = y;
 
-            obj.timer = 0;
-
             obj.mouseDownState = {value: 0};
-
             obj.updateRow = { value: -1};
-
             obj.tone = pentaTonicFactory(x);
 
             obj.release = function(){
@@ -111,30 +107,8 @@ define(
 
             //updates the timer and does different actions on the timer
             obj.updateTimer = function(nowTimer){
-                this.timer = nowTimer;
                 this.changeColor();
             }
-
-            // //consider adding these events later
-            // obj.mouseup(function(){
-            //     this.mouseDownState.value = 0;
-            // });
-
-            // obj.hover(function(){
-
-            //     if( this.mouseDownState.value == 1){
-            //         this.updateRow.value = this.row;
-            //         this.userChange = 1;
-            //         this.mouseDownState.value = 1;
-            //         console.log("first mousedown");
-            //         //past states can have black or white values only
-
-            //         //if(obj.changedState == 1 || this.row < this.timer){
-            //         this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
-            //         this.changeColor();
-
-            //     }
-            // });
 
             // //toggle state
             // obj.hover(function(){

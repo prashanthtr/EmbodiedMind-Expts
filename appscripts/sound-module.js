@@ -20,7 +20,7 @@ define(
 
             basicOsc.setParam("Frequency", 220*Math.pow(2, notenum/12));    //or// basicOsc.setParamNorm("Frequency", 0.199);
             basicOsc.setParam("Type", 1);    //or// basicOsc.setParamNorm("Type", 0.250);
-            basicOsc.setParam("Gain", 0.2);    //or// basicOsc.setParamNorm("Gain", 0.200);
+            basicOsc.setParam("Gain", 0);    //or// basicOsc.setParamNorm("Gain", 0.200);
             basicOsc.setParam("Attack Time", 0.05);    //or// basicOsc.setParamNorm("Attack Time", 0.010);
             basicOsc.setParam("Release Time", 0.05);    //or// basicOsc.setParamNorm("Release Time", 0.130);
             return basicOsc;
