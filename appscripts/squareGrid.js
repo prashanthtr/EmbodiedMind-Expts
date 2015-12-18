@@ -73,19 +73,23 @@ define(
                     }
                 }
 
-                // cell.on("mousedown", function(){
+                cell.onmousedown = function(){
 
-                //     console.log("this row is" + this.row + "this col is" + this.ind);
-                //     this.updateRow.value = this.row;
-                //     this.userChange = 1;
-                //     this.mouseDownState.value = 1;
-                //     console.log("first mousedown");
-                //     //past states can have black or white values only
+                    console.log("this row is" + this.row + "this col is" + this.ind);
+                    this.updateRow.value = this.row;
+                    this.userChange = 1;
+                    this.mouseDownState.value = 1;
+                    console.log("first mousedown");
+                    //past states can have black or white values only
 
-                //     //if(obj.changedState == 1 || this.row < this.timer){
-                //     this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
-                //     this.changeColor();
-                // });
+                    //if(obj.changedState == 1 || this.row < this.timer){
+                    this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
+                    this.changeColor();
+                };
+
+                cell.onmouseover = function(){
+
+                }
 
                 //function to update color of the cell based on state
                 cell.changeColor = function(){

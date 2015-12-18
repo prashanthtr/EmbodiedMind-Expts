@@ -11,7 +11,6 @@ require(
         // These are parameters to pass to the grid
         //Initialization for anticipatory score interface
 
-
         var id = "centerDiv",
             rowLength = 15,
             colLength = 15,
@@ -39,7 +38,7 @@ require(
         //     mouseDownState.value = 0;
         // });
 
-        function drawNow (rowLength, colLength){
+        function drawNowLine (rowLength, colLength){
 
             var svg = document.getElementById('mysvg');
             var rect = svg.getBoundingClientRect();
@@ -66,7 +65,7 @@ require(
         // top most row is the initialization row
         // this has to be initialized and cannot changed afterwards
         bittorio = squareGrid("mysvg", rowLength,colLength);
-        drawNow(rowLength, colLength);
+        drawNowLine(rowLength, colLength);
 
 
         function rowChange (rc){
@@ -156,7 +155,7 @@ require(
             //bittorio = grid(id, paper, rowLength,colLength,objSize);
             bittorio = squareGrid("mysvg", rowLength,colLength);
             utils.init(bittorio,colLength,now);
-            drawNow(rowLength, colLength);
+            drawNowLine(rowLength, colLength);
         }
 
         document.getElementById('inputBit').onchange = function(){
@@ -189,9 +188,8 @@ require(
             utils.updateChange (bittorio, rowLength, colLength, updateRow, mouseDownState);
             utils.reset(bittorio,rowLength, colLength,now)
             utils.init(bittorio,colLength,now);
-            drawNow(rowLength, colLength);
+            drawNowLine(rowLength, colLength);
         }
-
 
         document.getElementById('randomConfig').onclick = function(){
 
