@@ -38,6 +38,10 @@ require(
         //     mouseDownState.value = 0;
         // });
 
+
+        // --------------------- FUNCTIONS ----------------
+
+        // Draws the now line on startup and when canvas is redrawn
         function drawNowLine (rowLength, colLength){
 
             var svg = document.getElementById('mysvg');
@@ -67,6 +71,8 @@ require(
         bittorio = squareGrid("mysvg", rowLength,colLength);
         drawNowLine(rowLength, colLength);
 
+
+        //function that updates the rows after on screen each action
         function rowChange (rc){
             console.log(caupdate);
             var row = rc;
@@ -150,6 +156,9 @@ require(
             //console.log("paper width after is" + paper.width);
             //bittorio = grid(id, paper, rowLength,colLength,objSize);
             bittorio = squareGrid("mysvg", rowLength,colLength);
+
+            utils.updateChange (bittorio, rowLength, colLength, updateRow, mouseDownState);
+            utils.reset(bittorio,rowLength, colLength,now)
             utils.init(bittorio,colLength,now);
             drawNowLine(rowLength, colLength);
         }

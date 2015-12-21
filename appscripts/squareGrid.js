@@ -77,31 +77,40 @@ define(
 
                     console.log("this row is" + this.row + "this col is" + this.ind);
                     this.updateRow.value = this.row;
-                    this.userChange = 1;
+                    //this.userChange = 1;
                     this.mouseDownState.value = 1;
                     console.log("first mousedown");
                     //past states can have black or white values only
 
                     //if(obj.changedState == 1 || this.row < this.timer){
                     this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
+                    //second click means that cell goes back to its original state
+                    this.userChange = (this.userChange + 1)%2;
                     this.changeColor();
                 };
 
-                cell.onmouseover = function(){
-                    if(this.mouseDownState.value == 1){
-                        this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
-                        this.changeColor();
-                    }
-                }
+                // cell.onmouseover = function(){
+                //     if(this.mouseDownState.value == 1){
+                //         this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
+                //         this.changeColor();
+                //     }
+                // }
 
-                cell.onmouseup = function(){
-                    this.mouseDownState.value = 0;
-                }
+                // cell.onmouseup = function(){
+                //     this.mouseDownState.value = 0;
+                // }
 
 
                 //function to update color of the cell based on state
                 cell.changeColor = function(){
-                    if(this.state == 2){
+                    //also includes user change perturbation color
+                    if (this.userChange == 1 && this.state == 0){
+                        this.setAttribute("fill", "yellow");
+                    }
+                    else if(this.userChange == 1 && this.state == 1){
+                        this.setAttribute("fill", "#dd0000");
+                    }
+                    else if(this.state == 2){
                         this.setAttribute("fill", "grey");
                     }
                     else if(this.state == 1){

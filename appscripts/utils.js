@@ -209,7 +209,7 @@ define(
                 for(col=0; col< colLength; col++){
                     //assigning a pointer to the object
                     bittorio[row][col].updateRow = upRow;
-                    bittorio.mouseDownState = mouseDown;
+                    //bittorio.mouseDownState = mouseDown;
                 }
             }
         }
