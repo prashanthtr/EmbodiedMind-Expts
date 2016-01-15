@@ -8,9 +8,6 @@ require(
         var bittorio = [];
         var timer = 0;
 
-        // These are parameters to pass to the grid
-        //Initialization for anticipatory score interface
-
         var id = "centerDiv",
             rowLength = 15,
             colLength = 15,
@@ -18,9 +15,6 @@ require(
             now = Math.floor(rowLength/2),
             initNum = 0,
             stepCount = 0;
-
-
-        // Create the Raphael paper that we will use for drawing and creating graphical objects
 
         var centerDiv = document.getElementById("centerDiv");
         //var paper = new Raphael(centerDiv);
@@ -37,7 +31,7 @@ require(
         //     //console.log("reset because of this function");
         //     mouseDownState.value = 0;
         // });
-
+        
 
         // --------------------- FUNCTIONS ----------------
 
