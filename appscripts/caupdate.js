@@ -8,7 +8,7 @@ define(
 
             console.log("Changing future of row" + row);
             bittorio[row].map( function (el,ind,arr){
-
+                
                 var wrapping = document.getElementById('wrapCells').value;
                 var wrapCtrl = parseInt(document.getElementById('wrapSetting').value);
 

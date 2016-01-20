@@ -48,11 +48,15 @@ define(
             //object events, declared
             obj.changeColor = function(){
 
+                
                 //toggled states
-                if (this.userChange == 1 && this.state == 0){
+                var pertCol = parseInt(document.getElementById('perturbationColor').value);
+                console.log("color is" + pertCol)
+                
+                if (this.userChange == 1 && pertCol == 0){
                     this.attr({"fill": "#ffdddd"});
                 }
-                else if(this.userChange == 1 && this.state == 1){
+                else if(this.userChange == 1 && pertCol == 1){
                     this.attr({"fill": "#dd0000"});
                 }
                 else if(this.state == 2){
@@ -73,15 +77,19 @@ define(
 
             obj.mousedown(function(){
 
-                console.log("this row is" + this.row + "this col is" + this.ind);
+                //console.log("this row is" + this.row + "this col is" + this.ind);
                 this.updateRow.value = this.row;
                 this.userChange = 1;
                 this.mouseDownState.value = 1;
-                console.log("first mousedown");
+                //console.log("first mousedown");
+                var pertCol = parseInt(document.getElementById("perturbationColor").value)
                 //past states can have black or white values only
+                //console.log("perturbation is" + pertCol);
 
                 //if(obj.changedState == 1 || this.row < this.timer){
-                    this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
+                this.state = parseInt(document.getElementById("perturbationColor").value);
+                //this.state = (this.state + 1)%2; //obj = (obj.state + 1)%2;
+                //console.log("state is" + this.state)
                 this.changeColor();
 
                 //}

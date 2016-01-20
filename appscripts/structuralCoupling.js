@@ -5,7 +5,7 @@ define(
         //takes two arguments, the state of the cell and the state of
         //the change that should occur to the cell and updates the state of the cell
         return function (cell, replacingCells){
-
+ 
             function directSC(){
                 //simplest form structural coupling based on only one cell
                 cell.state = replacingCells[0].state;
@@ -15,6 +15,17 @@ define(
                 replacingCells[0].userChange = 0;
                 return cell;
             }
+
+            //more tuned with Varela's definition
+            function perturbations(){
+                //simplest form structural coupling based on only one cell
+                cell.state = parseInt(document.getElementById('perturbationColor').value);
+                cell.userChange = 1;
+
+                //transfered the perturbation
+                return cell;
+            }
+
 
             //more complex forms of structural coupling
             function additiveSC(){
@@ -29,7 +40,7 @@ define(
                 return cell;
             }
 
-            return directSC();
+            return perturbation;
         }
 
     });
