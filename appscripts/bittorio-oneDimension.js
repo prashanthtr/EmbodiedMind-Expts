@@ -46,11 +46,10 @@ require(
     
     //function that updates the rows after on screen each action
     function rowChange (rc){
-      //console.log(caupdate);
-      var row = rc;
-      for( row = rc+1; row< rowLength; row++){
-        caupdate.changeFuture(row);
+      for(var row = rc+1; row < bittorio.length; row++) {
+        caupdate.changeFuture(bittorio,row);
       }
+
     }
     
     userGuide();
@@ -84,12 +83,17 @@ require(
 
       caupdate.changeFuture(bittorio, rowLength - 1);
       
-      utils.playAllSounds(bittorio[now]);
+      //utils.playAllSounds(bittorio[now]);
       timer++;
     }
     
     /// ------------ Events on buttons ---------------------------
 
+    document.getElementById('bittorio').onclick = function(){
+      //console.log("Second")
+      rowChange(now);
+    }
+    
     document.getElementById('preset').onchange = function(){
 
       var val = document.getElementById('preset').value;
@@ -185,7 +189,7 @@ require(
         run = setInterval(simulate , parseFloat(document.getElementById("loopTime").value)); // start setInterval as "run";
       }
     },true);
-
+    
 
     document.getElementById('stop').addEventListener("click", function(){
       if(run != null){

@@ -52,18 +52,18 @@ define(
       //object events, declared
       cell.changeColor = function(){
 
-        var pertCol = utils.getVal("perturbationColor");
+        //var pertCol = utils.getVal("perturbationColor");
         //also includes user change perturbation color
-        if (this.userChange == 1 && pertCol == 0){
+        if (this.userChange == 1 && this.state == 0){
           this.setAttribute("fill", "yellow");
         }
-        else if(this.userChange == 1 && pertCol == 1){
-          this.setAttribute("fill", "#dd0000");
+        else if(this.userChange == 1 && this.state == 1){
+          this.setAttribute("fill", "red");
         }
-        else if(this.state == 2){
+        else if(this.userChange == 0 && this.state == 2){
           this.setAttribute("fill", "grey");
         }
-        else if(this.state == 1){
+        else if(this.userChange == 0 && this.state == 1){
           this.setAttribute("fill", "black");
         }
         else{
@@ -75,16 +75,22 @@ define(
 
       cell.onmousedown = function(){
 
-        //console.log("this row is" + this.row + "this col is" + this.ind);
-        this.userChange = 1;
-        this.state = utils.getVal('perturbationColor');
-        this.changeColor();
-
-        for( row = this.row+1; row<utils.getVal("gridRowLength"); row++){
-          caupdate.changeFuture(row);
+        //console.log("first")
+        //console.log("this row is" + this.row + "this col is" +
+        //this.ind);
+        if( utils.getVal("enablePerturb") == 1){
+          this.state = (this.state + 1)%2; //utils.getVal('perturbationColor');
+          this.userChange = 1;
+          this.changeColor(); 
+          
+        }
+        else if(utils.getVal("enablePerturb") == 0){
+          this.userChange = 0;
+          this.state = (this.state + 1)%2; //merely toggle
+          this.changeColor(); 
         }
         
-      };
+      }
       
       return cell;
     }

@@ -18,12 +18,12 @@ define(
 
             //more tuned with Varela's definition
             function perturbations(){
-                //simplest form structural coupling based on only one cell
-                cell.state = parseInt(document.getElementById('perturbationColor').value);
-                cell.userChange = 1;
-
-                //transfered the perturbation
-                return cell;
+              //simplest form structural coupling based on only one cell
+              //cell.state = //parseInt(document.getElementById('perturbationColor').value);
+              cell.userChange = 1;
+              
+              //transfered the perturbation
+              return cell;
             }
 
 

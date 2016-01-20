@@ -93,7 +93,8 @@ define(
           return ret;
         }
 
-        return booleanFns;
+        return booleanFns();
+        //return 1;
       }
 
     });
