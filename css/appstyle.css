@@ -4,96 +4,63 @@ html, body {  /* Select and size the outermost elements so other elements can be
 }
 
 body {
-   font: 12px Helvetica;
-   background-color: grey;
-  }
+    font: 12px Helvetica;
+    background-color: grey;
+}
 
-  #main {  /* select element with id="main" */
-   min-height: 87%;
-   max-height: 95%;
-   margin: 0px;
-   padding: 0px;
-   display:  flex;
-   flex-flow: row;
-   }
+#main {  /* select element with id="main" */
+    width: 100%;
+    height:87%;
+    margin: 0px;
+    padding: 0px;
+    display:  flex;
+    flex-flow: row;
+}
 
-  #main > article { /* select articles (if they are inside the element with id="main") */
-   margin: 4px;
-   padding: 5px;
-   border: 1px solid #cccc33;
-   border-radius: 7pt;
-   background: #dddd88;
-   flex: 3 1 50%;
-   order: 2;
-   font: 9px Helvetica;
-   }
-
-  #main > #centerDiv {
+ #main > centerDiv {
       margin: 1px;
       padding: 4px;
       border: 1px solid #8888bb;
       background: #0000FF;
-      flex: 3 1 50%;
+      flex: 4;
       order: 2;
   }
 
-  #main > nav {
-   margin: 4px;
-   padding: 5px;
-   border: 1px solid #8888bb;
-   border-radius: 7pt;
-   background: #ccccff;
-   flex: 1 6 15%;
-   order: 1;
-   font: 7pt Helvetica;
-   }
+#main > instruction {
+    margin: 4px;
+    padding: 5px;
+    border: 1px solid #8888bb;
+    border-radius: 7pt;
+    background: #ccccff;
+    flex: 2;
+    order: 3;
+    font: 7pt Helvetica;
+}
 
-  #main > aside {
-   margin: 3px;
-   padding: 7px;
-   border: 1px solid #8888bb;
-   border-radius: 5pt;
-   background: #ccccff;
-   flex: 1 6 20%;
-   order: 3;
-   font: 8pt Helvetica;
-   }
+#main > controls {
+    margin: 3px;
+    padding: 7px;
+    border: 1px solid #8888bb;
+    border-radius: 5pt;
+    background: #ccccff;
+    flex: 1;
+    order: 1;
+    font: 8pt Helvetica;
+}
 
 #player {
     width: 200px;
    }
 
-  header {  /* select all header and footer elements */
-   display: block;
-   margin: 4px;
-   padding: 5px;
-   min-height: 10%;
-   border: 1px solid #eebb55;
-   border-radius: 7pt;
-   background: #ffeebb;
-   text-align: center;
-   font: 24px Helvetica;
-   }
+header {  /* select all header and footer elements */
+    display: block;
+    margin: 4px;
+    padding: 5px;
+    min-height: 10%;
+    border: 1px solid #eebb55;
+    border-radius: 7pt;
+    background: #ffeebb;
+    text-align: center;
+    font: 24px Helvetica;
+}
 
-
-
-  /* Changes layout under these conditions : Too narrow to support three columns */
-  /* "at-rules" using the '@' sign is an "advanced" feature */
-  @media all and (max-width: 640px) {
-
-   #main, #page {
-    flex-flow: column;
-    flex-direction: column;
-   }
-
-   #main > article, #main > nav, #main > aside {
-    /* Return them to document order */
-            order: 0;
-   }
-
-   #main > nav, #main > aside, header, footer {
-    min-height: 50px;
-    max-height: 50px;
-   }
-
-};
