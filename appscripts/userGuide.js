@@ -2,14 +2,16 @@ define(
     [],
     function(){
 
-        return function (){
+      return function(){
+        //introductory text
+        document.getElementById('userGuide').innerHTML = "<p> The following text provides instructions to play along with the Cellular automata. </p>";
 
-            //introductory text
-          document.getElementById('userGuide').innerHTML  = "<p>This is an app for exploring ideas to central to enactive cognition, such as operational closure and structural coupling, by applying them to a 1D cellular automaton (CA)";
+        document.getElementById('userGuide').innerHTML += "<h2> Key mapping </h2> Use the following key mapping to the toggle the the immediate future of the now cell, on or off <ol> <li>h- C</li> <li>j- C#</li> <li>k- D</li> <li>l- D#</li> <li>\;- E</li> <li>'' - F</li> <li>Enter - F#</li> <li>a - G</li> <li>s - G#</li> <li>d - A</li> <li>f - A#</li> <li>g - B</li> </ol>";
+        
+        document.getElementById('userGuide').innerHTML += "<h2> Perturbations </h2> Red perturbations correspond to note-on action. The note is played when it reaches the now line. Yellow perturbations correspond to note-off state"; 
 
-          document.getElementById('userGuide').innerHTML  += "CA states:</p> <ol> <li>The center row is the initial configuration of the CA.</li> <li>Each subsequent row is the configuration of the CA in a subsequent time-step and each row in the previous row is the configuration of the CA at an earlier time  </li> <li> Current state has cells that are black or white, if unperturbed, and red or yellow if perturbed. Past state has white or black cells depending on the CA rules. Future states are grey, white, black, red or yellow. Grey cells are uncomputed, white or black cells are computed using CA rule projected into future, and red or yellow cells are 'perturbations' that are 'external' to the CA.</li> </ol>"
-
-          document.getElementById('userGuide').innerHTML += "<p>User actions:</p> <ol> <li>Initial configuration: user can click the cells on or off </li> <li>Rules: the user can enter a particular rule (in binary or decimal) or select certain rules from the pull-down menu. Note: the rules in the pull-down menu are created by applying boolean functions on the state of adjacent cells in an k=2,r=1 CA. These result in specific kinds of interesting structural coupling (eg, “odd sequence recognizer”)</li> <li>Perturbations: user can create perturbations by clicking cells on or off</li> <li> Structural changes: user can change the number of states that CA has and the number of neighbours that it pays attention to </li> </ol>";
-        }
+        document.getElementById('userGuide').innerHTML += "<h2> Instructions </h2> <ol> <li> Press start to run the CA </li> <li> Play a melody using the keyboard mappings specified above </li> <li> The cellular automata immediately responds to the changes in the user input through changes in the visual patterns on the screen </li> </ol> "
+        
+      }
       
-    });
+});

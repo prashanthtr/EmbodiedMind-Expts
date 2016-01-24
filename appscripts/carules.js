@@ -53,7 +53,7 @@ define(
             case "01": ret = rule[1];  break;
             case "10": ret = rule[2];  break;
             case "11": ret = rule[3];  break;
-            default: ret = -1; break;
+            default: ret = 2; break;
             }    
           }
           else if(cur == 0){
@@ -62,7 +62,7 @@ define(
             case "01": ret = rule[5];  break;
             case "10": ret = rule[6];  break;
             case "11": ret = rule[7];  break;
-            default: ret = -1; break;
+            default: ret = 2; break;
             }
           }
           

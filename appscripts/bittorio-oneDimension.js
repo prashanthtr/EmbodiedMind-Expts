@@ -42,6 +42,7 @@ require(
     // top most row is the initialization row
     // this has to be initialized and cannot changed afterwards
     bittorio = squareGrid("bittorio", rowLength,colLength);
+    //toneMatrix = squareGrid("toneMatrix", rowLength+1,colLength+1);
     drawNowLine(rowLength, colLength);
     
     //function that updates the rows after on screen each action
@@ -84,7 +85,7 @@ require(
     }
     
     /// ------------ Events on buttons ---------------------------
-
+    
     document.getElementById('bittorio').onclick = function(){
       //console.log("Second")
       rowChange(now);
@@ -162,7 +163,7 @@ require(
       }
 
     }
-
+    
     document.getElementById('gridColLength').onchange = function(){
       colLength = utils.getVal('gridColLength'); 
       var svg = document.getElementById('bittorio');

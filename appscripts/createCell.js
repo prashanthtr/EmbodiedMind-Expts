@@ -62,6 +62,9 @@ define(
         else if(this.userChange == 1 && this.state == 1){
           this.setAttribute("fill", "red");
         }
+        else if(this.userChange == 1 && this.state == 2){
+          this.setAttribute("fill", "grey");
+        }
         else if(this.userChange == 0 && this.state == 2){
           this.setAttribute("fill", "grey");
         }
@@ -81,14 +84,14 @@ define(
         //console.log("this row is" + this.row + "this col is" +
         //this.ind);
         if( utils.getVal("enablePerturb") == 1){
-          this.state = (this.state + 1)%2; //utils.getVal('perturbationColor');
+          this.state = (this.state + 1)%3; //utils.getVal('perturbationColor');
           this.userChange = 1;
           this.changeColor();
           this.play();
         }
         else if(utils.getVal("enablePerturb") == 0){
           this.userChange = 0;
-          this.state = (this.state + 1)%2; //merely toggle
+          this.state = (this.state + 1)%3; //merely toggle
           this.changeColor(); 
           this.play();
         }
