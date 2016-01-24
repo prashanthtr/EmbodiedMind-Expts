@@ -65,16 +65,14 @@ require(
       for(row=0; row < rowLength-1; row++){
         for(col=0; col < colLength; col++){
           
-          bittorio[row][col] = structuralCoupling(
-            bittorio[row][col],
-            [bittorio[row+1][col]]);
-
+          bittorio[row][col].state = bittorio[row+1][col].state;
+          bittorio[row][col].userChange = bittorio[row+1][col].userChange;
           bittorio[row][col].changeColor();
+          bittorio[row][col].play();
         }
       }
 
       console.log("calculating the value of the future");
-
       //compute the new future after pushing up
       for(col=0; col < colLength; col++){
         bittorio[rowLength -1][col].state = 2;
@@ -82,8 +80,6 @@ require(
       }
 
       caupdate.changeFuture(bittorio, rowLength - 1);
-      
-      //utils.playAllSounds(bittorio[now]);
       timer++;
     }
     
@@ -92,6 +88,65 @@ require(
     document.getElementById('bittorio').onclick = function(){
       //console.log("Second")
       rowChange(now);
+    }
+    
+    document.getElementById('bittorio').onmouseover = function(){
+      if( utils.getVal("enablePerturb") == 0){
+        rowChange(now);
+      }
+      
+    }
+
+    document.onkeypress = function(evt){
+      var code = evt.which || evt.keyCode;
+      console.log("key is down" + evt.keyCode)
+      
+      if( code == 97){
+        bittorio[now+1][0].updateFn();
+      }
+      if( code == 115){
+        bittorio[now+1][1].updateFn();
+      }
+      if( code == 100){
+        bittorio[now+1][2].updateFn();
+      }
+
+      if( code == 102){
+        bittorio[now+1][3].updateFn();
+      }
+
+      if( code == 103){
+        bittorio[now+1][4].updateFn();
+      }
+      if( code == 104){
+        bittorio[now+1][5].updateFn();
+      }
+
+      if( code == 106){
+        bittorio[now+1][6].updateFn();
+      }
+      
+      if( code == 107){
+        bittorio[now+1][7].updateFn();
+      }
+
+      if( code == 108){
+        bittorio[now+1][8].updateFn();
+      }
+
+      if( code == 59){
+        bittorio[now+1][9].updateFn();
+      }
+
+      if( code == 39){
+        bittorio[now+1][10].updateFn();
+      }
+
+      if( code == 13){
+        bittorio[now+1][11].updateFn();
+      }
+      
+      rowChange(now+1);
     }
     
     document.getElementById('preset').onchange = function(){
@@ -183,7 +238,6 @@ require(
 
     document.getElementById('start').addEventListener("click", function(){
       //console.log("here after reset");
-
       rowChange(now);
       if(run == null){
         run = setInterval(simulate , parseFloat(document.getElementById("loopTime").value)); // start setInterval as "run";
@@ -210,11 +264,12 @@ require(
       utils.reset(bittorio, rowLength, colLength, now);
       stepCount = 0;
       console.log("utilNum is" + initNum);
-      var str = utils.convert2Binary (initNum, colLength);
-      str = str.split(""); //has to be an array
-      console.log("str is" + str);
 
-      utils.setConfig(str,bittorio,colLength, now);
+      //var str = utils.convert2Binary (initNum, colLength);
+      //str = str.split(""); //has to be an array
+      //console.log("str is" + str);
+      
+      utils.setConfig(0,bittorio,colLength, now);
       
 
       timer = 0;
@@ -222,14 +277,7 @@ require(
 
 
     function simulate() {
-      //console.log(); // firebug or chrome log
-
-      // if(timer > rowLength-1){
-      //     clearInterval(run); // stop the setInterval()
-      //     utils.stopAllSounds(bittorio[now]);
-      // }
-      // else{
-
+      
       clearInterval(run); // stop the setInterval()
       // evolve the next state of the CA
       caScroll();
@@ -237,6 +285,6 @@ require(
       run = setInterval(simulate, parseFloat(document.getElementById("loopTime").value)); // start the setInterval()
 
     }
-
+    
 
   });

@@ -1,6 +1,6 @@
 define(
-  ["carules","utils","caupdate"],
-  function(caRules,utils,caupdate){
+  ["carules","utils","caupdate","sound-module"],
+  function(caRules,utils,caupdate,basicOsc){
     
     //.  x,y, - positions, side - of the square x,y, -
     //positions, side - of the square
@@ -31,27 +31,29 @@ define(
       cell.ind = x;
       cell.row = y;
 
-      // cell.leftCell = function (col,row,bittorio){
-      //   if( x != 0 ){
-      //     return bittorio[row][bittorio.length-1];
-      //   }
-      //   else{
-      //     return bittorio[row][col-1];
-      //   }
-      // }
-
-      // cell.rightCell = function (col,row,bittorio){
-      //   if( x == bittorio.length-1 ){
-      //     return bittorio[row][0];
-      //   }
-      //   else{
-      //     return bittorio[row][col+1];
-      //   }
-      // }
+      cell.tone = basicOsc(x);
+     
+      //simply plays a note when the cell is on
+      cell.play = function(){
+        if(this.state == 2){
+          this.tone.release();
+        }
+        else if(this.state == 1){
+          if(this.row == Math.floor(utils.getVal('gridRowLength')/2)){
+            this.tone.play();
+          }
+          else{
+            this.tone.release();
+          }
+        }
+        else{
+          this.tone.release();
+        }
+      }
       
       //object events, declared
       cell.changeColor = function(){
-
+        
         //var pertCol = utils.getVal("perturbationColor");
         //also includes user change perturbation color
         if (this.userChange == 1 && this.state == 0){
@@ -72,8 +74,8 @@ define(
       }
 
       cell.changeColor();
-
-      cell.onmousedown = function(){
+      
+      cell.updateFn = function (){
 
         //console.log("first")
         //console.log("this row is" + this.row + "this col is" +
@@ -81,13 +83,28 @@ define(
         if( utils.getVal("enablePerturb") == 1){
           this.state = (this.state + 1)%2; //utils.getVal('perturbationColor');
           this.userChange = 1;
-          this.changeColor(); 
-          
+          this.changeColor();
+          this.play();
         }
         else if(utils.getVal("enablePerturb") == 0){
           this.userChange = 0;
           this.state = (this.state + 1)%2; //merely toggle
           this.changeColor(); 
+          this.play();
+        }
+        
+      }
+      
+      cell.onmousedown = cell.updateFn;
+
+      cell.onmouseover = function(){
+        
+        if( utils.getVal("enablePerturb") == 0){
+          this.state = (this.state + 1)%2; //utils.getVal('perturbationColor');
+          this.userChange = 0;
+          this.changeColor(); 
+        }
+        else{
         }
         
       }
