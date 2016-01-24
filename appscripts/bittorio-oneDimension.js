@@ -244,8 +244,11 @@ require(
         run = setInterval(simulate , parseFloat(document.getElementById("loopTime").value)); // start setInterval as "run";
       }
     },true);
-    
 
+    document.getElementById('gain').onchange = function(){
+      utils.setGain(bittorio[now], utils.getVal("gain"));
+    }
+    
     document.getElementById('stop').addEventListener("click", function(){
       if(run != null){
         clearInterval(run); // stop the setInterval()
@@ -253,7 +256,7 @@ require(
         run = null;
       }
       //also unconditionally stop playing everything
-      //utils.stopAllSounds(bittorio[now]);
+      utils.stopAllSounds(bittorio[now]);
     },true);
 
     document.getElementById('reset').addEventListener("click", function(){

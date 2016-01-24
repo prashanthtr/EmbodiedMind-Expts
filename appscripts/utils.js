@@ -82,7 +82,7 @@ define(
 
           }
         }
-        //stopAllSounds(bittorio[now]);
+        stopAllSounds(bittorio[now]);
       }
 
       //toggles only a given state of row and column
@@ -138,6 +138,20 @@ define(
         return parseFloat(document.getElementById(docElement).value)
       }
 
+      function stopAllSounds (tone){
+        //console.log("tone lengt is " + tone.length);
+        tone.map(function(el){
+          el.tone.release();
+        });
+      }
+
+      //unmutes all cells
+      function setGain (soundingRow, gain){
+        var row = 0, col = 0;
+        for(col = 0; col < soundingRow.length; col++){
+          soundingRow[col].tone.setParam("Gain", gain);
+        }
+      }
 
       var exports = {};
       exports.init = init;
@@ -149,7 +163,8 @@ define(
       exports.clear = clear;
       exports.setConfig = setConfig;
       //exports.findInitConfigVal = findInitConfigVal;
-      //exports.stopAllSounds = stopAllSounds;
+      exports.stopAllSounds = stopAllSounds;
+      exports.setGain = setGain;
       //exports.updateTimers = updateTimers;
       //exports.updateChange = updateChange;
       //exports.setNthBit = setNthBit;
