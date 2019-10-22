@@ -291,6 +291,36 @@ window.addEventListener("keypress", function(c){
         return ret;
     }
 
+    // which aspect of cognition am I trying to explain/model with this.
+    // context-sensitivty/behavioral diveristy/ emergence and persistence of a
+    // coherent self-from within a milleu of interactions.
+
+    // why should it change a rule - same rule may not be applicable in all
+    // situations. organism needs to change its behavior in different
+    // envirnoments. moving towards glucose, and moving away from predator.
+
+    // part of it is captured through the dynamics.
+
+    //however, by making system respond to the time of events, system changes
+    //states at different times, and different rates. So, explaining the changes
+    //in the system as a coherent unit becomes challenging.
+
+    // system maintains an internal state - and selects same or different rules
+    // for maintaing that state.
+
+    // state provides positive or negative feedback to the each of the
+    //individual cells to guide their self-organizing behavior.
+
+    // Cells use the feedback to alter their behavior either by chanigng the Ca
+    // rules, or changing the frequency of sensing/acting wrt neighbour cells,
+    // or a combination of the two.
+
+    //
+
+
+    // what rule should it select so that it maintains some notion of steady-stateness?
+    // produces a continuous change?
+
     // what rule should it select so that it maintains operational closure? 256
     // rules
 
