@@ -26,7 +26,7 @@ var pWidth = canvas.clientWidth;
 var pHeight = canvas.clientHeight;
 
 var rafId = null;
-var drawLoop = function(){};
+
 
 var scale = 0.9*Math.min(pWidth, pHeight);
 var pi = Math.PI;
@@ -240,9 +240,11 @@ function createBoundaryEl(n, N){
 
         rafId = requestAnimationFrame(cell.compute_next_state);
     }
-
 }
 
+
+//runs simulation of cellular autonmaton
+var drawLoop = function(){};
 
 
 window.addEventListener("keypress", function(c){
@@ -261,7 +263,55 @@ window.addEventListener("keypress", function(c){
 
 
 
+    // the cellular automaton rules that each object uses to compute
+    // their states.
+    function ca_rule (prev, cur, next){
 
+        var rule = document.getElementById('carulebinary').value;
+        rule = rule.split("");
+        rule = rule.map(function(r){ return parseInt(r);});
+
+        console.log("carule is" + rule);
+
+        var castate = prev + "" +  cur + ""+ next;
+        console.log(castate);
+        //ca rule
+        var ret = -1;
+        switch(castate){
+        case "000": ret = rule[0]; break;
+        case "001": ret = rule[1];  break;
+        case "010": ret = rule[2];  break;
+        case "011": ret = rule[3];  break;
+        case "100": ret = rule[4]; break;
+        case "101": ret = rule[5];  break;
+        case "110": ret = rule[6];  break;
+        case "111": ret = rule[7];  break;
+        default: ret = -1; break;
+        };
+        return ret;
+    }
+
+    // what rule should it select so that it maintains operational closure? 256
+    // rules
+
+    // Can it always find atleast 1 rule that allows it to maintain operational
+    // closure in an environment.
+
+    // computation: search 256 rules to find out which rules produce viable next
+    // states?
+
+    // which rules produce non-steady states over next few iterations? (16 iterations)
+
+    // which rules produce environmentally adaptive states over next few
+    // iterations? (16 iterations)
+
+    // which rules produce cominbation of environmentally adaptive and
+    // non-steady state over next 16 iterations
+
+    // simulated resting and changing behavior - either in terms of no
+    // action/no change
+
+    //
 
 
 
