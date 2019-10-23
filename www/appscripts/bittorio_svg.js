@@ -84,14 +84,14 @@ function createBoundaryEl(n, N){
 
     cell.environment = {};
 
-    cell.listen_int = 1000/(n+1)
-    cell.act_int = 2000/(n+1)
+    cell.listen_int = 125; //1000/(n+1)
+    cell.act_int = 500; //2000/(n+1)
 
     cell.number = n;
 
     cell.listen = js_clock(40, cell.listen_int);//listen updates that fast, all sensors have
                                    //equal speed of information gathering
-    cell.act = js_clock(40, cell.act_int); //500 is a parameter to be controlled
+    cell.act = js_clock(30, cell.act_int); //500 is a parameter to be controlled
 
     // cell is listening only in some phases in its listen-action cycle
     cell.listen_counter = 0;
@@ -130,7 +130,13 @@ function createBoundaryEl(n, N){
             //listen if there was new incoming keyboard event from environment
             //since the last check.
 
-            if( cell.last_incoming_event < cell.environment.timeStamp){
+            if( cell.last_incoming_event < cell.environment.timeStamp && cell.environment.state == 1){
+
+                //pertubration is not an input - such as a 0/1. Perturbatin is
+                //essentially the presence of a signal that the agent senses and
+                //uses to flip its state.
+
+                //perturbation that always changes state
                 //console.log("recognized pertubration")
                 cell.incoming_event = true;
                 //update state
@@ -159,10 +165,9 @@ function createBoundaryEl(n, N){
 
                     cell.next_cell_state = cell.sense_next_cell();
                     cell.prev_cell_state = cell.sense_prev_cell();
-                    cell.state = cell.sense_env();
+                    cell.state =  cell.state==1?0:1;
 
                     //three sensors updating
-
                     cell.set_early = 0;
                     cell.last_note_set = 1;
                 }
@@ -196,7 +201,7 @@ function createBoundaryEl(n, N){
 
                     cell.next_cell_state = cell.sense_next_cell();
                     cell.prev_cell_state = cell.sense_prev_cell();
-                    cell.state = cell.sense_env();
+                    cell.state =  cell.state==1?0:1;
 
                     cell.incoming_event = false;
                     cell.wait_to_set = 0;
@@ -216,7 +221,9 @@ function createBoundaryEl(n, N){
                 else{
                     cell.next_cell_state = cell.sense_next_cell();
                     cell.prev_cell_state = cell.sense_prev_cell();
-                    cell.state = cell.sense_env();
+
+                    //no change in the cell state as no event is deducted or event is detected late.
+                    //cell.state = cell.sense_env();
                 }
                 cell.last_note_set = 0;
 
@@ -275,6 +282,7 @@ function createBoundaryEl(n, N){
             // let state_self = cell.state || cell.sense_env();
             // let state_next = cell.sense_next_cell();
             // let state_prev = cell.sense_prev_cell();
+
 
             cell.state = ca_rule( cell.prev_cell_state, cell.state, cell.next_cell_state ); //ca_rule that determines next state
 
