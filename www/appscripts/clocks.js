@@ -30,7 +30,7 @@ export function js_clock ( latency , cycle ){
 
         if( delta > interval ){
             then = now - (delta % interval); //look back
-            console.log("Exceeded")
+            //console.log("Exceeded")
             return function(){}
         }
         else if( delta > interval - lookahead){

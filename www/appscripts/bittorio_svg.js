@@ -2,7 +2,6 @@
 // so far improving the asynchronicity of bittorio to make it responsive to the
 // changes in adjacent elements at different temporal rates
 
-
 import {js_clock} from "./clocks.js"
 
 // reimplementation of bittorio with new html conventions, and svg
@@ -41,7 +40,22 @@ rect.setAttributeNS(null, 'width', pWidth);
 rect.setAttributeNS(null, 'fill', '#000000');
 canvas.appendChild(rect);
 
+
 var mouseDownState = 0;
+
+var display = js_clock(20, 125);
+
+var cells = []
+for (var i = 0; i < 8; i++) {
+    cells.push({});
+}
+
+var env = [];
+
+//each cell's environment
+for (var i = 0; i < 8; i++) {
+    env.push({ state: 0, timeStamp: 0});
+}
 
 
 // function creaates the boundary elements of the cell wall with
@@ -59,16 +73,25 @@ var mouseDownState = 0;
 function createBoundaryEl(n, N){
 
     var cell = {}
+
     cell.state = 0; // on or off (0 or 1)
     cell.color = "black" //off
 
-    cell.next_cell = (n+1)%n; //sensors for adjacent cells
-    cell.prev_cell = n-1<0?(N-1):n-1;
+    //initialized as 0
+    cell.next_cell_state = 0;
+    cell.prev_cell_state = 0;
+    cell.env_state = 0
+
+    cell.environment = {};
+
+    cell.listen_int = 1000/(n+1)
+    cell.act_int = 2000/(n+1)
+
     cell.number = n;
 
-    cell.listen = js_clock(30, 125);//listen updates that fast, all sensors have
+    cell.listen = js_clock(40, cell.listen_int);//listen updates that fast, all sensors have
                                    //equal speed of information gathering
-    cell.act = js_clock(30, 500); //500 is a parameter to be controlled
+    cell.act = js_clock(40, cell.act_int); //500 is a parameter to be controlled
 
     // cell is listening only in some phases in its listen-action cycle
     cell.listen_counter = 0;
@@ -76,19 +99,46 @@ function createBoundaryEl(n, N){
     cell.wait_to_set = 0;
     cell.set_early_obj= "0";
 
-    //three sequences
-    cell.next_cell_state = 0
-    cell.prev_cell_state = 0
-    cell.env_cell_state = 0
-
-    //incoming event can be an update from nearby cells, and from the environment
-    // either  of these affect the computation of the new state
-
+    // incoming event referes a perturbation from the environment that changes
+    // the state of the cell
     cell.incoming_event = false;
+    cell.last_incoming_event = 0; //time of last event
 
+    cell.assign_adj_cell = function(n, N){
+        cell.next_cell_state = cells[(n+1)%N].state; //sensors for adjacent cells
+        cell.prev_cell_state = cells[n-1<0?(N-1):n-1].state;
+        cell.environment = env[cell.number];
+    };
+
+    cell.sense_next_cell = function(){
+        return cell.next_cell_state;
+    }
+
+    cell.sense_prev_cell = function(){
+        return cell.prev_cell_state;
+    }
+
+    cell.sense_env = function(){
+        return cell.env_state;
+    }
+
+    //loop that starts the cells listen and act cycle
     cell.compute_next_state = function (now){
 
         cell.listen(now, function(cell){
+
+            //listen if there was new incoming keyboard event from environment
+            //since the last check.
+
+            if( cell.last_incoming_event < cell.environment.timeStamp){
+                //console.log("recognized pertubration")
+                cell.incoming_event = true;
+                //update state
+                cell.last_incoming_event = cell.environment.timeStamp;
+            }
+            else{
+                //console.log("no perturbation");
+            }
 
             //time just after the threshold interval for listening was passed checks
             //if there was an event before the threshold was crossed or even within
@@ -109,7 +159,7 @@ function createBoundaryEl(n, N){
 
                     cell.next_cell_state = cell.sense_next_cell();
                     cell.prev_cell_state = cell.sense_prev_cell();
-                    cell.state = cell.sense_env_state();
+                    cell.state = cell.sense_env();
 
                     //three sensors updating
 
@@ -146,7 +196,7 @@ function createBoundaryEl(n, N){
 
                     cell.next_cell_state = cell.sense_next_cell();
                     cell.prev_cell_state = cell.sense_prev_cell();
-                    cell.state = cell.sense_env_state();
+                    cell.state = cell.sense_env();
 
                     cell.incoming_event = false;
                     cell.wait_to_set = 0;
@@ -166,7 +216,7 @@ function createBoundaryEl(n, N){
                 else{
                     cell.next_cell_state = cell.sense_next_cell();
                     cell.prev_cell_state = cell.sense_prev_cell();
-                    cell.state = cell.sense_env_state();
+                    cell.state = cell.sense_env();
                 }
                 cell.last_note_set = 0;
 
@@ -218,19 +268,15 @@ function createBoundaryEl(n, N){
 
             cell.listen_counter+= 0.25;
 
-
         })(cell);
-
 
         cell.act(now, function(cell){
 
-            console.log("play")
+            // let state_self = cell.state || cell.sense_env();
+            // let state_next = cell.sense_next_cell();
+            // let state_prev = cell.sense_prev_cell();
 
-            let state_self = cell.sense_self_state();
-            let state_next = cell.sense_next_state();
-            let state_prev = cell.sense_prev_state();
-
-            this.state = ca_rule(); //ca_rule that determines next state
+            cell.state = ca_rule( cell.prev_cell_state, cell.state, cell.next_cell_state ); //ca_rule that determines next state
 
             // at the end of play functin, the beat is completley over
             // play is called at the end of all the cycles of the beat
@@ -238,58 +284,106 @@ function createBoundaryEl(n, N){
 
         })(cell);
 
-        rafId = requestAnimationFrame(cell.compute_next_state);
-    }
+    };
+
+    return cell;
+}
+
+
+//inititalize cells
+for (var i = 0; i < 8; i++) {
+    cells[i] = createBoundaryEl(i, 8);
+}
+
+//assign cell connections
+for (var i = 0; i < 8; i++) {
+    cells[i].assign_adj_cell(i, 8);
 }
 
 
 //runs simulation of cellular autonmaton
-var drawLoop = function(){};
+var drawLoop = function(){
 
+    var now = Date.now();
+
+    for (var i = 0; i < 8; i++) {
+        cells[i].compute_next_state(now);
+    }
+
+    //displays every 125,ms
+    display(now, function(){
+
+
+
+
+        console.log("CA => " + cells.map(function(f){return f.state}).join("-"));
+        //console.log(env.map(function(f){return f.state}).join("-"));
+    })();
+
+    rafId = requestAnimationFrame(drawLoop);
+};
 
 window.addEventListener("keypress", function(c){
 
-	  console.log("char code" + c.keyCode)
+    //need to have a state that prevents too quick key presses/holding
+
+	  //console.log("char code" + c.keyCode + "timestamp" + c.timeStamp)
 
     if( c.keyCode == 115){
         drawLoop();
     }
-
-		if( c.keyCode == 114){
+    else if( c.keyCode == 114){
 	      cancelAnimationFrame(rafId);
 				rafId = null;
 	  }
+    else{
 
+        // change the environment for a particular cell
+        switch( c.keyCode){
+        case 50: {env[0].state = env[0].state==1?0:1; env[0].timeStamp = c.timeStamp;} break;
+        case 51: {env[1].state = env[1].state==1?0:1; env[1].timeStamp = c.timeStamp;} break;
+        case 52: {env[2].state = env[2].state==1?0:1; env[2].timeStamp = c.timeStamp;} break;
+        case 53: {env[3].state = env[3].state==1?0:1; env[3].timeStamp = c.timeStamp;} break;
+        case 54: {env[4].state = env[4].state==1?0:1; env[4].timeStamp = c.timeStamp;} break;
+        case 55: {env[5].state = env[5].state==1?0:1; env[5].timeStamp = c.timeStamp;} break;
+        case 56: {env[6].state = env[6].state==1?0:1; env[6].timeStamp = c.timeStamp;} break;
+        case 57: {env[7].state = env[7].state==1?0:1; env[7].timeStamp = c.timeStamp;} break;
+        default: break;
+        }
 
-
-
-    // the cellular automaton rules that each object uses to compute
-    // their states.
-    function ca_rule (prev, cur, next){
-
-        var rule = document.getElementById('carulebinary').value;
-        rule = rule.split("");
-        rule = rule.map(function(r){ return parseInt(r);});
-
-        console.log("carule is" + rule);
-
-        var castate = prev + "" +  cur + ""+ next;
-        console.log(castate);
-        //ca rule
-        var ret = -1;
-        switch(castate){
-        case "000": ret = rule[0]; break;
-        case "001": ret = rule[1];  break;
-        case "010": ret = rule[2];  break;
-        case "011": ret = rule[3];  break;
-        case "100": ret = rule[4]; break;
-        case "101": ret = rule[5];  break;
-        case "110": ret = rule[6];  break;
-        case "111": ret = rule[7];  break;
-        default: ret = -1; break;
-        };
-        return ret;
+        console.log( "Env => " +  env.map(function(f){return f.state}).join("-"));
     }
+
+});
+
+// the cellular automaton rules that each object uses to compute
+// their states.
+function ca_rule (prev, cur, next){
+
+    var rule = document.getElementById('carulebinary').value;
+    rule = rule.split("");
+    rule = rule.map(function(r){ return parseInt(r);});
+
+    //console.log("carule is" + rule);
+
+    var castate = prev + "" +  cur + ""+ next;
+    //console.log(castate);
+    //ca rule
+
+    var ret = -1;
+    switch(castate){
+    case "000": ret = rule[0]; break;
+    case "001": ret = rule[1];  break;
+    case "010": ret = rule[2];  break;
+    case "011": ret = rule[3];  break;
+    case "100": ret = rule[4]; break;
+    case "101": ret = rule[5];  break;
+    case "110": ret = rule[6];  break;
+    case "111": ret = rule[7];  break;
+    default: ret = -1; break;
+    };
+    return ret;
+}
 
     // which aspect of cognition am I trying to explain/model with this.
     // context-sensitivty/behavioral diveristy/ emergence and persistence of a
