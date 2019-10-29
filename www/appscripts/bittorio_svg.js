@@ -1,4 +1,6 @@
 
+//01111000
+
 //biologically viable models of emergent computation
 
 // how much can be assumed as a context - and how much should be modeled as
@@ -75,7 +77,7 @@ for (var i = 0; i < 8; i++) {
     env.push({ state: 0, timeStamp: 0});
 }
 
-var global_movement = {x: 0, y: 0};
+var global_movement = {x: 1, y: 0};
 
 
 // function creaates the boundary elements of the cell wall with
@@ -200,8 +202,8 @@ function createBoundaryEl(global_movement){
                 //pulls the remaining cells if they are already not active - makes the bonds tighten
                 //makes them active (neural net way of saying) -
                 console.log("Active cell")
-                global_movement.x += cell.v.x
-                global_movement.y += cell.v.y
+                global_movement.x = cell.v.x
+                global_movement.y = cell.v.y
                 cell.active = false; //no longer is the active site for movement
             }
         }
