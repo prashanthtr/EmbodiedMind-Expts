@@ -1,4 +1,22 @@
 
+//biologically viable models of emergent computation
+
+// how much can be assumed as a context - and how much should be modeled as
+// dynamics - how is it different from computational and collaborative emergence
+// (co-emergence).
+
+// bittorio with environment rules
+
+// the black cells of bittorio correspond to bond strengthening. white cells
+// correspond to bond relaxation.
+
+// through a process of tensioning and relaxation, the system moves through the
+// space
+
+//Environment Rule: - global rule - 5 adjacent bonds are tensed, then the system
+//moves one step in the direction of the center cell in the environment.
+
+
 // so far improving the asynchronicity of bittorio to make it responsive to the
 // changes in adjacent elements at different temporal rates
 
@@ -40,10 +58,10 @@ rect.setAttributeNS(null, 'width', pWidth);
 rect.setAttributeNS(null, 'fill', '#000000');
 canvas.appendChild(rect);
 
-
 var mouseDownState = 0;
 
-var display = js_clock(20, 125);
+//display after every action
+var display = js_clock(20, 500);
 
 var cells = []
 for (var i = 0; i < 8; i++) {
@@ -56,6 +74,8 @@ var env = [];
 for (var i = 0; i < 8; i++) {
     env.push({ state: 0, timeStamp: 0});
 }
+
+var global_movement = {x: 0, y: 0};
 
 
 // function creaates the boundary elements of the cell wall with
@@ -70,237 +90,327 @@ for (var i = 0; i < 8; i++) {
 // then, it has an action cycle in which it triggers an action - either
 // demonstrated as computing the next state, and visually indicating it.
 
-function createBoundaryEl(n, N){
+// each cell is given position p in the grid whcih is represented by 2
+// coordinates, (X,Y)
 
-    var cell = {}
 
-    cell.state = 0; // on or off (0 or 1)
-    cell.color = "black" //off
+function createBoundaryEl(global_movement){
 
-    //initialized as 0
-    cell.next_cell_state = 0;
-    cell.prev_cell_state = 0;
-    cell.env_state = 0
+    return function(n, N, p){
+        var cell = {}
 
-    cell.environment = {};
+        cell.state = 0; // on or off (0 or 1)
+        cell.color = "black" //off
 
-    cell.listen_int = 125; //1000/(n+1)
-    cell.act_int = 500; //2000/(n+1)
+        cell.position = p;//adjacent to the
 
-    cell.number = n;
+        //at any one time, more than 1 cell can be active (assumption) - there will
+        //be a competition for action.
+        cell.active = false;
 
-    cell.listen = js_clock(40, cell.listen_int);//listen updates that fast, all sensors have
-                                   //equal speed of information gathering
-    cell.act = js_clock(30, cell.act_int); //500 is a parameter to be controlled
+        //initialized as 0
+        cell.next_cell_state = 0;
+        cell.next2_next_cell_state = 0;
+        cell.prev_cell_state = 0;
+        cell.prev2_prev_cell_state = 0;
+        cell.env_state = 0
 
-    // cell is listening only in some phases in its listen-action cycle
-    cell.listen_counter = 0;
-    cell.set_early = 0; //setting the listener value earluer than it is registereedf
-    cell.wait_to_set = 0;
-    cell.set_early_obj= "0";
+        cell.environment = {};
 
-    // incoming event referes a perturbation from the environment that changes
-    // the state of the cell
-    cell.incoming_event = false;
-    cell.last_incoming_event = 0; //time of last event
+        cell.listen_int = 125; //1000/(n+1)
+        cell.act_int = 500; //2000/(n+1)
 
-    cell.assign_adj_cell = function(n, N){
-        cell.next_cell_state = cells[(n+1)%N].state; //sensors for adjacent cells
-        cell.prev_cell_state = cells[n-1<0?(N-1):n-1].state;
-        cell.environment = env[cell.number];
-    };
+        cell.number = n;
 
-    cell.sense_next_cell = function(){
-        return cell.next_cell_state;
-    }
-
-    cell.sense_prev_cell = function(){
-        return cell.prev_cell_state;
-    }
-
-    cell.sense_env = function(){
-        return cell.env_state;
-    }
-
-    //loop that starts the cells listen and act cycle
-    cell.compute_next_state = function (now){
-
-        cell.listen(now, function(cell){
-
-            //listen if there was new incoming keyboard event from environment
-            //since the last check.
-
-            if( cell.last_incoming_event < cell.environment.timeStamp && cell.environment.state == 1){
-
-                //pertubration is not an input - such as a 0/1. Perturbatin is
-                //essentially the presence of a signal that the agent senses and
-                //uses to flip its state.
-
-                //perturbation that always changes state
-                //console.log("recognized pertubration")
-                cell.incoming_event = true;
-                //update state
-                cell.last_incoming_event = cell.environment.timeStamp;
+        cell.v = function(n){
+            switch(n){
+            case 1:  {return {x: 0, y: -1}; break;}
+            case 2: {return {x: 1, y: -1}; break;}
+            case 3: {return {x: 1, y: 0}; break;}
+            case 4: {return {x: 1, y: 1}; break;}
+            case 5: {return {x: 0, y: 1}; break;}
+            case 6: {return {x: -1, y: 1}; break;}
+            case 7: {return {x: -1, y: 0}; break;}
+            case 8: {return {x: -1, y: -1}; break;}
+            default:  {return {x: 0, y: 0}; break;}
             }
-            else{
-                //console.log("no perturbation");
+        }(cell.number);
+
+        cell.listen = js_clock(40, cell.listen_int);//listen updates that fast, all sensors have
+        //equal speed of information gathering
+        cell.act = js_clock(30, cell.act_int); //500 is a parameter to be controlled
+        cell.movement = js_clock(50, cell.act_int); //asynchronous movement
+
+        // cell is listening only in some phases in its listen-action cycle
+        cell.listen_counter = 0;
+        cell.set_early = 0; //setting the listener value earluer than it is registereedf
+        cell.wait_to_set = 0;
+        cell.set_early_obj= "0";
+
+        // incoming event referes a perturbation from the environment that changes
+        // the state of the cell
+        cell.incoming_event = false;
+        cell.last_incoming_event = 0; //time of last event
+
+        cell.assign_adj_cell = function(n, N){
+            cell.next_cell = cells[(n+1)%N]; //sensors for adjacent cells
+            cell.prev_cell = cells[n-1<0?(N-1):n-1];
+            cell.next2_next_cell = cells[(n+2)%N]; //sensors for adjacent cells
+            cell.prev2_prev_cell = cells[n-2<0?(N-2):n-2]; //sensors for adjacent cells
+            cell.environment = env[cell.number];
+        }
+
+        cell.get_adjacent_states = function(){
+            cell.next_cell_state = cell.next_cell.state
+            cell.prev_cell_state = cell.prev_cell.state
+            cell.next2_next_cell_state = cell.next2_next_cell.state;
+            cell.prev2_prev_cell_state = cell.prev2_prev_cell.state;
+            cell.env_state = cell.environment.state;
+        };
+
+        //return on sensing
+        cell.sense_next_cell = function(){
+            return cell.next_cell.state;
+        }
+
+        cell.sense_prev_cell = function(){
+            return cell.prev_cell.state;
+        }
+
+        cell.sense_env = function(){
+            return cell.environment.state;
+        }
+
+        //emergent state - or another signalling pathway - as a result of context/organism
+        cell.ce_rule = function( p2_p, p, c, n, n2_n){
+
+            //some configurations signify movement in environment - when action coupled
+
+            // Claim: this rule for action is not specified in the cells themselves
+            // - but in the interaction of the cellular states with the environment
+
+            //console.log(cell.number + " adj" + p2_p + "|" + p + "|" + c + "|" + n + "|" +  n2_n );
+
+            if( n == 1 && n2_n == 1 && c == 1 && p == 1 && p2_p == 1){
+                cell.active = true; //cell is active for movement
             }
 
-            //time just after the threshold interval for listening was passed checks
-            //if there was an event before the threshold was crossed or even within
-            //the threshold window the mouse was pushed
+            //updates the co-emergent
+            if( cell.active ){
+                //pulls the remaining cells if they are already not active - makes the bonds tighten
+                //makes them active (neural net way of saying) -
+                console.log("Active cell")
+                global_movement.x += cell.v.x
+                global_movement.y += cell.v.y
+                cell.active = false; //no longer is the active site for movement
+            }
+        }
 
-            // there could be case where it was updated but not played, so listen
-            // should have a higher window of delay compared to play?
+        //emergent state - or another signalling pathway - as a result of context/organism
+        // newotnian - mechanisms (leaves the objects keeps going?)
 
-            // At the onset of the beat, the counter checks if there the key has
-            // been pressed before the onset. If a key is pressed, then
-            // set_early is 1. This is used to set the note at the correct beat
-            // position.
-            if(cell.listen_counter % 1 == 0 ){
+        //loop that starts the cells listen and act cycle
+        cell.compute_next_state = function (now){
 
-                //no change
-                //notePressed = false;
-                if( cell.set_early == 1){
+            cell.listen(now, function(cell){
 
-                    cell.next_cell_state = cell.sense_next_cell();
-                    cell.prev_cell_state = cell.sense_prev_cell();
-                    cell.state =  cell.state==1?0:1;
+                //listen if there was new incoming keyboard event from environment
+                //since the last check.
 
-                    //three sensors updating
-                    cell.set_early = 0;
-                    cell.last_note_set = 1;
+                if( cell.last_incoming_event < cell.environment.timeStamp && cell.environment.state == 1){
+
+                    //pertubration is not an input - such as a 0/1. Perturbatin is
+                    //essentially the presence of a signal that the agent senses and
+                    //uses to flip its state.
+
+                    //perturbation that always changes state
+                    //console.log("recognized pertubration")
+                    cell.incoming_event = true;
+                    //update state
+                    cell.last_incoming_event = cell.environment.timeStamp;
                 }
                 else{
-
-                    //if the hit was not played by the onset, there is still a
-                    //chance that it might be played after the onset. We are
-                    //allowing for a small window where musician plays the hit
-                    //slightly after the onset. This is stored in wait-to-set.
-                    //When wait-to-set is 1, the system is still waiting to
-                    //register the hit that will occurr immediately.
-                    cell.wait_to_set = 1;
+                    //console.log("no perturbation");
                 }
 
-                //initialize  early object to 0
-                //console.log("setting " + set_early_obj + " at " + beats);
-                //userInput = utils.setCharAt(userInput, ind, set_early_obj);
-            }
-            else if( cell.listen_counter % 1 == 0.25){ // phase 1
+                //time just after the threshold interval for listening was passed checks
+                //if there was an event before the threshold was crossed or even within
+                //the threshold window the mouse was pushed
 
-                //The system is in the first phase after the onset. A new event
-                //may occur due to a mistitming just after the onset.
+                // there could be case where it was updated but not played, so listen
+                // should have a higher window of delay compared to play?
 
-                //A new event has not occurred, and the system no longer
-                //needs to wait for a new event. So wait-to-set is set to 0
-                //anyway
-                //wait_to_set = 0;
-                if( cell.incoming_event == true && cell.wait_to_set == 1){
-                    //A new event occurs just after the onset.
-                    // create the object that was just registered in the press
+                // At the onset of the beat, the counter checks if there the key has
+                // been pressed before the onset. If a key is pressed, then
+                // set_early is 1. This is used to set the note at the correct beat
+                // position.
+                if(cell.listen_counter % 1 == 0 ){
 
-                    cell.next_cell_state = cell.sense_next_cell();
-                    cell.prev_cell_state = cell.sense_prev_cell();
-                    cell.state =  cell.state==1?0:1;
+                    //no change
+                    //notePressed = false;
+                    if( cell.set_early == 1){
 
-                    cell.incoming_event = false;
-                    cell.wait_to_set = 0;
-                    cell.last_note_set = 1;
-                }
-                else{
-                    //no longer wait for a new note
-                    cell.wait_to_set = 0;
-                }
+                        cell.next_cell_state = cell.sense_next_cell();
+                        cell.prev_cell_state = cell.sense_prev_cell();
+                        cell.state =  cell.state==1?0:1;
 
-            }
-            else if(cell.listen_counter % 1 == 0.5 ){
-                //nothing happens for now
-                if( cell.last_note_set == 1){
-                    // last note has already been set with early events or a late event
-                }
-                else{
-                    cell.next_cell_state = cell.sense_next_cell();
-                    cell.prev_cell_state = cell.sense_prev_cell();
-
-                    //no change in the cell state as no event is deducted or event is detected late.
-                    //cell.state = cell.sense_env();
-                }
-                cell.last_note_set = 0;
-
-                //now is a good time to log the last beat as no new events can change the past
-                //console.log("pressed");
-            }
-            else{ // if listen counter is >= 0.75
-                //we are in the third phase in which the user may play a note
-                //earlier than it has to be sounded.
-                if( cell.set_early == 1){
-
-                    // The user has already played the hit in the previous phase
-                    //period and set the note to 1. No action needs to be taken
-                    //now. do nothing
-
-                }
-                else{
-                    // The userpresses the hit in the third phase. This hit is
-                    // meant to be sounded at the onset of the next beat, but
-                    // due to timing issues, user presses it slightly before.
-                    if( cell.incoming_event == true && cell.set_early == 0){
-
-                        //set eearly oibject is a note hit
-                        //set_early_obj = createControlledSoundObj({event_yes: 1, type: event_type, velocity: 0.5});
-                        //set_early_obj = "1";
-                        //userInput = utils.setCharAt(userInput, ind, "1");
-                        cell.set_early = 1;
-                        cell.incoming_event = false; //in this way even if a new note is pressed simultaneously, it wont be registered if it is in a small succession
+                        //three sensors updating
+                        cell.set_early = 0;
+                        cell.last_note_set = 1;
                     }
                     else{
 
-                        //set early obj is silence
-                        // this could mean that the user
-                        // has not yet played a note in this phase.
-                        cell.set_early_obj = 0;
-                        //userInput = utils.setCharAt(userInput, ind, "0");
+                        //if the hit was not played by the onset, there is still a
+                        //chance that it might be played after the onset. We are
+                        //allowing for a small window where musician plays the hit
+                        //slightly after the onset. This is stored in wait-to-set.
+                        //When wait-to-set is 1, the system is still waiting to
+                        //register the hit that will occurr immediately.
+                        cell.wait_to_set = 1;
                     }
-                    //no change to ind
-                    //update the stored source
+
+                    //initialize  early object to 0
+                    //console.log("setting " + set_early_obj + " at " + beats);
+                    //userInput = utils.setCharAt(userInput, ind, set_early_obj);
+                }
+                else if( cell.listen_counter % 1 == 0.25){ // phase 1
+
+                    //The system is in the first phase after the onset. A new event
+                    //may occur due to a mistitming just after the onset.
+
+                    //A new event has not occurred, and the system no longer
+                    //needs to wait for a new event. So wait-to-set is set to 0
+                    //anyway
+                    //wait_to_set = 0;
+                    if( cell.incoming_event == true && cell.wait_to_set == 1){
+                        //A new event occurs just after the onset.
+                        // create the object that was just registered in the press
+
+                        cell.next_cell_state = cell.sense_next_cell();
+                        cell.prev_cell_state = cell.sense_prev_cell();
+                        cell.state =  cell.state==1?0:1;
+
+                        cell.incoming_event = false;
+                        cell.wait_to_set = 0;
+                        cell.last_note_set = 1;
+                    }
+                    else{
+                        //no longer wait for a new note
+                        cell.wait_to_set = 0;
+                    }
 
                 }
-            }
+                else if(cell.listen_counter % 1 == 0.5 ){
+                    //nothing happens for now
+                    if( cell.last_note_set == 1){
+                        // last note has already been set with early events or a late event
+                    }
+                    else{
+                        cell.next_cell_state = cell.sense_next_cell();
+                        cell.prev_cell_state = cell.sense_prev_cell();
 
-            //console.log("pushed")
-            //and keyboard is pushed or not pushed now?
-            //lookback time of 50 seconds
-            //giving a huge window
-            //last_event > time - 1000/4 + 50 &&  last_event < time &
+                        //no change in the cell state as no event is deducted or event is detected late.
+                        //cell.state = cell.sense_env();
+                    }
+                    cell.last_note_set = 0;
 
-            cell.listen_counter+= 0.25;
+                    //now is a good time to log the last beat as no new events can change the past
+                    //console.log("pressed");
+                }
+                else{ // if listen counter is >= 0.75
+                    //we are in the third phase in which the user may play a note
+                    //earlier than it has to be sounded.
+                    if( cell.set_early == 1){
 
-        })(cell);
+                        // The user has already played the hit in the previous phase
+                        //period and set the note to 1. No action needs to be taken
+                        //now. do nothing
 
-        cell.act(now, function(cell){
+                    }
+                    else{
+                        // The userpresses the hit in the third phase. This hit is
+                        // meant to be sounded at the onset of the next beat, but
+                        // due to timing issues, user presses it slightly before.
+                        if( cell.incoming_event == true && cell.set_early == 0){
 
-            // let state_self = cell.state || cell.sense_env();
-            // let state_next = cell.sense_next_cell();
-            // let state_prev = cell.sense_prev_cell();
+                            //set eearly oibject is a note hit
+                            //set_early_obj = createControlledSoundObj({event_yes: 1, type: event_type, velocity: 0.5});
+                            //set_early_obj = "1";
+                            //userInput = utils.setCharAt(userInput, ind, "1");
+                            cell.set_early = 1;
+                            cell.incoming_event = false; //in this way even if a new note is pressed simultaneously, it wont be registered if it is in a small succession
+                        }
+                        else{
 
+                            //set early obj is silence
+                            // this could mean that the user
+                            // has not yet played a note in this phase.
+                            cell.set_early_obj = 0;
+                            //userInput = utils.setCharAt(userInput, ind, "0");
+                        }
+                        //no change to ind
+                        //update the stored source
 
-            cell.state = ca_rule( cell.prev_cell_state, cell.state, cell.next_cell_state ); //ca_rule that determines next state
+                    }
+                }
 
-            // at the end of play functin, the beat is completley over
-            // play is called at the end of all the cycles of the beat
-            cell.listen_counter = 0;
+                //console.log("pushed")
+                //and keyboard is pushed or not pushed now?
+                //lookback time of 50 seconds
+                //giving a huge window
+                //last_event > time - 1000/4 + 50 &&  last_event < time &
 
-        })(cell);
+                cell.listen_counter+= 0.25;
 
-    };
+            })(cell);
 
-    return cell;
+            //global movement influences cell
+            cell.movement(now, function(cell,global_movement){
+                cell.position.x += global_movement.x;
+                cell.position.y += global_movement.y;
+            })(cell, global_movement);
+
+            cell.act(now, function(cell){
+
+                // let state_self = cell.state || cell.sense_env();
+                // let state_next = cell.sense_next_cell();
+                // let state_prev = cell.sense_prev_cell();
+
+                cell.state = ca_rule( cell.prev_cell_state, cell.state, cell.next_cell_state ); //ca_rule that determines next state
+                cell.get_adjacent_states();
+                cell.ce_rule( cell.prev2_prev_cell_state, cell.prev_cell_state, cell.state, cell.next_cell_state, cell.next2_next_cell_state); // updates the global variables for the next movement
+                // at the end of play functin, the beat is completley over
+                // play is called at the end of all the cycles of the beat
+                cell.listen_counter = 0;
+
+            })(cell);
+
+        };
+
+        return cell;
+    }
+
 }
 
 
-//inititalize cells
+// inititalize cells
 for (var i = 0; i < 8; i++) {
-    cells[i] = createBoundaryEl(i, 8);
+    var pos = ret_pos(i)
+    cells[i] = (createBoundaryEl(global_movement))(i, 8, pos);
+}
+
+function ret_pos(n){
+    switch(n){
+    case 1:  {return {x: 10, y: 9}; break;}
+    case 2: {return {x: 11, y: 9}; break;}
+    case 3: {return {x: 11, y: 10}; break;}
+    case 4: {return {x: 11, y: 11}; break;}
+    case 5: {return {x: 10, y: 11}; break;}
+    case 6: {return {x: 9, y: 11}; break;}
+    case 7: {return {x: 9, y: 10}; break;}
+    case 8: {return {x: 9, y: 9}; break;}
+    default:  {return {x: 10, y: 10}; break;}
+    }
 }
 
 //assign cell connections
@@ -320,11 +430,9 @@ var drawLoop = function(){
 
     //displays every 125,ms
     display(now, function(){
-
-
-
-
         console.log("CA => " + cells.map(function(f){return f.state}).join("-"));
+        console.log("CA => " + cells.map(function(f){return "[" + f.position.x + "," + f.position.y + "]"}).join("-"));
+        console.log(global_movement)
         //console.log(env.map(function(f){return f.state}).join("-"));
     })();
 
