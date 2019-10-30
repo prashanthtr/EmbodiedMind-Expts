@@ -44,6 +44,7 @@ var canvas = document.getElementById( 'svgCanvas' );
 var pWidth = canvas.clientWidth;
 var pHeight = canvas.clientHeight;
 
+
 var rafId = null;
 
 
@@ -63,7 +64,7 @@ canvas.appendChild(rect);
 var mouseDownState = 0;
 
 //display after every action
-var display = js_clock(20, 500);
+var display = js_clock(10, 60);
 
 var cells = []
 for (var i = 0; i < 8; i++) {
@@ -126,14 +127,14 @@ function createBoundaryEl(global_movement){
 
         cell.v = function(n){
             switch(n){
-            case 1:  {return {x: 0, y: -1}; break;}
-            case 2: {return {x: 1, y: -1}; break;}
-            case 3: {return {x: 1, y: 0}; break;}
-            case 4: {return {x: 1, y: 1}; break;}
-            case 5: {return {x: 0, y: 1}; break;}
-            case 6: {return {x: -1, y: 1}; break;}
-            case 7: {return {x: -1, y: 0}; break;}
-            case 8: {return {x: -1, y: -1}; break;}
+            case 0:  {return {x: 0, y: -1}; break;}
+            case 1: {return {x: 1, y: -1}; break;}
+            case 2: {return {x: 1, y: 0}; break;}
+            case 3: {return {x: 1, y: 1}; break;}
+            case 4: {return {x: 0, y: 1}; break;}
+            case 5: {return {x: -1, y: 1}; break;}
+            case 6: {return {x: -1, y: 0}; break;}
+            case 7: {return {x: -1, y: -1}; break;}
             default:  {return {x: 0, y: 0}; break;}
             }
         }(cell.number);
@@ -399,19 +400,37 @@ function createBoundaryEl(global_movement){
 for (var i = 0; i < 8; i++) {
     var pos = ret_pos(i)
     cells[i] = (createBoundaryEl(global_movement))(i, 8, pos);
+    cells[i].rect = create_rect(cells[i].position, 'red');
+    console.log(cells[i].rect)
+
+}
+
+//mapping from position to screen coordinates
+//needs the svg context for height and width
+function create_rect(pos, fill){
+    // 1 unit is 10px by 10px
+    var scale = 10;
+    var rect = document.createElementNS(svgns, 'rect');
+    rect.setAttributeNS(null, 'x', pWidth/2 + pos.x*scale);
+    rect.setAttributeNS(null, 'y', pHeight/2 + pos.y*scale);
+    rect.setAttributeNS(null, 'height', scale);
+    rect.setAttributeNS(null, 'width', scale);
+    rect.setAttributeNS(null, 'fill', fill);
+    canvas.appendChild(rect);
+    return rect;
 }
 
 function ret_pos(n){
     switch(n){
-    case 1:  {return {x: 10, y: 9}; break;}
-    case 2: {return {x: 11, y: 9}; break;}
-    case 3: {return {x: 11, y: 10}; break;}
-    case 4: {return {x: 11, y: 11}; break;}
-    case 5: {return {x: 10, y: 11}; break;}
-    case 6: {return {x: 9, y: 11}; break;}
-    case 7: {return {x: 9, y: 10}; break;}
-    case 8: {return {x: 9, y: 9}; break;}
-    default:  {return {x: 10, y: 10}; break;}
+    case 0:  {return {x: 0, y: -1}; break;}
+    case 1: {return {x: 1, y: -1}; break;}
+    case 2: {return {x: 1, y: 0}; break;}
+    case 3: {return {x: 1, y: 1}; break;}
+    case 4: {return {x: 0, y: 1}; break;}
+    case 5: {return {x: -1, y: 1}; break;}
+    case 6: {return {x: -1, y: 0}; break;}
+    case 7: {return {x: -1, y: -1}; break;}
+    default:  {return {x: 0, y: 0}; break;}
     }
 }
 
@@ -419,7 +438,6 @@ function ret_pos(n){
 for (var i = 0; i < 8; i++) {
     cells[i].assign_adj_cell(i, 8);
 }
-
 
 //runs simulation of cellular autonmaton
 var drawLoop = function(){
@@ -432,10 +450,40 @@ var drawLoop = function(){
 
     //displays every 125,ms
     display(now, function(){
+
+        //delete all existing cells
+        for (var i = 0; i < 8; i++) {
+            var parent = cells[i].rect.parentNode;
+            if(parent){
+                parent.removeChild(cells[i].rect);
+            }
+            if( cells[i].env_rect ){
+                parent = cells[i].env_rect.parentNode
+                if(parent){
+                    parent.removeChild(cells[i].env_rect);
+                }
+            }
+        }
+
         console.log("CA => " + cells.map(function(f){return f.state}).join("-"));
         console.log("CA => " + cells.map(function(f){return "[" + f.position.x + "," + f.position.y + "]"}).join("-"));
         console.log(global_movement)
         //console.log(env.map(function(f){return f.state}).join("-"));
+
+        // inititalize cells
+        for (var i = 0; i < 8; i++) {
+            cells[i].rect = create_rect(cells[i].position,'red');
+            canvas.appendChild(cells[i].rect);
+            if( cells[i].environment.state == 1 ){
+                var newpos = {x: cells[i].position.x + cells[i].v.x,
+                              y: cells[i].position.y + cells[i].v.y,
+                             };
+                //one cell in the environment
+                cells[i].env_rect = create_rect(newpos, 'yellow');
+            }
+
+        }
+
     })();
 
     rafId = requestAnimationFrame(drawLoop);
