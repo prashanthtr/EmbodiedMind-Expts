@@ -203,19 +203,8 @@ function createBoundaryEl(global_movement){
                 //pulls the remaining cells if they are already not active - makes the bonds tighten
                 //makes them active (neural net way of saying) -
                 console.log("Active cell")
-
-                //multiple cells lead to collapsing to the same location
-                // %2 is arbitrary to keep the decision within direction range
-
-                global_movement.x =  (global_movement.x + cell.v.x ) % 3;
-
-                // if the global movement is -ve, atleast 2 cells needs to fire
-                // to change to a global movement - from the original direction.
-                // 3 or more cells have to fire to change direction. more than 5
-                // cells means that it belongs to another side of cell. So cell
-                // stops moving.
-
-                global_movement.y = (global_movement.y + cell.v.y) % 3;
+                global_movement.x = cell.v.x
+                global_movement.y = cell.v.y
                 cell.active = false; //no longer is the active site for movement
             }
         }
@@ -411,7 +400,7 @@ function createBoundaryEl(global_movement){
 for (var i = 0; i < 8; i++) {
     var pos = ret_pos(i)
     cells[i] = (createBoundaryEl(global_movement))(i, 8, pos);
-    cells[i].rect = create_rect(cells[i].position, 'red');
+    cells[i].rect = create_rect(cells[i].position, 'white');
     console.log(cells[i].rect)
 
 }
@@ -420,11 +409,11 @@ for (var i = 0; i < 8; i++) {
 //needs the svg context for height and width
 function create_rect(pos, fill){
     // Grid is 100 by 100
-    var scale_w = pWidth/100;
-    var scale_h = pHeight/100;
+    var scale_w = pWidth/40;
+    var scale_h = pHeight/40;
     var rect = document.createElementNS(svgns, 'rect');
-    rect.setAttributeNS(null, 'x', pos.x*scale_w);
-    rect.setAttributeNS(null, 'y', pos.y*scale_h);
+    rect.setAttributeNS(null, 'x', pWidth/2 + pos.x*scale_w);
+    rect.setAttributeNS(null, 'y', pHeight/2 + pos.y*scale_h);
     rect.setAttributeNS(null, 'height', 10);
     rect.setAttributeNS(null, 'width', 10);
     rect.setAttributeNS(null, 'fill', fill);
@@ -435,15 +424,15 @@ function create_rect(pos, fill){
 //100 positions
 function ret_pos(n){
     switch(n){
-    case 0:  {return {x: 50, y: 49}; break;}
-    case 1: {return {x: 51, y: 49}; break;}
-    case 2: {return {x: 51, y: 50}; break;}
-    case 3: {return {x: 51, y: 51}; break;}
-    case 4: {return {x: 50, y: 51}; break;}
-    case 5: {return {x: 49, y: 51}; break;}
-    case 6: {return {x: 49, y: 50}; break;}
-    case 7: {return {x: 49, y: 49}; break;}
-    default:  {return {x: 50, y: 50}; break;}
+    case 0:  {return {x: 0, y: -1}; break;}
+    case 1: {return {x: 1, y: -1}; break;}
+    case 2: {return {x: 1, y: 0}; break;}
+    case 3: {return {x: 1, y: 1}; break;}
+    case 4: {return {x: 0, y: 1}; break;}
+    case 5: {return {x: -1, y: 1}; break;}
+    case 6: {return {x: -1, y: 0}; break;}
+    case 7: {return {x: -1, y: -1}; break;}
+    default:  {return {x: 0, y: 0}; break;}
     }
 }
 
