@@ -78,7 +78,7 @@ for (var i = 0; i < 8; i++) {
     env.push({ state: 0, timeStamp: 0});
 }
 
-var global_movement = {x: 1, y: 0};
+var global_movement = {x: 0, y: 0};
 
 
 // function creaates the boundary elements of the cell wall with
@@ -203,8 +203,19 @@ function createBoundaryEl(global_movement){
                 //pulls the remaining cells if they are already not active - makes the bonds tighten
                 //makes them active (neural net way of saying) -
                 console.log("Active cell")
-                global_movement.x = cell.v.x
-                global_movement.y = cell.v.y
+
+                //multiple cells lead to collapsing to the same location
+                // %2 is arbitrary to keep the decision within direction range
+
+                global_movement.x =  (global_movement.x + cell.v.x ) % 3;
+
+                // if the global movement is -ve, atleast 2 cells needs to fire
+                // to change to a global movement - from the original direction.
+                // 3 or more cells have to fire to change direction. more than 5
+                // cells means that it belongs to another side of cell. So cell
+                // stops moving.
+
+                global_movement.y = (global_movement.y + cell.v.y) % 3;
                 cell.active = false; //no longer is the active site for movement
             }
         }
@@ -408,29 +419,31 @@ for (var i = 0; i < 8; i++) {
 //mapping from position to screen coordinates
 //needs the svg context for height and width
 function create_rect(pos, fill){
-    // 1 unit is 10px by 10px
-    var scale = 10;
+    // Grid is 100 by 100
+    var scale_w = pWidth/100;
+    var scale_h = pHeight/100;
     var rect = document.createElementNS(svgns, 'rect');
-    rect.setAttributeNS(null, 'x', pWidth/2 + pos.x*scale);
-    rect.setAttributeNS(null, 'y', pHeight/2 + pos.y*scale);
-    rect.setAttributeNS(null, 'height', scale);
-    rect.setAttributeNS(null, 'width', scale);
+    rect.setAttributeNS(null, 'x', pos.x*scale_w);
+    rect.setAttributeNS(null, 'y', pos.y*scale_h);
+    rect.setAttributeNS(null, 'height', 10);
+    rect.setAttributeNS(null, 'width', 10);
     rect.setAttributeNS(null, 'fill', fill);
     canvas.appendChild(rect);
     return rect;
 }
 
+//100 positions
 function ret_pos(n){
     switch(n){
-    case 0:  {return {x: 0, y: -1}; break;}
-    case 1: {return {x: 1, y: -1}; break;}
-    case 2: {return {x: 1, y: 0}; break;}
-    case 3: {return {x: 1, y: 1}; break;}
-    case 4: {return {x: 0, y: 1}; break;}
-    case 5: {return {x: -1, y: 1}; break;}
-    case 6: {return {x: -1, y: 0}; break;}
-    case 7: {return {x: -1, y: -1}; break;}
-    default:  {return {x: 0, y: 0}; break;}
+    case 0:  {return {x: 50, y: 49}; break;}
+    case 1: {return {x: 51, y: 49}; break;}
+    case 2: {return {x: 51, y: 50}; break;}
+    case 3: {return {x: 51, y: 51}; break;}
+    case 4: {return {x: 50, y: 51}; break;}
+    case 5: {return {x: 49, y: 51}; break;}
+    case 6: {return {x: 49, y: 50}; break;}
+    case 7: {return {x: 49, y: 49}; break;}
+    default:  {return {x: 50, y: 50}; break;}
     }
 }
 
@@ -438,6 +451,7 @@ function ret_pos(n){
 for (var i = 0; i < 8; i++) {
     cells[i].assign_adj_cell(i, 8);
 }
+
 
 //runs simulation of cellular autonmaton
 var drawLoop = function(){
@@ -450,6 +464,8 @@ var drawLoop = function(){
 
     //displays every 125,ms
     display(now, function(){
+
+        console.log(cells.map(function(f){return f.position}));
 
         //delete all existing cells
         for (var i = 0; i < 8; i++) {
@@ -472,7 +488,13 @@ var drawLoop = function(){
 
         // inititalize cells
         for (var i = 0; i < 8; i++) {
-            cells[i].rect = create_rect(cells[i].position,'red');
+            if( cells[i].state == 1){
+                cells[i].rect = create_rect(cells[i].position,'red');
+            }
+            else{
+                cells[i].rect = create_rect(cells[i].position,'white');
+            }
+
             canvas.appendChild(cells[i].rect);
             if( cells[i].environment.state == 1 ){
                 var newpos = {x: cells[i].position.x + cells[i].v.x,
