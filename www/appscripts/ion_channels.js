@@ -72,6 +72,8 @@ for (var i = 0; i < 12; i++) {
         this.state = 1;
         this.setAttributeNS(null,"fill","red")
     });
+    rect.xpos = x
+    rect.ypos = y
     temp.push(0);
     inner_boundary.push(rect);
 }
@@ -89,6 +91,8 @@ for (var i = 0; i < 12; i++) {
         this.state = 1;
         this.setAttributeNS(null,"fill","red")
     });
+    rect.xpos = x
+    rect.ypos = y
     ext_temp.push(0);
     outer_boundary.push(rect);
 }
@@ -182,6 +186,45 @@ var drawLoop = function(){
             if( cells[i].xpos > pWidth-5) cells[i].vx = -cells[i].vx
             if ( cells[i].ypos < 10) cells[i].vy = -cells[i].vy
             if ( cells[i].ypos > pHeight-10) cells[i].vy = -cells[i].vy
+
+            // interaction between cells - collide and move away with 75% speed
+            for( var j=0; j < cells.length; j++){
+                if( j!=i){
+                    var euclid = Math.pow(cells[i].xpos - cells[j].xpos,2) + Math.pow(cells[i].ypos - cells[j].ypos,2)
+                    if( Math.sqrt(euclid) < 10){
+                        cells[i].vx = -cells[i].vx
+                        cells[i].vy = -cells[i].vy
+                        cells[j].vx = -cells[j].vx
+                        cells[j].vy = -cells[j].vy
+                    }
+                }
+            }
+
+            // interaction between cells - and outer boundary
+            for( var j=0; j < outer_boundary.length; j++){
+
+                var euclid = Math.pow(cells[i].xpos - outer_boundary[j].xpos,2) + Math.pow(cells[i].ypos - outer_boundary[j].ypos,2);
+                if( Math.sqrt(euclid) < 18 && outer_boundary[j].state == 0){ //blocked
+                    cells[i].vx = -0.75*cells[i].vx
+                    cells[i].vy = -0.75*cells[i].vy
+                }
+                else{
+                    // pass through if inner boundary is also red
+
+                    for( var k=0; k < outer_boundary.length; k++){
+
+                        var euclid = Math.pow(cells[i].xpos - inner_boundary[k].xpos,2) + Math.pow(cells[i].ypos - inner_boundary[k].ypos,2);
+                        if( Math.sqrt(euclid) < 18 && inner_boundary[k].state == 0){ //blocked
+                            cells[i].vx = -0.75*cells[i].vx
+                            cells[i].vy = -0.75*cells[i].vy
+                        }
+                        else{
+                            //let is pass in the samee direction
+                        }
+                    }
+
+                }
+            }
 
             cells[i].xpos = cells[i].xpos + cells[i].vx
             cells[i].ypos = cells[i].ypos + cells[i].vy
