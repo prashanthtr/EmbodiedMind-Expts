@@ -114,8 +114,8 @@ for (var i = 0; i < 40; i++) {
         cells[i] = create_rect(x,y,'green');
     }
 
-    cells[i].vx = -5 + Math.floor(Math.random()*10)
-    cells[i].vy = -5 + Math.floor(Math.random()*10)
+    cells[i].vx = -7 + Math.floor(Math.random()*15)
+    cells[i].vy = -7 + Math.floor(Math.random()*15)
     cells[i].xpos = x
     cells[i].ypos = y
 }
@@ -205,21 +205,22 @@ var drawLoop = function(){
 
                 var euclid = Math.pow(cells[i].xpos - outer_boundary[j].xpos,2) + Math.pow(cells[i].ypos - outer_boundary[j].ypos,2);
                 if( Math.sqrt(euclid) < 18 && outer_boundary[j].state == 0){ //blocked
-                    cells[i].vx = -0.75*cells[i].vx
-                    cells[i].vy = -0.75*cells[i].vy
+                    cells[i].vx = -cells[i].vx
+                    cells[i].vy = -cells[i].vy
                 }
                 else{
                     // pass through if inner boundary is also red
 
-                    for( var k=0; k < outer_boundary.length; k++){
+                    for( var k=0; k < inner_boundary.length; k++){
 
                         var euclid = Math.pow(cells[i].xpos - inner_boundary[k].xpos,2) + Math.pow(cells[i].ypos - inner_boundary[k].ypos,2);
                         if( Math.sqrt(euclid) < 18 && inner_boundary[k].state == 0){ //blocked
-                            cells[i].vx = -0.75*cells[i].vx
+                            cells[i].vx = -0.75*cells[i].vx //trapped inside
                             cells[i].vy = -0.75*cells[i].vy
                         }
                         else{
                             //let is pass in the samee direction
+
                         }
                     }
 
