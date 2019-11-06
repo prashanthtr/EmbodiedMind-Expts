@@ -4,23 +4,33 @@
 
 import {js_clock} from "./clocks.js"
 
-
 var svgns = "http://www.w3.org/2000/svg";
 var canvas = document.getElementById( 'svgCanvas' );
 
-var pWidth = canvas.clientWidth;
-var pHeight = canvas.clientHeight;
+var pW = canvas.clientWidth;
+var pH = canvas.clientHeight;
 
-console.log(pWidth + "  " + pHeight)
+var n = 20;
+var side = 16;
+
+var positive = 1;
+var negative = -1;
+var b_charge = +1;
+var neutral = 0;
+
+var pWidth = pW - pW%n
+var pHeight = pH - pH%n
+
+console.log(pWidth + "  " + pHeight);
 
 // 40 * 40 grid
-var scale_w = Math.floor(pWidth/40);
-var scale_h = Math.floor(pHeight/40);
+var scale_w = Math.floor(pWidth/n);
+var scale_h = Math.floor(pHeight/n);
 
 var rafId = null;
 
 var yellow = "#ffffa1"
-var green = "#87ceeb"
+var green = "#98ee90"
 
 var scale = 0.9*Math.min(pWidth, pHeight);
 var pi = Math.PI;
@@ -32,19 +42,18 @@ rect.setAttributeNS(null, 'x', 0);
 rect.setAttributeNS(null, 'y', 0);
 rect.setAttributeNS(null, 'height', pHeight);
 rect.setAttributeNS(null, 'width', pWidth);
-rect.setAttributeNS(null, 'fill', '#000000');
+rect.setAttributeNS(null, 'fill', 'white');
 canvas.appendChild(rect);
-
 
 //mapping from position to screen coordinates
 //needs the svg context for height and width
 function create_rect(x,y, fill){
     // Grid is 100 by 100
     var rect = document.createElementNS(svgns, 'rect');
-    rect.setAttributeNS(null, 'x', 19 + x);
-    rect.setAttributeNS(null, 'y', 20 + y);
-    rect.setAttributeNS(null, 'height', 10);
-    rect.setAttributeNS(null, 'width', 10);
+    rect.setAttributeNS(null, 'x', 3 + x);
+    rect.setAttributeNS(null, 'y', 2 + y);
+    rect.setAttributeNS(null, 'height', side);
+    rect.setAttributeNS(null, 'width', side);
     rect.setAttributeNS(null, 'fill', fill);
     rect.state = 0;
     canvas.appendChild(rect);
@@ -54,29 +63,29 @@ function create_rect(x,y, fill){
 var cells = [];
 
 // inititalize envrionment cells
-for (var i = 0; i < 40; i++) {
+for (var i = 0; i < n; i++) {
 
     cells[i] = []
 
-    for(var j = 0; j< 40; j++){
+    for(var j = 0; j< n; j++){
 
-        var x = i*scale_w
-        var y = j*scale_h
+        var x = i*scale_w;
+        var y = j*scale_h;
 
         var renv = Math.random()
         if(renv > 0.4){
             cells[i][j] = create_rect(x, y,yellow);
-            cells[i][j].state = -1; //negative charge
+            cells[i][j].state = negative; //negative charge
         }
         else {
             cells[i][j] = create_rect(x,y,green);
-            cells[i][j].state = 1;
+            cells[i][j].state = positive;
         }
 
         cells[i][j].addEventListener("mouseover", function(e){
-            this.state = this.state==1?-1:1;
-            if( this.state == 1) this.setAttributeNS(null,"fill",green)
-            else  this.setAttributeNS(null,"fill",yellow);
+            this.state = this.state==negative?positive:negative;
+            if( this.state == positive) this.setAttributeNS(null,"fill",green)
+            else this.setAttributeNS(null,"fill",yellow);
         });
 
         cells[i][j].setAttributeNS(null,"fill-opacity",0.9)
@@ -89,7 +98,6 @@ for (var i = 0; i < 40; i++) {
     // cells[i].vy = -7 + Math.floor(Math.random()*15)
 
 }
-
 
 var inner_boundary = [];
 var outer_boundary = [];
@@ -124,25 +132,23 @@ for (var i = 0; i < 16; i++) {
 
     var angle = i*Math.PI/8;
 
-    var x = scale_w*(20 + Math.floor( r*Math.cos(angle) )); // to get it in units
-    var y = scale_h*(20 + Math.floor( r*Math.sin(angle) ));
+    var x = scale_w*(n/2 + Math.floor( r*Math.cos(angle) )); // to get it in units
+    var y = scale_h*(n/2 + Math.floor( r*Math.sin(angle) ));
 
-        //pHeight/2 + Math.floor( r*Math.sin(angle));
+    //pHeight/2 + Math.floor( r*Math.sin(angle));
 
     var rect = create_rect(x,y, 'black');
     rect.addEventListener("mousedown", function(e){
-        this.state = 1;
+        this.state = b_charge;
         this.setAttributeNS(null,"fill","red")
         this.setAttributeNS(null,"fill-opacity",1); //back up
-
     });
+
     rect.xpos = x
     rect.ypos = y
     temp.push(0);
     inner_boundary.push(rect);
 }
-
-
 
 // r = 60;
 // for (var i = 0; i < 12; i++) {
@@ -163,9 +169,8 @@ for (var i = 0; i < 16; i++) {
 //     outer_boundary.push(rect);
 // }
 
-
 //display after every action
-var display = js_clock(10, 400);
+var display = js_clock(10, 800);
 
 //runs simulation of cellular autonmaton
 var drawLoop = function(){
@@ -203,7 +208,7 @@ var drawLoop = function(){
         // inititalize cells
         for (var i = 0; i < inner_boundary.length; i++) {
 
-            if( inner_boundary[i].state == 1){
+            if( inner_boundary[i].state == b_charge){
                 inner_boundary[i].setAttributeNS(null,"fill","red")
                 //inner_boundary[i].setAttributeNS(null,"fill-opacity",0.5)
             }
@@ -240,12 +245,12 @@ var drawLoop = function(){
                     var sum = cells[i-1][j-1].state  + cells[i-1][j].state + cells[i-1][j+1].state + cells[i][j+1].state + cells[i+1][j+1].state + cells[i+1][j].state + cells[i+1][j-1].state + cells[i][j].state
 
                     if( sum >= 0){ //sorrounded by more than 4 possitive charges, positive
-                        cells[i][j].state = 1;
+                        cells[i][j].state = positive;
                         cells[i][j].setAttributeNS(null,"fill",green)
                     }
                     else{
                         //negative charge
-                        cells[i][j].state = -1;
+                        cells[i][j].state = negative;
                         cells[i][j].setAttributeNS(null,"fill",yellow)
                     }
 
@@ -257,13 +262,17 @@ var drawLoop = function(){
 
                     //var sum = neighbours.reduce(function(a,b){return a+b});
 
-                    if( sum >= 0){ //sorrounded by more than 4 possitive charges, positive
-                        cells[i][j].state = 1;
+                    if( sum > 0){ //sorrounded by more than 4 possitive charges, positive
+                        cells[i][j].state = positive;
                         cells[i][j].setAttributeNS(null,"fill",green)
                     }
+                    // else if( sum > 2){ //sorrounded by more than 4 possitive charges, positive
+                    //     cells[i][j].state = 2*positive;
+                    //     cells[i][j].setAttributeNS(null,"fill",green)
+                    // }
                     else{
                         //negative charge
-                        cells[i][j].state = -1;
+                        cells[i][j].state = negative;
                         cells[i][j].setAttributeNS(null,"fill",yellow)
                     }
 
@@ -347,7 +356,10 @@ window.addEventListener("keypress", function(c){
 
 function within_boundary(  cell ){
 
-    if( cell.xpos > 17*scale_w  && cell.xpos < 23*scale_w &&  cell.ypos > 17*scale_h && cell.ypos < 23*scale_h  ){
+    var min = n/2-3;
+    var max = n/2+3;
+
+    if( cell.xpos > min*scale_w  && cell.xpos < max*scale_w &&  cell.ypos > min*scale_h && cell.ypos < max*scale_h  ){
         //console.log("within")
         return 1;
 
@@ -397,7 +409,7 @@ function neighbours_sum ( cell, boundary ){
             }
         }
         if(bool_check == 1){
-            sum += boundary[pos].state;
+            sum += 2*boundary[pos].state; //twice the charge
         }
     }
     return sum;
