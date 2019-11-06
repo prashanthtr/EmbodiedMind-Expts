@@ -1,6 +1,35 @@
 
-// so far improving the asynchronicity of bittorio to make it responsive to the
-// changes in adjacent elements at different temporal rates
+
+// in order to mdoel the cellular homeostasis, the rules of the should not be
+// independent of the charges of the neighbouring cells. This is a difference
+// from original bittorio.
+
+// A CA-rule then is a combination of charges/values of the adjacent cells,
+// charges of the adjacent ions, much like the rule of a cell in the game of
+// life. The interpretation though is matter of Ionic channel - that is, red
+// cells mean, open chanels, and black cells mean closed channels.
+
+// The representatin of the CA rule in terms of charges/charge values is
+// important so it is possible to describe the homeostatic behavior of the cell
+// in terms of the conservation of ion charge inside the cell. - maintaining a
+// membrane potential.
+
+// Another way is to consider the cells as perturbartions - green cells as
+// perturbations, and yellow as non-perturbations. Again, this feels a little
+// bit arbitrary (and a desgigner choice).
+
+// This allows us to observe one important aspect of this system (have to name
+// it) - the ability to alter the envrionment thorugh action coupling. This is
+// an ability that is observed in the game of life simulations but also often
+// resulted in the destruction of the glider/other entities. Here, it is an
+// example, in which the cell maintains operational closure, but affects
+// envrionment through interaction based on changes in alterations in membrane
+// potential. This is far more accurate model of the cell.
+
+//// Now we can explore whether different cells will be able to form mutually
+//// influencing perturbations in a same environment.
+
+// computational science -
 
 import {js_clock} from "./clocks.js"
 
@@ -244,7 +273,7 @@ var drawLoop = function(){
                 else{
                     var sum = cells[i-1][j-1].state  + cells[i-1][j].state + cells[i-1][j+1].state + cells[i][j+1].state + cells[i+1][j+1].state + cells[i+1][j].state + cells[i+1][j-1].state + cells[i][j].state
 
-                    if( sum >= 0){ //sorrounded by more than 4 possitive charges, positive
+                    if( sum >= -1){ //sorrounded by more than 3 possitive charges, positive
                         cells[i][j].state = positive;
                         cells[i][j].setAttributeNS(null,"fill",green)
                     }
@@ -262,7 +291,7 @@ var drawLoop = function(){
 
                     //var sum = neighbours.reduce(function(a,b){return a+b});
 
-                    if( sum > 0){ //sorrounded by more than 4 possitive charges, positive
+                    if( sum >= 2){ //sorrounded by more than 4 possitive charges, positive
                         cells[i][j].state = positive;
                         cells[i][j].setAttributeNS(null,"fill",green)
                     }
