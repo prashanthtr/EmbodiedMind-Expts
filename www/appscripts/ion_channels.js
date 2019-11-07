@@ -1,15 +1,15 @@
 
 
-// in order to mdoel the cellular homeostasis, the rules of the should not be
-// independent of the charges of the neighbouring cells. This is a difference
-// from original bittorio.
+// in order to mdoel the cellular homeostasis, the rules of the should
+// incorporate the distribution of the charges of the neighbouring cells. This
+// is a difference from original bittorio.
 
 // A CA-rule then is a combination of charges/values of the adjacent cells,
 // charges of the adjacent ions, much like the rule of a cell in the game of
 // life. The interpretation though is matter of Ionic channel - that is, red
 // cells mean, open chanels, and black cells mean closed channels.
 
-// The representatin of the CA rule in terms of charges/charge values is
+// The representation of the CA rule in terms of charges/charge values is
 // important so it is possible to describe the homeostatic behavior of the cell
 // in terms of the conservation of ion charge inside the cell. - maintaining a
 // membrane potential.
@@ -269,6 +269,29 @@ var drawLoop = function(){
                 }
                 else if( within_boundary(cells[i][j]) ){
                     //do not compute
+
+                    if( onboundary(cells[i][j],inner_boundary)){
+                        var sum = neighbours_sum(cells[i][j],inner_boundary);
+                    }
+                    else{
+                        var sum = cells[i-1][j-1].state  + cells[i-1][j].state + cells[i-1][j+1].state + cells[i][j+1].state + cells[i+1][j+1].state + cells[i+1][j].state + cells[i+1][j-1].state + cells[i][j].state
+                    }
+                    //var sum = neighbours.reduce(function(a,b){return a+b});
+
+                    if( sum >= 0){ //sorrounded by 4 or more possitive charges, positive
+                        // or 2 or more boundary cells that is lighted red
+                        cells[i][j].state = positive;
+                        cells[i][j].setAttributeNS(null,"fill",green)
+                    }
+                    // else if( sum > 2){ //sorrounded by more than 4 possitive charges, positive
+                    //     cells[i][j].state = 2*positive;
+                    //     cells[i][j].setAttributeNS(null,"fill",green)
+                    // }
+                    else{ //sorounded by 4 or less negative charges
+                        //negative charge
+                        cells[i][j].state = negative;
+                        cells[i][j].setAttributeNS(null,"fill",yellow)
+                    }
                 }
                 else{
                     var sum = cells[i-1][j-1].state  + cells[i-1][j].state + cells[i-1][j+1].state + cells[i][j+1].state + cells[i+1][j+1].state + cells[i+1][j].state + cells[i+1][j-1].state + cells[i][j].state
@@ -285,27 +308,7 @@ var drawLoop = function(){
 
                 }
 
-                if( onboundary(cells[i][j],inner_boundary)){
 
-                    var sum = neighbours_sum(cells[i][j],inner_boundary);
-
-                    //var sum = neighbours.reduce(function(a,b){return a+b});
-
-                    if( sum >= 2){ //sorrounded by more than 4 possitive charges, positive
-                        cells[i][j].state = positive;
-                        cells[i][j].setAttributeNS(null,"fill",green)
-                    }
-                    // else if( sum > 2){ //sorrounded by more than 4 possitive charges, positive
-                    //     cells[i][j].state = 2*positive;
-                    //     cells[i][j].setAttributeNS(null,"fill",green)
-                    // }
-                    else{
-                        //negative charge
-                        cells[i][j].state = negative;
-                        cells[i][j].setAttributeNS(null,"fill",yellow)
-                    }
-
-                }
 
             }
 
@@ -416,7 +419,6 @@ function onboundary(  cell, boundary ){
 }
 
 function neighbours_sum ( cell, boundary ){
-
 
     var n_arr = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,0],[0,1],[1,-1],[1,0],[1,1]];
     var sum = 0;
