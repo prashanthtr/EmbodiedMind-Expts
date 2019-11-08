@@ -32,20 +32,21 @@
 // computational science -
 
 import {js_clock} from "./clocks.js"
+import {create_rect_fn, on_boundary} from "./utils.js"
+import {create_cell} from "./cell_spec.js"
 
-var svgns = "http://www.w3.org/2000/svg";
-var canvas = document.getElementById( 'svgCanvas' );
-
-var pW = canvas.clientWidth;
-var pH = canvas.clientHeight;
-
+//in onfig file
 var n = 20;
 var side = 16;
-
 var positive = 1;
 var negative = -1;
 var b_charge = +1;
 var neutral = 0;
+
+
+var canvas = document.getElementById( 'svgCanvas' );
+var pW = canvas.clientWidth;
+var pH = canvas.clientHeight;
 
 var pWidth = pW - pW%n
 var pHeight = pH - pH%n
@@ -56,6 +57,7 @@ console.log(pWidth + "  " + pHeight);
 var scale_w = Math.floor(pWidth/n);
 var scale_h = Math.floor(pHeight/n);
 
+var create_rect = create_rect_fn(scale_w, scale_h, canvas);
 var rafId = null;
 
 var yellow = "#ffffa1"
@@ -66,29 +68,7 @@ var pi = Math.PI;
 
 var store_src = [];
 
-var rect = document.createElementNS(svgns, 'rect');
-rect.setAttributeNS(null, 'x', 0);
-rect.setAttributeNS(null, 'y', 0);
-rect.setAttributeNS(null, 'height', pHeight);
-rect.setAttributeNS(null, 'width', pWidth);
-rect.setAttributeNS(null, 'fill', 'white');
-canvas.appendChild(rect);
-
-//mapping from position to screen coordinates
-//needs the svg context for height and width
-function create_rect(x,y, fill){
-    // Grid is 100 by 100
-    var rect = document.createElementNS(svgns, 'rect');
-    rect.setAttributeNS(null, 'x', 3 + x);
-    rect.setAttributeNS(null, 'y', 2 + y);
-    rect.setAttributeNS(null, 'height', side);
-    rect.setAttributeNS(null, 'width', side);
-    rect.setAttributeNS(null, 'fill', fill);
-    rect.state = 0;
-    canvas.appendChild(rect);
-    return rect;
-}
-
+var rect = create_rect(0,0,pWidth,pHeight,"white");
 var cells = [];
 
 // inititalize envrionment cells
@@ -98,26 +78,24 @@ for (var i = 0; i < n; i++) {
 
     for(var j = 0; j< n; j++){
 
-        var x = i*scale_w;
-        var y = j*scale_h;
-
         var renv = Math.random()
         if(renv > 0.4){
-            cells[i][j] = create_rect(x, y,yellow);
+            cells[i][j] = create_cell(i,j,"env");
+            cells[i][j].rect = create_rect(i, j, side, side, yellow);
             cells[i][j].state = negative; //negative charge
         }
         else {
-            cells[i][j] = create_rect(x,y,green);
+            cells[i][j] = create_cell(i,j);
+            cells[i][j].rect = create_rect(i,j,side, side, green);
             cells[i][j].state = positive;
         }
 
-        cells[i][j].addEventListener("mouseover", function(e){
+        cells[i][j].rect.addEventListener("mouseover", function(e){
             this.state = this.state==negative?positive:negative;
             if( this.state == positive) this.setAttributeNS(null,"fill",green)
             else this.setAttributeNS(null,"fill",yellow);
         });
 
-        cells[i][j].setAttributeNS(null,"fill-opacity",0.9)
         cells[i][j].xpos = x
         cells[i][j].ypos = y
 
@@ -125,59 +103,11 @@ for (var i = 0; i < n; i++) {
 
     // cells[i].vx = -7 + Math.floor(Math.random()*15)
     // cells[i].vy = -7 + Math.floor(Math.random()*15)
-
 }
 
 var inner_boundary = [];
-var outer_boundary = [];
 var temp = []
-var ext_temp = []
 
-// inititalize cells
-
-// var r = 40;
-
-// for (var i = 0; i < 12; i++) {
-
-//     var angle = i*Math.PI/6;
-
-//     var x = pWidth/2 + Math.floor( r*Math.cos(angle) ); // to get it in units
-//     var y = pHeight/2 + Math.floor( r*Math.sin(angle));
-
-//     var rect = create_rect(x,y, 'white');
-//     rect.addEventListener("mousedown", function(e){
-//         this.state = 1;
-//         this.setAttributeNS(null,"fill","red")
-//     });
-//     rect.xpos = x
-//     rect.ypos = y
-//     temp.push(0);
-//     inner_boundary.push(rect);
-// }
-
-var r = 2.5;
-
-for (var i = 0; i < 16; i++) {
-
-    var angle = i*Math.PI/8;
-
-    var x = scale_w*(n/2 + Math.floor( r*Math.cos(angle) )); // to get it in units
-    var y = scale_h*(n/2 + Math.floor( r*Math.sin(angle) ));
-
-    //pHeight/2 + Math.floor( r*Math.sin(angle));
-
-    var rect = create_rect(x,y, 'black');
-    rect.addEventListener("mousedown", function(e){
-        this.state = b_charge;
-        this.setAttributeNS(null,"fill","red")
-        this.setAttributeNS(null,"fill-opacity",1); //back up
-    });
-
-    rect.xpos = x
-    rect.ypos = y
-    temp.push(0);
-    inner_boundary.push(rect);
-}
 
 // r = 60;
 // for (var i = 0; i < 12; i++) {
@@ -192,14 +122,69 @@ for (var i = 0; i < 16; i++) {
 //         this.state = 1;
 //         this.setAttributeNS(null,"fill","red")
 //     });
+
 //     rect.xpos = x
 //     rect.ypos = y
 //     ext_temp.push(0);
 //     outer_boundary.push(rect);
 // }
 
+
+var r = 2.5;
+
+for (var i = 0; i < 16; i++) {
+
+    var angle = i*Math.PI/8;
+
+    var x = n/2 + Math.floor( r*Math.cos(angle) ); // scale_w*(n/2 + Math.floor( r*Math.cos(angle) )); // to get it in units
+    var y = n/2 + Math.floor( r*Math.sin(angle) ); //scale_h*(n/2 + Math.floor( r*Math.sin(angle) ));
+
+    //pHeight/2 + Math.floor( r*Math.sin(angle));
+
+    var bcell = create_cell(x,y,"boundary")
+    bcell.rect = create_rect(x,y, side, side, 'black');
+    bcell.rect.addEventListener("mousedown", function(e){
+        this.state = b_charge;
+        this.setAttributeNS(null,"fill","red")
+        this.setAttributeNS(null,"fill-opacity",1); //back up
+    });
+
+    inner_boundary.push(bcell);
+    temp.push(0);
+}
+
+
+inner_boundary.map(function(ib){
+    ib.assign_adj_cell(inner_boundary, cells, cells.length, cells[0].length);
+    //maximum number of cel;ls in length and width of the grid
+});
+
+
+
+var grid = [];
+
+// inititalize envrionment cells
+for (var i = 0; i < n; i++) {
+    grid[i] = []
+    for(var j = 0; j< n; j++){
+        cells[i][j].assign_adj_cell(inner_boundary, cells, n, n);
+        grid[i][j] = 0;
+    }
+}
+
+// // inititalize envrionment cells
+// for (var i = 0; i < n; i++) {
+//     grid[i] = []
+//     for(var j = 0; j< n; j++){
+//         console.log(cells[i][j].adjacent);
+//     }
+// }
+
+
+
+
 //display after every action
-var display = js_clock(10, 800);
+var display = js_clock(10, 500);
 
 //runs simulation of cellular autonmaton
 var drawLoop = function(){
@@ -210,160 +195,46 @@ var drawLoop = function(){
     display(now, function(){
 
         for (var i = 0; i < inner_boundary.length; i++) {
-
-            if( i == 0){
-                var prev = inner_boundary.length-1
-                var next = 1;
-            }
-            else if( i == inner_boundary.length-1){
-                var next = 0
-                var prev = inner_boundary.length-2
-            }
-            else {
-                var next = i + 1
-                var prev = i - 1
-            }
-
-            temp[i] = ca_rule(inner_boundary[prev].state, inner_boundary[i].state, inner_boundary[next].state);
-            //ext_temp[i] = ca_rule(outer_boundary[prev].state, outer_boundary[i].state, outer_boundary[next].state);
+            temp[i] = inner_boundary[i].act(inner_boundary);
         }
 
-        for(var i = 0; i<inner_boundary.length;i++){
-            inner_boundary[i].state = temp[i];
-            //outer_boundary[i].state = ext_temp[i];
-        }
-
-
-        // inititalize cells
         for (var i = 0; i < inner_boundary.length; i++) {
 
+            inner_boundary[i].state = temp[i];
             if( inner_boundary[i].state == b_charge){
-                inner_boundary[i].setAttributeNS(null,"fill","red")
-                //inner_boundary[i].setAttributeNS(null,"fill-opacity",0.5)
+                inner_boundary[i].rect.setAttributeNS(null,"fill","red")
             }
             else{
-                //wall
-                inner_boundary[i].setAttributeNS(null,"fill-opacity",1)
-                inner_boundary[i].setAttributeNS(null,"fill","black")
+                inner_boundary[i].rect.setAttributeNS(null,"fill","black")
             }
 
-            // if( outer_boundary[i].state == 1){
-            //     outer_boundary[i].setAttributeNS(null,"fill","red")
-            // }
-            // else{
-            //     outer_boundary[i].setAttributeNS(null,"fill","white")
-            // }
-
         }
+
 
         // console.log("CA => " + boundary.map(function(f){return f.state}).join("-"));
 
         for(i = 0; i< cells.length;i++){
-
             for( j=0; j< cells[i].length; j++){
-
-                var neighbour = [];
-                //edges
-                if( i == 0 || i == cells.length-1 || j == 0 || j == cells[i].length-1 ){
-                    //do not compute
+                if( !on_boundary( cells[i][j].xind, cells[i][j].yind, inner_boundary )){
+                    grid[i][j] = cells[i][j].act(cells[i][j].state, cells[i][j].adjacent, inner_boundary)
                 }
-                else if( within_boundary(cells[i][j]) ){
-                    //do not compute
-
-                    if( onboundary(cells[i][j],inner_boundary)){
-                        var sum = neighbours_sum(cells[i][j],inner_boundary);
-                    }
-                    else{
-                        var sum = cells[i-1][j-1].state  + cells[i-1][j].state + cells[i-1][j+1].state + cells[i][j+1].state + cells[i+1][j+1].state + cells[i+1][j].state + cells[i+1][j-1].state + cells[i][j].state
-                    }
-                    //var sum = neighbours.reduce(function(a,b){return a+b});
-
-                    if( sum >= 0){ //sorrounded by 4 or more possitive charges, positive
-                        // or 2 or more boundary cells that is lighted red
-                        cells[i][j].state = positive;
-                        cells[i][j].setAttributeNS(null,"fill",green)
-                    }
-                    // else if( sum > 2){ //sorrounded by more than 4 possitive charges, positive
-                    //     cells[i][j].state = 2*positive;
-                    //     cells[i][j].setAttributeNS(null,"fill",green)
-                    // }
-                    else{ //sorounded by 4 or less negative charges
-                        //negative charge
-                        cells[i][j].state = negative;
-                        cells[i][j].setAttributeNS(null,"fill",yellow)
-                    }
-                }
-                else{
-                    var sum = cells[i-1][j-1].state  + cells[i-1][j].state + cells[i-1][j+1].state + cells[i][j+1].state + cells[i+1][j+1].state + cells[i+1][j].state + cells[i+1][j-1].state + cells[i][j].state
-
-                    if( sum >= -1){ //sorrounded by more than 3 possitive charges, positive
-                        cells[i][j].state = positive;
-                        cells[i][j].setAttributeNS(null,"fill",green)
-                    }
-                    else{
-                        //negative charge
-                        cells[i][j].state = negative;
-                        cells[i][j].setAttributeNS(null,"fill",yellow)
-                    }
-
-                }
-
-
 
             }
-
         }
 
-        // if( cells[i].xpos < 5) cells[i].vx = -cells[i].vx
-        // if( cells[i].xpos > pWidth-5) cells[i].vx = -cells[i].vx
-        // if ( cells[i].ypos < 10) cells[i].vy = -cells[i].vy
-        // if ( cells[i].ypos > pHeight-10) cells[i].vy = -cells[i].vy
+        for(i = 0; i< cells.length;i++){
+            for( j=0; j< cells[i].length; j++){
+                cells[i][j].state = grid[i][j]
+                if( cells[i][j].state == positive ){
+                          cells[i][j].rect.setAttributeNS(null,"fill",green)
+                }
+                else{
+                    cells[i][j].rect.setAttributeNS(null,"fill",yellow)
+                }
+            }
+        }
 
-        // // interaction between cells - collide and move away with 75% speed
-        // for( var j=0; j < cells.length; j++){
-        //     if( j!=i){
-        //         var euclid = Math.pow(cells[i].xpos - cells[j].xpos,2) + Math.pow(cells[i].ypos - cells[j].ypos,2)
-        //         if( Math.sqrt(euclid) < 10){
-        //             cells[i].vx = -cells[i].vx
-        //             cells[i].vy = -cells[i].vy
-        //             cells[j].vx = -cells[j].vx
-        //             cells[j].vy = -cells[j].vy
-        //         }
-        //     }
-        // }
-
-        // // interaction between cells - and outer boundary
-        // for( var j=0; j < outer_boundary.length; j++){
-
-        //     var euclid = Math.pow(cells[i].xpos - outer_boundary[j].xpos,2) + Math.pow(cells[i].ypos - outer_boundary[j].ypos,2);
-        //     if( Math.sqrt(euclid) < 18 && outer_boundary[j].state == 0){ //blocked
-        //         cells[i].vx = -cells[i].vx
-        //         cells[i].vy = -cells[i].vy
-        //     }
-        //     else{
-        //         // pass through if inner boundary is also red
-
-        //         for( var k=0; k < inner_boundary.length; k++){
-
-        //             var euclid = Math.pow(cells[i].xpos - inner_boundary[k].xpos,2) + Math.pow(cells[i].ypos - inner_boundary[k].ypos,2);
-        //             if( Math.sqrt(euclid) < 18 && inner_boundary[k].state == 0){ //blocked
-        //                 cells[i].vx = -0.75*cells[i].vx //trapped inside
-        //                 cells[i].vy = -0.75*cells[i].vy
-        //             }
-        //             else{
-        //                 //let is pass in the samee direction
-
-        //             }
-        //         }
-
-        //     }
-        // }
-
-        // cells[i].xpos = cells[i].xpos + cells[i].vx
-        // cells[i].ypos = cells[i].ypos + cells[i].vy
-        // cells[i].setAttribute('x', cells[i].xpos)
-        // cells[i].setAttribute('y', cells[i].ypos)
-
+        console.log("will diosplauy")
     })();
 
     rafId = requestAnimationFrame(drawLoop);
@@ -386,37 +257,37 @@ window.addEventListener("keypress", function(c){
 });
 
 
-function within_boundary(  cell ){
+// function within_boundary(  cell ){
 
-    var min = n/2-3;
-    var max = n/2+3;
+//     var min = n/2-3;
+//     var max = n/2+3;
 
-    if( cell.xpos > min*scale_w  && cell.xpos < max*scale_w &&  cell.ypos > min*scale_h && cell.ypos < max*scale_h  ){
-        //console.log("within")
-        return 1;
+//     if( cell.xpos > min*scale_w  && cell.xpos < max*scale_w &&  cell.ypos > min*scale_h && cell.ypos < max*scale_h  ){
+//         //console.log("within")
+//         return 1;
 
-    }
-    else{
-        return 0;
-    }
+//     }
+//     else{
+//         return 0;
+//     }
 
-}
+// }
 
-function onboundary(  cell, boundary ){
+// function onboundary(  cell, boundary ){
 
-    var near_boundary = 0;
-    for(var i = 0; i <boundary.length; i++){
-        var cx = cell.xpos/scale_w
-        var cy = cell.ypos/scale_h
-        var bx = boundary[i].xpos/scale_w
-        var by = boundary[i].ypos/scale_h
+//     var near_boundary = 0;
+//     for(var i = 0; i <boundary.length; i++){
+//         var cx = cell.xpos/scale_w
+//         var cy = cell.ypos/scale_h
+//         var bx = boundary[i].xpos/scale_w
+//         var by = boundary[i].ypos/scale_h
 
-        if( (Math.abs( cx - bx ) <= 1 && Math.abs( cx - bx ) != 0) ||  (Math.abs( cy - by ) <= 1 && Math.abs( cy - by ) != 0) ){
-            near_boundary = 1;
-        }
-    }
-    return near_boundary;
-}
+//         if( (Math.abs( cx - bx ) <= 1 && Math.abs( cx - bx ) != 0) ||  (Math.abs( cy - by ) <= 1 && Math.abs( cy - by ) != 0) ){
+//             near_boundary = 1;
+//         }
+//     }
+//     return near_boundary;
+// }
 
 function neighbours_sum ( cell, boundary ){
 
@@ -447,6 +318,9 @@ function neighbours_sum ( cell, boundary ){
 
 }
 
+// Ca rule takes in a bunch of cells adjacent to the boundary cell - and gives
+// different weights to adjacent cells on the boundary, and cells outside,
+// andinterior to the boundary.
 
 // the cellular automaton rules that each object uses to compute
 // their states.
