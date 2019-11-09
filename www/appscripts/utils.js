@@ -25,8 +25,8 @@ export function create_rect_fn(scale_x, scale_y, canvas){
 //checks if cell within boundary
 export function within_boundary(  xind, yind, n ){
 
-    var min = n/2-3;
-    var max = n/2+3;
+    var min = n/2-2;
+    var max = n/2+2;
 
     if( xind > min  && xind < max &&  yind > min && yind < max  ){
         return 1;

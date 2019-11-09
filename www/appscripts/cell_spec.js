@@ -2,10 +2,10 @@
 
 import {on_boundary,within_boundary,find_boundary_el} from "./utils.js"
 
-
 //input: x,y, max number of cells,
 // -1 is length-1 : grid wraps around
 // length+1 is 0 : grid wraps around
+
 
 // description for the cells (ions, boundary cells, ions interior to the cell)
 export function create_cell(x, y, type){
@@ -28,6 +28,8 @@ export function create_cell(x, y, type){
 
     cell.int_env = [];
     cell.ext_env = [];
+
+    cell.rect = { state: 0}
 
     cell.assign_adj_cell = function(boundary, env, maxX, maxY){
 
@@ -89,27 +91,49 @@ export function create_cell(x, y, type){
     cell.act = function(boundary ){
 
         cell.get_adjacent_states();
+        cell.state = cell.rect.state;
         var current_neighbours = []
 
-        if ( on_boundary( cell.xpos, cell.ypos, boundary  ) == 0  ){
 
+        if ( on_boundary( cell.xpos, cell.ypos, boundary ) == 1  ){
             current_neighbours = current_neighbours.concat(cell.adjacent);
+            //console.log(current_neighbours);
+        }
+        else if ( within_boundary( cell.xpos, cell.ypos, 20) == 1 ){
 
+            //computation happesn only when any of the adjacent neighbours are 1
+
+            //current_neighbours = current_neighbours.concat(cell.adjacent);
             //dynamically construct neighbour for ion exchange based on open
             //channel
             for(var i=0; i<cell.adjacent.length;i++){
                 if( on_boundary(cell.adjacent[i].xpos, cell.adjacent[i].ypos, boundary ) && cell.adjacent[i].state == 1){
+                    //common neighbours
                     var nn = new_neighbours(cell.adjacent, cell.adjacent[i].adjacent);
+                    //var adj_adj = cell.adjacent[i].adjacent;
+                    //only copy those cells are commonly adjacent
+                    // for(var j = 0; j < cell.adjacent.length;j++){
+                    //     for(var k=0; k<adj_adj.length; k++){
+                    //         if( cell.adjacent[j].xind == adj_adj[k].xind &&
+                    //             cell.adjacent[j].yind == adj_adj[k].yind
+                    //           ){
+
+                    //         }
+                    //     }
+                    // }
                     current_neighbours = current_neighbours.concat(nn);
                     //add neighbours adjacent boundary cells that are 1
+                }
+                else if( within_boundary( cell.adjacent[i].xpos, cell.adjacent[i].ypos, 20  ) == 1 ){
+                    current_neighbours.push(cell.adjacent[i]);
                 }
             }
         }
         else{
-            //boundary Ca rules
+
+            //proabably neighbour rule for boudnary rule
             current_neighbours = current_neighbours.concat(cell.adjacent);
         }
-
 
         //console.log(current_neighbours)
         //need to rule to say interior cell computes only when any of the adjacent boundary elements is on
@@ -120,13 +144,13 @@ export function create_cell(x, y, type){
     return cell;
 }
 
-
 function new_neighbours(adjacent, adj_adjacent){
 
     var temp = [];
     for( var i=0; i< adj_adjacent.length; i++ ){
         var adj_adj = adj_adjacent[i];
         var bool = 0
+
         for(var j=0; j<adjacent.length;j++){
             if( adj_adj.xpos == adjacent[j].xpos && adj_adj.ypos == adjacent[j].ypos ){
                 bool = 1;
@@ -141,7 +165,6 @@ function new_neighbours(adjacent, adj_adjacent){
 }
 
 
-
 // Ca rule takes in a bunch of cells adjacent to the boundary cell - and gives
 // different weights to adjacent cells on the boundary, and cells outside,
 // andinterior to the boundary.
@@ -149,9 +172,9 @@ function new_neighbours(adjacent, adj_adjacent){
 function ca_rule ( state, neighbours, boundary){
 
     var threshold = 2;
-    var w_b = 1, w_ions = 0;
+    var w_b = 2, w_ions = 0; // 1 positive cell, and a net positive charge around (inside and outisde
 
-    var sum = w_b*state;
+    var sum = w_b*this.state;
 
     for(var i =0; i<neighbours.length;i++){
 
@@ -164,26 +187,42 @@ function ca_rule ( state, neighbours, boundary){
         }
     }
 
-    console.log(neighbours);
-    console.log(sum)
-    if( sum >= threshold){
+    // console.log(neighbours);
+    // console.log(sum)
+    // if( sum >= threshold){
+    //     return 1; //actiuve
+    // }
+    // else{
+    //     return 0;
+    // }
+
+    //homeostatic rule
+    if( this.state == 1 && sum >= 1.5*threshold){
+        return 0; //actiuve
+    }
+    else if( this.state == 0 && sum <= -1.5*threshold){
         return 1; //actiuve
     }
+    else if( this.state == 1 && sum <= -threshold){
+        return 0; //actiuve
+    }
+    else if (this.state == 0 && sum >= threshold  ){
+        return 1
+    }
     else{
-        return 0;
+        return this.state;
     }
 
 }
-
 
 //
 function ion_rule (state, neighbours, boundary ){
 
 
-    var threshold = 2;
-    var w_b = 1, w_ions = 1;
+    var threshold = 1; // each charged particle has to be sorrounded by a net charge that is 1 unit or more in the opposite direction.
+    var w_b = 0, w_ions = 1;
 
-    var sum = w_b*state;
+    var sum = w_b*this.state;
 
     for(var i =0; i<neighbours.length;i++){
 
@@ -196,13 +235,13 @@ function ion_rule (state, neighbours, boundary ){
     }
 
 
-    if( state == 1 && sum <= -threshold){
+    if( this.state == 1 && sum <= -threshold){
         return -1; //actiuve
     }
-    else if (state == -1 && sum >= threshold  ){
+    else if (this.state == -1 && sum >= threshold  ){
         return 1
     }
     else{
-        return state;
+        return this.state;
     }
 }

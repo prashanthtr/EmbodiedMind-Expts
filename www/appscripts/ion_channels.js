@@ -36,8 +36,10 @@ import {create_rect_fn, on_boundary} from "./utils.js"
 import {create_cell} from "./cell_spec.js"
 
 //in onfig file
+
 var n = 20;
 var side = 16;
+
 var positive = 1;
 var negative = -1;
 var b_charge = +1;
@@ -83,11 +85,13 @@ for (var i = 0; i < n; i++) {
             cells[i][j] = create_cell(i,j,"env");
             cells[i][j].rect = create_rect(i, j, side, side, yellow);
             cells[i][j].state = negative; //negative charge
+            cells[i][j].rect.state = negative
         }
         else {
             cells[i][j] = create_cell(i,j);
             cells[i][j].rect = create_rect(i,j,side, side, green);
             cells[i][j].state = positive;
+            cells[i][j].rect.state = positive
         }
 
         cells[i][j].rect.addEventListener("mouseover", function(e){
@@ -130,35 +134,73 @@ var temp = []
 // }
 
 
-var r = 2.5;
 
-for (var i = 0; i < 16; i++) {
 
-    var angle = i*Math.PI/8;
+
+var r = 1.3;
+
+for (var i = 0; i < 10; i++) {
+
+    var angle = i*2*Math.PI/10;
 
     var x = n/2 + Math.floor( r*Math.cos(angle) ); // scale_w*(n/2 + Math.floor( r*Math.cos(angle) )); // to get it in units
     var y = n/2 + Math.floor( r*Math.sin(angle) ); //scale_h*(n/2 + Math.floor( r*Math.sin(angle) ));
 
+    if( inner_boundary.length > 0){
+        if( on_boundary( x,y, inner_boundary ) == 0){
+            var bcell = create_cell(x,y,"boundary");
+            bcell.rect = create_rect(x,y, side, side, 'black');
+            bcell.rect.addEventListener("mouseover", function(e){
+                this.state = this.state == 1?0:1;
+                if( this.state == 1){
+                    this.setAttributeNS(null,"fill","red")
+                }
+                else{
+                    this.setAttributeNS(null,"fill","black")
+                }
+                this.setAttributeNS(null,"fill-opacity",1); //back up
+            });
+
+            inner_boundary.push(bcell);
+            temp.push(0);
+        }
+        else{
+            //do not push
+        }
+    }
+    else{
+            //push once
+            var bcell = create_cell(x,y,"boundary");
+            bcell.rect = create_rect(x,y, side, side, 'black');
+            bcell.rect.addEventListener("mouseover", function(e){
+
+                this.state = this.state == 1?0:1;
+                if( this.state == 1){
+                    this.setAttributeNS(null,"fill","red")
+                }
+                else{
+                    this.setAttributeNS(null,"fill","black")
+                }
+                this.setAttributeNS(null,"fill-opacity",1); //back up
+            });
+        inner_boundary.push(bcell);
+            temp.push(0);
+        }
+
+
     //pHeight/2 + Math.floor( r*Math.sin(angle));
 
-    var bcell = create_cell(x,y,"boundary")
-    bcell.rect = create_rect(x,y, side, side, 'black');
-    bcell.rect.addEventListener("mousedown", function(e){
-        this.state = b_charge;
-        this.setAttributeNS(null,"fill","red")
-        this.setAttributeNS(null,"fill-opacity",1); //back up
-    });
 
-    inner_boundary.push(bcell);
-    temp.push(0);
 }
-
 
 inner_boundary.map(function(ib){
     ib.assign_adj_cell(inner_boundary, cells, cells.length, cells[0].length);
     //maximum number of cel;ls in length and width of the grid
 });
 
+inner_boundary.map(function(ib){
+    console.log(ib)
+});
 
 
 var grid = [];
@@ -201,6 +243,7 @@ var drawLoop = function(){
         for (var i = 0; i < inner_boundary.length; i++) {
 
             inner_boundary[i].state = temp[i];
+            inner_boundary[i].rect.state = temp[i]
             if( inner_boundary[i].state == b_charge){
                 inner_boundary[i].rect.setAttributeNS(null,"fill","red")
             }
@@ -225,6 +268,7 @@ var drawLoop = function(){
         for(i = 0; i< cells.length;i++){
             for( j=0; j< cells[i].length; j++){
                 cells[i][j].state = grid[i][j]
+                cells[i][j].rect.state = grid[i][j]
                 if( cells[i][j].state == positive ){
                           cells[i][j].rect.setAttributeNS(null,"fill",green)
                 }
