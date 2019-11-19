@@ -213,10 +213,10 @@ var drawLoop = function(){
 
                 if( !on_boundary(adj[ac].xind, adj[ac].yind, boundary, boundary.length )){
                     if( boundary[bcell].yind < adj[ac].yind ){
-                        prev = adj[ac].state;
+                        next = adj[ac].state;
                     }
                     else{
-                        next = adj[ac].state;
+                        prev = adj[ac].state;
                     }
                 }
             }
@@ -232,11 +232,12 @@ var drawLoop = function(){
                 boundary[bcell].rect.state = active;
                 boundary[bcell].rect.setAttributeNS(null,"fill","red")
             }
-            else{
-                boundary[bcell].state = inactive;
-                boundary[bcell].rect.state = inactive;
-                boundary[bcell].rect.setAttributeNS(null,"fill","black")
-            }
+            //cllosing is due to internal dynamics
+            // else{
+            //     boundary[bcell].state = inactive;
+            //     boundary[bcell].rect.state = inactive;
+            //     boundary[bcell].rect.setAttributeNS(null,"fill","black")
+            // }
         }
 
         console.log("CA => " + boundary.map(function(f){return f.state}).join("-"));
