@@ -167,22 +167,76 @@ var drawLoop = function(){
     //displays every 125,ms
     display(now, function(){
 
-        for (var i = 0; i < boundary.length; i++) {
 
-            if ( boundary[i].state != boundary[i].rect.state ){
-                //console.log("updating boundary state");
-                boundary[i].state = boundary[i].rect.state
+        // for (var i = 0; i < boundary.length; i++) {
+
+        //     if ( boundary[i].state != boundary[i].rect.state ){
+        //         //console.log("updating boundary state");
+        //         boundary[i].state = boundary[i].rect.state
+        //     }
+
+        //     //console.log(boundary.map(function(b){ return b.state }).join("-"));
+
+        //     //like a perturbation
+        //     // if( boundary[i].state == ){
+        //     //     boundary[i].rect.setAttributeNS(null,"fill","red")
+        //     // }
+        //     // else{
+        //     //     boundary[i].rect.setAttributeNS(null,"fill","black")
+        //     // }
+        // }
+
+        //boundary
+        for (var bcell = 0; bcell < boundary.length; bcell++) {
+
+            //channel for both sodium and potassium ions flow
+            boundary[bcell].act(boundary);
+
+            boundary[bcell].rect.state = boundary[bcell].state;
+            if( boundary[bcell].state == active){
+                boundary[bcell].rect.setAttributeNS(null,"fill","red")
+            }
+            else{
+                boundary[bcell].rect.setAttributeNS(null,"fill","black")
             }
 
-            //console.log(boundary.map(function(b){ return b.state }).join("-"));
+        }
 
-            //like a perturbation
-            // if( boundary[i].state == ){
-            //     boundary[i].rect.setAttributeNS(null,"fill","red")
-            // }
-            // else{
-            //     boundary[i].rect.setAttributeNS(null,"fill","black")
-            // }
+        // need to have a different rate for sensing and state change
+        //voltaget senseing
+        for (var bcell = 0; bcell < boundary.length; bcell++) {
+
+            var prev =0 , next = 0;
+            var adj = boundary[bcell].adjacent;
+            var sense = 0;
+            for(var ac = 0; ac < adj.length; ac++){
+
+                if( !on_boundary(adj[ac].xind, adj[ac].yind, boundary, boundary.length )){
+                    if( boundary[bcell].yind < adj[ac].yind ){
+                        prev = adj[ac].state;
+                    }
+                    else{
+                        next = adj[ac].state;
+                    }
+                }
+            }
+
+            console.log("Diofference " + next + ", " + prev + "," + (next-prev))
+            sense = next - prev; // difference in threshold, gradient from inside cell to ousdie
+
+            //sense is difference bertewewen in and out
+            if( sense > 1) {
+                //channel for both sodium and potassium ions flow
+                //console.log("non equilibrium potential")
+                boundary[bcell].state = active;
+                boundary[bcell].rect.state = active;
+                boundary[bcell].rect.setAttributeNS(null,"fill","red")
+            }
+            else{
+                boundary[bcell].state = inactive;
+                boundary[bcell].rect.state = inactive;
+                boundary[bcell].rect.setAttributeNS(null,"fill","black")
+            }
         }
 
         console.log("CA => " + boundary.map(function(f){return f.state}).join("-"));
@@ -250,33 +304,34 @@ var drawLoop = function(){
             }
         }
 
-        for(i = 0; i< cells.length;i++){
-            for( j=0; j< cells[i].length; j++){
 
-                // cells[i][j].state = grid[i][j]
+        // for(i = 0; i< cells.length;i++){
+        //     for( j=0; j< cells[i].length; j++){
 
-                cells[i][j].rect.state = cells[i][j].state
+        //         // cells[i][j].state = grid[i][j]
 
-                if( cells[i][j].state == sodium ){
-                    cells[i][j].rect.setAttributeNS(null,"fill",green)
-                    cells[i][j].rect.setAttributeNS(null,"height",side)
-                    cells[i][j].rect.setAttributeNS(null,"width",side)
-                }
-                else if( cells[i][j].state == potassium ){
-                    cells[i][j].rect.setAttributeNS(null,"fill",purple)
-                    cells[i][j].rect.setAttributeNS(null,"height",side+8)
-                    cells[i][j].rect.setAttributeNS(null,"width",side+8)
-                }
-                else if(cells[i][j].state == chloride){
-                    cells[i][j].rect.setAttributeNS(null,"fill",yellow)
-                    cells[i][j].rect.setAttributeNS(null,"height",side+4)
-                    cells[i][j].rect.setAttributeNS(null,"width",side+4)
-                }
-                else{
-                    //no change
-                }
-            }
-        }
+        //         cells[i][j].rect.state = cells[i][j].state
+
+        //         if( cells[i][j].state == sodium ){
+        //             cells[i][j].rect.setAttributeNS(null,"fill",green)
+        //             cells[i][j].rect.setAttributeNS(null,"height",side)
+        //             cells[i][j].rect.setAttributeNS(null,"width",side)
+        //         }
+        //         else if( cells[i][j].state == potassium ){
+        //             cells[i][j].rect.setAttributeNS(null,"fill",purple)
+        //             cells[i][j].rect.setAttributeNS(null,"height",side+8)
+        //             cells[i][j].rect.setAttributeNS(null,"width",side+8)
+        //         }
+        //         else if(cells[i][j].state == chloride){
+        //             cells[i][j].rect.setAttributeNS(null,"fill",yellow)
+        //             cells[i][j].rect.setAttributeNS(null,"height",side+4)
+        //             cells[i][j].rect.setAttributeNS(null,"width",side+4)
+        //         }
+        //         else{
+        //             //no change
+        //         }
+        //     }
+        // }
 
     })();
 

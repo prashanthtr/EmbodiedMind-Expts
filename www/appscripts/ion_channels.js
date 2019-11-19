@@ -1,4 +1,31 @@
 
+// how is the mind embodied in biology -
+
+// how is a construct of the mind such as a number embodied in biology - and is
+// there is robust implementation that serves to show this.
+
+// The goal has shifted a bit from modeling the mechanism of ion transfer to
+// building a computational environment - a microworld - that allows us to
+// explore the dynamics of ion-channel transfer.
+
+// From the chat with Lakshmi, it seemed that I have to account for two kinds of
+// phenonmenon - namely, the dynamics of firing of an individual neuron. There
+// are two patterns of firing - regular, and irregular. The dynamics of a group
+// of neuron are characterized through synchronous, and asynchronous behaviors.
+
+// The cellular environment needs to be rich enough to simulate the dynamics of
+// variety of neural behviors found in regular, and irregular firing for an
+// individual, and synchronous, and asynchronous firing for a group of neurons.
+
+// Furthermore, the goal is to find out whether there are determinsitic
+// interaction rules between the grid components of the differnet cells in the
+// world, that simulate such behavior.
+
+// Eventually, this could become a learing enviroment for students/professors/
+// who tinkering with neural networks, and build networks to solve specific
+// computational problems.
+
+
 
 // in order to mdoel the cellular homeostasis, the rules of the should
 // incorporate the distribution of the charges of the neighbouring cells. This

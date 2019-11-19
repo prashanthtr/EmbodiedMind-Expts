@@ -9,7 +9,7 @@ export function create_rect_fn(scale_x, scale_y, canvas){
     return function(x,y,width,height,fill){
         // Grid is 100 by 100
         var rect = document.createElementNS(svgns, 'rect');
-        rect.setAttributeNS(null, 'x', 3 + x*scale_x);
+        rect.setAttributeNS(null, 'x', 16 + x*scale_x);
         rect.setAttributeNS(null, 'y', 2 + y*scale_y);
         rect.setAttributeNS(null, 'height', height);
         rect.setAttributeNS(null, 'width', width);

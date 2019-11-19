@@ -156,7 +156,7 @@ export function create_cell(x, y, type){
                         }
                     }
                     console.log("added new neighbuurs to " + cell.xind + "," + cell.yind);
-                    console.log(current_neighbours)
+                    //console.log(current_neighbours)
                     //current_neighbours = current_neighbours.concat(nn);
                     //add neighbours adjacent boundary cells that are 1
                 }
@@ -289,12 +289,58 @@ function find_boundary_el(x,y, boundary){
 
 //no change
 
-function ca_rule ( state, neighbours, boundary){
+function ca_rule ( cell, neighbours, boundary){
 
     //no change
     //return state;
+
+    var prev = 0, next = 0;
+
+    for (var bcell = 0; bcell < neighbours.length; bcell++) {
+
+        if( on_boundary(neighbours[bcell].xind, neighbours[bcell].yind, boundary, boundary.length ) == 1){
+            if( neighbours[bcell].xind < cell.xind ){
+                prev = neighbours[bcell].state
+            }
+            else{
+                next = neighbours[bcell].state
+            }
+        }
+
+    }
+
+    var ruleString = document.getElementById("carulebinary").value;
+
+    cell.state = next_state(prev, cell.state, next, ruleString );
+
 }
 
+
+function next_state (prev, cur, next, ruleString){
+
+    var rule = ruleString.split("");
+    rule = rule.map(function(r){ return parseInt(r);});
+
+    //console.log("carule is" + rule);
+
+    var castate = prev + "" +  cur + ""+ next;
+    //console.log(castate);
+    //ca rule
+
+    var ret = -1;
+    switch(castate){
+    case "000": ret = rule[0]; break;
+    case "001": ret = rule[1];  break;
+    case "010": ret = rule[2];  break;
+    case "011": ret = rule[3];  break;
+    case "100": ret = rule[4]; break;
+    case "101": ret = rule[5];  break;
+    case "110": ret = rule[6];  break;
+    case "111": ret = rule[7];  break;
+    default: ret = -1; break;
+    };
+    return ret;
+}
 
 
 // moves the ion

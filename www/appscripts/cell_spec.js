@@ -1,4 +1,6 @@
 
+//trying to find acombination of rules that leads to active transport ofions
+//inside and outisde the membrane
 
 import {on_boundary,within_boundary,find_boundary_el} from "./utils.js"
 
@@ -172,7 +174,7 @@ function new_neighbours(adjacent, adj_adjacent){
 function ca_rule ( state, neighbours, boundary){
 
     var threshold = 2;
-    var w_b = 2, w_ions = 0; // 1 positive cell, and a net positive charge around (inside and outisde
+    var w_b = 2, w_ions = 1; // 1 positive cell, and a net positive charge around (inside and outisde
 
     var sum = w_b*this.state;
 
@@ -187,8 +189,8 @@ function ca_rule ( state, neighbours, boundary){
         }
     }
 
-    // console.log(neighbours);
-    // console.log(sum)
+    //console.log(neighbours);
+    console.log(sum)
     // if( sum >= threshold){
     //     return 1; //actiuve
     // }
@@ -197,20 +199,43 @@ function ca_rule ( state, neighbours, boundary){
     // }
 
     //homeostatic rule
-    if( this.state == 1 && sum >= 1.5*threshold){
-        return 0; //actiuve
+
+    // If the cell wall is positively charged, and the sum/distribution of the
+    // charges inside and outside the cell is greater than a threshold of
+    // difference
+
+    // tHe cell wall is actively conducting ions/supoorting ion exchange as long
+    // as the net
+
+    // the system stops conducting ions once there is too much of one kind of
+    // charge around it in the environment.
+
+    // the system starts conducting from a non conducting state, when there is a
+    // gradient of charge distribution around the cell.
+
+    // The difference is greater than 1.5 times the threshold, there is a
+    // greater distribution of positive charges on one side of the cell.
+    //
+
+    if( this.state == 1 && sum >= 2*threshold){
+        return 0; // conducting state leads to a concentrationg of positive
+                  //charges beyond threshold - so cell stops conducting
     }
-    else if( this.state == 0 && sum <= -1.5*threshold){
-        return 1; //actiuve
+    else if( this.state == 0 && sum <= -2*threshold){
+        return 1; //non conducting state leads to a concentrationg of negative
+                  //charges so cell starts conducting
     }
     else if( this.state == 1 && sum <= -threshold){
-        return 0; //actiuve
+        return 0; //conducting state leads to a concentrationg of negative
+                  //charges so cell stops conducting
     }
     else if (this.state == 0 && sum >= threshold  ){
-        return 1
+        return 1;  //non-conducting state leads to a concentrationg of negative
+                  //charges - so the cell starts conducting
     }
     else{
-        return this.state;
+        return this.state; //cell has not lead to any concentration of charges,
+                           //and is maintaining the distribtuion.
     }
 
 }
@@ -218,8 +243,7 @@ function ca_rule ( state, neighbours, boundary){
 //
 function ion_rule (state, neighbours, boundary ){
 
-
-    var threshold = 1; // each charged particle has to be sorrounded by a net charge that is 1 unit or more in the opposite direction.
+    var threshold = 3; // each charged particle has to be sorrounded by a net charge that is 1 unit or more in the opposite direction.
     var w_b = 0, w_ions = 1;
 
     var sum = w_b*this.state;

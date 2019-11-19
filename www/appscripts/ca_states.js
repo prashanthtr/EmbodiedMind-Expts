@@ -14,9 +14,9 @@ for (var i = 0; i < startState.length; i++) {
 
 setInterval(function(){
 
-    console.log("State => " + cells.join("-"));   
+    console.log("State => " + cells.join("-"));
     for (var i = 0; i < cells.length; i++) {
-        
+
         if( i == 0){
             prev = cells[cells.length-1]
             next = 1;
@@ -34,9 +34,9 @@ setInterval(function(){
     }
 
     for(var i = 0; i<cells.length;i++){
-          cells[i] = temp[i];  
-    }      
-     
+          cells[i] = temp[i];
+    }
+
 },250);
 
 // the cellular automaton rules that each object uses to compute
@@ -66,4 +66,3 @@ function ca_rule (prev, cur, next, ruleString){
     };
     return ret;
 }
-
