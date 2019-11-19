@@ -8,7 +8,7 @@ body {
    background-color: grey;
   }
 
-  #main {  /* select element with id="main" */ 
+  #main {  /* select element with id="main" */
    min-height: 70%;
    max-height: 70%;
    margin: 0px;
@@ -16,13 +16,13 @@ body {
    display:  flex;
    flex-flow: row;
    }
- 
-  #main > article { /* select articles (if they are inside the element with id="main") */ 
+
+  #main > article { /* select articles (if they are inside the element with id="main") */
    margin: 4px;
    padding: 5px;
    border: 1px solid #cccc33;
    border-radius: 7pt;
-   background: #dddd88;
+   background: #000000;
    flex: 3 1 50%;
    order: 2;
    overflow: scroll;
@@ -49,7 +49,7 @@ body {
            flex: 1 6 15%;
            order: 1;
    }
-  
+
   #main > aside {
    margin: 4px;
    padding: 5px;
@@ -64,7 +64,7 @@ body {
 #player {
     width: 200px;
    }
- 
+
   header, footer {  /* select all header and footer elements */
    display: block;
    margin: 4px;
@@ -82,11 +82,11 @@ body {
    }
 
 
- 
+
   /* Changes layout under these conditions : Too narrow to support three columns */
-  /* "at-rules" using the '@' sign is an "advanced" feature */ 
+  /* "at-rules" using the '@' sign is an "advanced" feature */
   @media all and (max-width: 640px) {
-  
+
    #main, #page {
     flex-flow: column;
     flex-direction: column;
@@ -96,11 +96,10 @@ body {
     /* Return them to document order */
             order: 0;
    }
-  
+
    #main > nav, #main > aside, header, footer {
     min-height: 50px;
     max-height: 50px;
    }
-  
-};
 
+};
