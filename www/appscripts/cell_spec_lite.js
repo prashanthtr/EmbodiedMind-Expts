@@ -365,7 +365,7 @@ function ion_rule (cell, neighbours, boundary ){
 
         for( var n = 0; n < neighbours.length; n++  ){
 
-            if( cell.state > neighbours[n].state ){ //equal charge
+            if( cell.state > neighbours[n].state && !on_boundary( neighbours[n].xind, neighbours[n].yind, boundary, boundary.length ) ){ //equal charge
                 less_charge.push(neighbours[n])
             }
             // else if ( cell.state < 0 && cell.state < neighbours[n].state ){

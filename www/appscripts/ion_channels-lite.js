@@ -212,10 +212,10 @@ var drawLoop = function(){
             }
 
             console.log("Diofference " + next + ", " + prev + "," + (next-prev))
-            sense = next - prev; // difference in threshold, gradient from inside cell to ousdie
+            var sense_val = next - prev; // difference in threshold, gradient from inside cell to ousdie
 
             //sense is difference bertewewen in and out
-            if( sense < -1) {
+            if( sense_val  < -1 || sense_val > 1) {
                 //channel for both sodium and potassium ions flow
                 //console.log("non equilibrium potential")
                 boundary[bcell].state = active;
