@@ -177,7 +177,7 @@ export function create_cell(x, y, type){
         //need to rule to say interior cell computes only when any of the adjacent boundary elements is on
         //cell.state =
 
-        cell.update_rule(cell, current_neighbours, boundary);
+        cell.update_rule(this, current_neighbours, boundary);
         // ion change rule that determines next state
 
         cell.rect.state = cell.state
@@ -324,7 +324,7 @@ function next_state (prev, cur, next, ruleString){
     //console.log("carule is" + rule);
 
     var castate = prev + "" +  cur + ""+ next;
-    //console.log(castate);
+    console.log(castate);
     //ca rule
 
     var ret = -1;
@@ -339,6 +339,10 @@ function next_state (prev, cur, next, ruleString){
     case "111": ret = rule[7];  break;
     default: ret = -1; break;
     };
+
+    console.log("CA state" )
+    console.log("next state is " + ret);
+
     return ret;
 }
 

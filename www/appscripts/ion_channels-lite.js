@@ -73,17 +73,43 @@ for (var i = 0; i < n; i++) {
             cells[i][j].state = neutral; //negative charge
             cells[i][j].rect.state = potassium
         }
-        else{
+        else if( j < n/2){
+            //less potassium, more sodium and chroline
 
             var renv = Math.random()
 
-            if( renv <= 0.3){
+            if( renv <= 0.1){
                 cells[i][j] = create_cell(i,j,"env");
                 cells[i][j].rect = create_rect(i, j, side+8, side+8, purple);
                 cells[i][j].state = potassium; //negative charge
                 cells[i][j].rect.state = potassium
             }
-            else if(renv > 0.3 && renv <= 0.6){
+            else if(renv > 0.1 && renv <= 0.55){
+                cells[i][j] = create_cell(i,j,"env");
+                cells[i][j].rect = create_rect(i, j, side+4, side+4, yellow);
+                cells[i][j].state = chloride; //negative charge
+                cells[i][j].rect.state = chloride
+            }
+            else {
+                cells[i][j] = create_cell(i,j);
+                cells[i][j].rect = create_rect(i,j,side, side, green);
+                cells[i][j].state = sodium;
+                cells[i][j].rect.state = sodium
+            }
+
+        }
+        else if( j > n/2){
+            //more potassium
+
+            var renv = Math.random()
+
+            if( renv <= 0.7){
+                cells[i][j] = create_cell(i,j,"env");
+                cells[i][j].rect = create_rect(i, j, side+8, side+8, purple);
+                cells[i][j].state = potassium; //negative charge
+                cells[i][j].rect.state = potassium
+            }
+            else if(renv > 0.7 && renv <= 0.85){
                 cells[i][j] = create_cell(i,j,"env");
                 cells[i][j].rect = create_rect(i, j, side+4, side+4, yellow);
                 cells[i][j].state = chloride; //negative charge
@@ -98,7 +124,6 @@ for (var i = 0; i < n; i++) {
 
 
         }
-
 
         cells[i][j].xpos = i*scale_w
         cells[i][j].ypos = j*scale_h
@@ -128,7 +153,7 @@ for (var col = 0; col < n; col++) {
 
         this.state = this.state == 1?0:1;
         if( this.state == 1){
-            this.setAttributeNS(null,"fill","red")
+            this.setAttributeNS(null,"fill","white")
         }
         else{
             this.setAttributeNS(null,"fill","black")
@@ -155,8 +180,10 @@ for (var col = 0; col < n; col++) {
 }
 
 //display after every action
-var display = js_clock(10, 250);
+var display = js_clock(20, 250);
 
+//loop that runs faster
+var sense = js_clock(10, 125);
 
 
 //runs simulation of cellular autonmaton
@@ -164,7 +191,52 @@ var drawLoop = function(){
 
     var now = Date.now();
 
-    //displays every 125,ms
+    sense(now, function(){
+        // need to have a different rate for sensing and state change
+        //voltaget senseing
+        for (var bcell = 0; bcell < boundary.length; bcell++) {
+
+            var prev =0 , next = 0;
+            var adj = boundary[bcell].adjacent;
+            var sense = 0;
+            for(var ac = 0; ac < adj.length; ac++){
+
+                if( !on_boundary(adj[ac].xind, adj[ac].yind, boundary, boundary.length )){
+                    if( boundary[bcell].yind < adj[ac].yind ){
+                        next = adj[ac].state;
+                    }
+                    else{
+                        prev = adj[ac].state;
+                    }
+                }
+            }
+
+            console.log("Diofference " + next + ", " + prev + "," + (next-prev))
+            sense = next - prev; // difference in threshold, gradient from inside cell to ousdie
+
+            //sense is difference bertewewen in and out
+            if( sense < -1) {
+                //channel for both sodium and potassium ions flow
+                //console.log("non equilibrium potential")
+                boundary[bcell].state = active;
+                boundary[bcell].rect.state = active;
+                boundary[bcell].rect.setAttributeNS(null,"fill","white")
+                //perturbed state
+            }
+            //cllosing is due to internal dynamics
+            // else{
+            //     boundary[bcell].state = inactive;
+            //     boundary[bcell].rect.state = inactive;
+            //     boundary[bcell].rect.setAttributeNS(null,"fill","black")
+            // }
+        }
+
+        console.log("CA threshold => " + boundary.map(function(f){return f.state}).join("-"));
+
+    })();
+
+
+    //displays every 250 ms
     display(now, function(){
 
 
@@ -194,7 +266,7 @@ var drawLoop = function(){
 
             boundary[bcell].rect.state = boundary[bcell].state;
             if( boundary[bcell].state == active){
-                boundary[bcell].rect.setAttributeNS(null,"fill","red")
+                boundary[bcell].rect.setAttributeNS(null,"fill","white")
             }
             else{
                 boundary[bcell].rect.setAttributeNS(null,"fill","black")
@@ -202,45 +274,7 @@ var drawLoop = function(){
 
         }
 
-        // need to have a different rate for sensing and state change
-        //voltaget senseing
-        for (var bcell = 0; bcell < boundary.length; bcell++) {
-
-            var prev =0 , next = 0;
-            var adj = boundary[bcell].adjacent;
-            var sense = 0;
-            for(var ac = 0; ac < adj.length; ac++){
-
-                if( !on_boundary(adj[ac].xind, adj[ac].yind, boundary, boundary.length )){
-                    if( boundary[bcell].yind < adj[ac].yind ){
-                        next = adj[ac].state;
-                    }
-                    else{
-                        prev = adj[ac].state;
-                    }
-                }
-            }
-
-            console.log("Diofference " + next + ", " + prev + "," + (next-prev))
-            sense = next - prev; // difference in threshold, gradient from inside cell to ousdie
-
-            //sense is difference bertewewen in and out
-            if( sense > 1) {
-                //channel for both sodium and potassium ions flow
-                //console.log("non equilibrium potential")
-                boundary[bcell].state = active;
-                boundary[bcell].rect.state = active;
-                boundary[bcell].rect.setAttributeNS(null,"fill","red")
-            }
-            //cllosing is due to internal dynamics
-            // else{
-            //     boundary[bcell].state = inactive;
-            //     boundary[bcell].rect.state = inactive;
-            //     boundary[bcell].rect.setAttributeNS(null,"fill","black")
-            // }
-        }
-
-        console.log("CA => " + boundary.map(function(f){return f.state}).join("-"));
+        console.log("CA dynamics => " + boundary.map(function(f){return f.state}).join("-"));
         //console.log(boundary);
 
         for(i = 0; i< cells.length;i++){
