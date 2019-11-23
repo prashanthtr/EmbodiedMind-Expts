@@ -4,7 +4,7 @@
     <head>
 
       <link rel="stylesheet" type="text/css" href="css/appstyle.css">
-      <script type="module" src="appscripts/ion_channels-lite.js"></script>
+      <script type="module" src="appscripts/bittorio-svg-oneD.js"></script>
 
       <title> 1D cellular automata </title>
       <style type="text/css">
@@ -62,27 +62,34 @@
 
         <aside>
 
-          <b> Controls: </b> <br>
+          <!-- <b> Controls: </b> <br> -->
           <!-- Click the initial configuration <input type="button" id="setInitConfig" value="fix!"> </input> <br> -->
-          Run speed in milliseconds <input type="text" id="loopTime" value="200">  </input> <br>
+          Run speed in milliseconds <input type="text" id="loopTime"
+          value="200" hidden>   </input> <br>
 
           <input type="button" id="start" value="Start">  </input>
           <input type="button" id="stop" value="stop">  </input>
           <input type="button" id="reset" value="Reset">  </input> <br> <br>
 
-          <b> CA states </b> <br>
+          <!-- <input type="button" id="back" value="Go forward >>">  </input> <br> -->
+
+          <!-- <b> CA states </b> <br> -->
 
           <input type="button" id="randomConfig" value="Select random configuration">  </input> <br>
 
-          <input type="button" id="configFix" value="setConfig">  </input> <input type="text" id="configNum" value="0" size="14">  </input>
+          <input type="button" id="back" value="<<Go Back">  </input> <br>
+
+          <input type="button" id="configFix" value="setConfig"
+          hidden>  </input> <input type="text" id="configNum" value="0"
+          size="14" hidden>  </input>
           <br>
 
 
           <br>
 
           <b> CA rules </b> <br>
-          CA Rule Number (0-255) <input type="text" id="carule" value="0"> <br>
-          CA Rule Binary <input type="text" id="carulebinary" value="00000000"> <br> <br>
+           <input type="text" id="carule" value="0" hidden> <br>
+           <input type="text" id="carulebinary" value="00000000"> <br> <br>
 
           <b> Preset configurations </b>
 
