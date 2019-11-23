@@ -8,7 +8,7 @@ import {create_rect_fn,create_path_fn, setColor} from "./utils.js"
 import {create_cell, on_boundary} from "./cell_spec_lite.js"
 import {bittorio} from "./boundary.js"
 
-var n = 80;
+var n = 40;
 var side = 5;
 
 var gridn = 10;
@@ -41,6 +41,7 @@ var create_path = create_path_fn(scale_w, scale_h, canvas);
 
 var cellularAutomaton = bittorio( create_rect, create_path, n );
 
+var ca2Perturb = [];
 
 var rafId = null;
 
@@ -66,17 +67,12 @@ for (var i = 0; i < n; i++) {
 }
 
 
-// for(var col = 0; col< n; col++){
+for(var col = 0; col< n; col++){
 
-//     if( Math.random() < 0.05){
-//         cells[col][0].state = 1;
-//     }
-//     else{
-//         cells[col][0].state = 0;
-//     }
-//     setColor(cells[col][0]);
-//     starting_config[col] = cells[col][0].state;
-// }
+    cells[col][0].state = 0;
+    setColor(cells[col][0]);
+    starting_config[col] = cells[col][0].state;
+}
 
 
 
@@ -85,11 +81,12 @@ var ca2 = cellularAutomaton( n/2, side );
 
 var starting_config = ca1.getState();
 ca2.reconfigure(starting_config);
+ca2Perturb = starting_config;
 
-for(var col = 0; col< n; col++){
-    cells[col][0].state = starting_config[col];
-    setColor(cells[col][0]);
-}
+// for(var col = 0; col< n; col++){
+//     cells[col][0].state = starting_config[col];
+//     setColor(cells[col][0]);
+// }
 
 
 
@@ -116,8 +113,8 @@ for(var col = 0; col< n; col++){
 
 
 //display after every action
-var display = js_clock(40, 250);
-var sense = js_clock(20, 125);
+var display = js_clock(40, 600);
+var sense = js_clock(20, 300);
 var t = 0;
 
 
@@ -132,13 +129,14 @@ var drawLoop = function(){
 
         //only for second CA
         if( t >= n/2){
+            //to know places of perturbation
             //activate the second CA
-
             let perturbRow = []
             for( var col = 0; col < n; col++ ){
                 perturbRow[col] = cells[col][n/2-1].state;
             }
             ca2.sense(pertOn, perturbRow);
+            //ca2.sense( pertOn, ca2Perturb);
         }
     })();
 
@@ -204,39 +202,32 @@ var drawLoop = function(){
 
         // reconfigure 2nd CA and activate next states
         if( pertOn == 1){
-
-            if( ca2.checkPerturbed() == 1){
-                //do not change from already assiend cell
-
-                var perturbRow = []
-                for(var i = 0; i< n; i++){
-                    if( Math.random() < percentPerturb){
-                        perturbRow[i] = 1;
-                    }
-                    else{
-                        perturbRow[i] = 0
-                    }
-                }
-                ca2.reconfigure(perturbRow);
-                ca2.resetPerturbed();
+            ca2.reconfigure(ca2Perturb);
+        }
+        else{
+            var perturbRow = [];
+            //original dynamics
+            for (var col = 0; col < n; col++) {
+                perturbRow[col] = cells[col][n/2-1].state;
             }
-            else{
-                var perturbRow = [];
-                for (var col = 0; col < n; col++) {
-                    perturbRow[col] = cells[col][n/2-1].state;
-                }
-                ca2.reconfigure(perturbRow);
-            }
-
+            ca2.reconfigure(perturbRow);
         }
 
         //3. static state
         //3. copy perturbation
 
-
         //4. next state
         ca1.nextState();
         ca2.nextState();
+
+        var ca2state = ca2.getState()
+
+        //no random perturbations between timezones, CA continues with selforiganized dynamics
+        for (var col = 0; col < n; col++) {
+            ca2Perturb[col] = ca2state[col];
+        }
+
+        //copy to ensure that there is not perturbation without user interference
 
         t++;
 
@@ -293,12 +284,6 @@ window.addEventListener("keypress", function(c){
 
 document.getElementById("reset").addEventListener("click",function(e){
 
-    // starting_config.map(function(s,ind,arr){
-
-    //     cells[ind][0].state = s;
-    //     setColor(cells[ind][0])
-    // });
-
     for( var row = 2; row < n; row++){
         for(var col = 0; col <n; col++){
             cells[col][row].state = 0;
@@ -335,7 +320,10 @@ document.getElementById("clear").addEventListener("click",function(e){
 document.getElementById("randomConfig").addEventListener("click",function(e){
 
     //later control proportion of white and black
-    ca2.setPerturbed();
+    //ca2.setPerturbed();
+
+    //with a certain pertangage flip the digits
+    gen_perturbation();
 
 });
 
@@ -440,7 +428,6 @@ document.getElementById("restart").addEventListener("click",function(e){
 
 
 
-
 document.getElementById("percentCA").addEventListener("change",function(e){
     percentCA = parseFloat(e.target.value);
 })
@@ -459,3 +446,12 @@ document.getElementById("pertOn").addEventListener("click",function(e){
         e.target.value = "Perturbations are on"
     }
 })
+
+
+function gen_perturbation(){
+    for(var i = 0; i< n; i++){
+        if( Math.random() < percentPerturb){
+            ca2Perturb[i] = (ca2Perturb[i]+1)%2;
+        }
+    }
+}
