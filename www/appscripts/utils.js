@@ -9,7 +9,7 @@ export function create_rect_fn(scale_x, scale_y, canvas){
     return function(x,y,width,height,fill){
         // Grid is 100 by 100
         var rect = document.createElementNS(svgns, 'rect');
-        rect.setAttributeNS(null, 'x', 16 + x*scale_x);
+        rect.setAttributeNS(null, 'x', 10 + x*scale_x);
         rect.setAttributeNS(null, 'y', 2 + y*scale_y);
         rect.setAttributeNS(null, 'height', height);
         rect.setAttributeNS(null, 'width', width);
@@ -20,7 +20,23 @@ export function create_rect_fn(scale_x, scale_y, canvas){
     }
 }
 
+export function create_path_fn(scale_x, scale_y, canvas){
 
+    return function(x,y,width , height, fill){
+            // Grid is 100 by 100
+
+        var xpos = 10 + x*scale_x
+        var ypos = y*scale_y;
+        //rectangle border
+        var pathstring = "M" + xpos + " " + ypos + " L" + (xpos+width) + " " + ypos + " L" + (xpos+width) + " " + (ypos+height+5) + " L" + xpos + " " + (ypos+height+5) + " L" + xpos + " " + ypos ;
+        var path = document.createElementNS(svgns, 'path');
+        path.setAttributeNS(null,"d", pathstring);
+        path.setAttributeNS(null, 'stroke', fill);
+        path.setAttributeNS(null, 'fill', "none");
+        canvas.appendChild(path);
+        return path;
+    }
+}
 
 //checks if cell within boundary
 export function within_boundary(  xind, yind, n ){

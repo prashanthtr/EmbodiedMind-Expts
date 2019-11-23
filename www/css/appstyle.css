@@ -22,7 +22,7 @@ body {
    padding: 5px;
    border: 1px solid #cccc33;
    border-radius: 7pt;
-   background: #000000;
+   background: #ffffff;
    flex: 3 1 50%;
    order: 2;
    overflow: scroll;
@@ -45,8 +45,8 @@ body {
    padding: 5px;
    border: 1px solid #8888bb;
    border-radius: 7pt;
-   background: #ccccff;
-           flex: 1 6 15%;
+   background: #000000;
+           flex: 1 6 20%;
            order: 1;
    }
 
@@ -55,8 +55,8 @@ body {
    padding: 5px;
    border: 1px solid #8888bb;
    border-radius: 7pt;
-   background: #ccccff;
-           flex: 1 6 15%;
+   background: #000000;
+           flex: 1 6 20%;
            order: 3;
 
    }

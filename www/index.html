@@ -70,12 +70,16 @@
           <input type="button" id="start" value="Start">  </input>
           <input type="button" id="stop" value="stop">  </input>
           <input type="button" id="reset" value="Reset">  </input> <br> <br>
+          <input type="button" id="clear" value="Clear-CA">  </input> <br> <br>
+          <input type="button" id="restart" value="New Ca state">  </input>
+          <input type="text" id="percentCA" value="0.2" style="width: 20px"> </input> <br>
 
           <!-- <input type="button" id="back" value="Go forward >>">  </input> <br> -->
 
           <!-- <b> CA states </b> <br> -->
 
-          <input type="button" id="randomConfig" value="Select random configuration">  </input> <br>
+          <input type="button" id="randomConfig" value="New environment">  </input>
+          <input type="text" id="percentPert" value="0.2" style="width: 20px"> </input> <br>
 
           <input type="button" id="back" value="<<Go Back">  </input> <br>
 
@@ -93,7 +97,7 @@
 
           <b> Preset configurations </b>
 
-          <select>
+          <select hidden>
             <option value="None"> ---- </option>
             <option value="odd sequence recognizer"> Odd sequence recognizer </option>
             <option value="even sequence recognizer"> Even sequence recognizer </option>

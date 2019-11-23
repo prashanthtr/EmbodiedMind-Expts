@@ -8,14 +8,20 @@ import {create_rect_fn,create_path_fn} from "./utils.js"
 import {create_cell, on_boundary} from "./cell_spec_lite.js"
 
 
-var n = 20;
-var side = 16;
+var n = 80;
+var side = 5;
 
-var gridn = 5
+var gridn = 10
 
 var canvas = document.getElementById( 'svgCanvas' );
 var pW = canvas.clientWidth;
 var pH = canvas.clientHeight;
+
+console.log(pW + "  " + pH);
+
+
+var percentPerturb = 0.1;
+var percentCA = 0.1;
 
 
 var starting_config = [];
@@ -37,7 +43,9 @@ var scale_h = Math.floor(pHeight/n);
 var create_rect = create_rect_fn(scale_w, scale_h, canvas);
 var create_path = create_path_fn(scale_w, scale_h, canvas);
 
-create_path( "M0" + " " + (gridn*scale_h) + " L" + pWidth + " " + gridn*scale_h + " L" + pWidth + " " + (gridn*scale_h + side+5) + " L" + 0 + " " + (gridn*scale_h + side + 5), "#ff0000" )
+//create_path( 0, gridn, pWidth, side, "#ff0000" );
+
+    // "M0" + " " + (gridn*scale_h) + " L" + pWidth + " " + gridn*scale_h + " L" + pWidth + " " + (gridn*scale_h + side+5) + " L" + 0 + " " + (gridn*scale_h + side + 5), "#ff0000" )
 
 var rafId = null;
 
@@ -53,15 +61,19 @@ for (var i = 0; i < n; i++) {
 
         cells[i][j] = {}
 
-            cells[i][j].rect = create_rect(i,j,side, side, "#ffffff");
-            cells[i][j].state = 0;
+        cells[i][j].rect = create_rect(i,j,side, side, "#ffffff");
+        cells[i][j].state = 0;
+
+        if ( j == n/2){
+            cells[i][j].rect.setAttributeNS(null, "opacity", 0);
+        }
     }
 }
 
 
 for( col = 0; col< n; col++){
 
-    if( Math.random() < 0.1){
+    if( Math.random() < 0.05){
         cells[col][0].state = 1;
     }
     else{
@@ -80,7 +92,15 @@ for (var col = 0; col < n; col++) {
 
     boundary[col] = {}
     boundary[col].rect = create_rect(col, row, side, side, "#ffffff");
-    boundary[col].state = 0;
+    boundary[col].path = create_path(col, row, side, side,  "#ff0000");
+
+    if( Math.random() < percentCA){
+            boundary[col].state = 1
+    }
+    else{
+            boundary[col].state = 0;
+    }
+    setColor(boundary[col]);
 
 }
 
@@ -106,8 +126,8 @@ for (var col = 0; col < n; col++) {
 
 
 //display after every action
-var display = js_clock(40, 500);
-var sense = js_clock(20, 250);
+var display = js_clock(40, 250);
+var sense = js_clock(20, 125);
 
 //console.log(cells)
 
@@ -126,10 +146,14 @@ var drawLoop = function(){
             if ( boundary[bcell].state != cells[bcell][gridn-1].state){
                 console.log("perturbation")
                 //boundary[bcell].state = cells[bcell][gridn-1].state
-                boundary[bcell].rect.setAttributeNS(null,"fill","red")
+                //boundary[bcell].rect.setAttributeNS(null,"fill","red")
+                boundary[bcell].path.setAttributeNS(null, 'stroke', "#0000ff");
+                boundary[bcell].path.setAttributeNS(null, 'stroke-width', 2);
             }
             else{
                 //no change
+                boundary[bcell].path.setAttributeNS(null, 'stroke', "#ff0000");
+                boundary[bcell].path.setAttributeNS(null, 'stroke-width', 1);
             }
         }
 
@@ -184,6 +208,7 @@ var drawLoop = function(){
         //3. copy perturbation
         for (var col = 0; col < n; col++) {
             boundary[col].state = cells[col][gridn-1].state;
+            setColor(boundary[col]);
         }
 
         //4. compute next state;
@@ -220,7 +245,7 @@ var drawLoop = function(){
         //6. initaite new environment
         for(var i = 0; i< n; i++){
 
-            if( Math.random() < 0.05){
+            if( Math.random() < percentPerturb){
                 cells[i][0].state = 1;
             }
             else{
@@ -312,6 +337,17 @@ document.getElementById("start").addEventListener("click",function(e){
     drawLoop();
 });
 
+document.getElementById("clear").addEventListener("click",function(e){
+
+    for(var col = 0 ; col < n; col++){
+        boundary[col].state = 0
+        setColor( boundary[col]);
+        boundary[col].path.setAttributeNS(null, 'stroke', "#ff0000");
+        boundary[col].path.setAttributeNS(null, 'stroke-width', 1);
+    }
+
+});
+
 
 document.getElementById("randomConfig").addEventListener("click",function(e){
 
@@ -319,7 +355,7 @@ document.getElementById("randomConfig").addEventListener("click",function(e){
     //generate new random sequence
     for(var i = 0; i< n; i++){
 
-        if( Math.random() < 0.8){
+        if( Math.random() < percentPerturb){
             cells[i][0].state = 1;
         }
         else{
@@ -329,6 +365,24 @@ document.getElementById("randomConfig").addEventListener("click",function(e){
     }
 
 });
+
+document.getElementById("restart").addEventListener("click",function(e){
+
+    //later control proportion of white and black
+    //generate new random sequence
+    for(var i = 0; i< n; i++){
+
+        if( Math.random() < percentCA){
+            boundary[i].state = 1;
+        }
+        else{
+            boundary[i].state = 0;
+        }
+        setColor(boundary[i]);
+    }
+
+});
+
 
 document.getElementById("back").addEventListener("click", function(e){
 
@@ -392,10 +446,15 @@ document.getElementById("back").addEventListener("click", function(e){
 
             //sense perturbation
             if ( boundary[bcell].state != cells[bcell][gridn-1].state){
-                boundary[bcell].rect.setAttributeNS(null,"fill","red")
+                //boundary[bcell].rect.setAttributeNS(null,"fill","red")
+                boundary[bcell].path.setAttributeNS(null, 'stroke', "#0000ff");
+                boundary[bcell].path.setAttributeNS(null, 'stroke-width', 2);
             }
             else{
                 //no change
+                boundary[bcell].path.setAttributeNS(null, 'stroke', "#ff0000");
+                boundary[bcell].path.setAttributeNS(null, 'stroke-width', 1);
+
             }
         }
 
@@ -404,7 +463,6 @@ document.getElementById("back").addEventListener("click", function(e){
 
 
 });
-
 
 
 function setColor( cell ){
@@ -416,3 +474,13 @@ function setColor( cell ){
         cell.rect.setAttributeNS(null,"fill","#ffffff")
     }
 }
+
+
+
+document.getElementById("percentCA").addEventListener("change",function(e){
+    percentCA = parseFloat(e.target.value);
+})
+
+document.getElementById("percentPerturb").addEventListener("change",function(e){
+    percentPerturb = parseFloat(e.target.value);
+})
