@@ -28,7 +28,7 @@ export function create_path_fn(scale_x, scale_y, canvas){
         var xpos = 10 + x*scale_x
         var ypos = y*scale_y;
         //rectangle border
-        var pathstring = "M" + xpos + " " + ypos + " L" + (xpos+width) + " " + ypos + " L" + (xpos+width) + " " + (ypos+height+5) + " L" + xpos + " " + (ypos+height+5) + " L" + xpos + " " + ypos ;
+        var pathstring = "M" + xpos + " " + ypos + " L" + (xpos+width) + " " + ypos + " L" + (xpos+width) + " " + (ypos+height+3) + " L" + xpos + " " + (ypos+height+3) + " L" + xpos + " " + ypos ;
         var path = document.createElementNS(svgns, 'path');
         path.setAttributeNS(null,"d", pathstring);
         path.setAttributeNS(null, 'stroke', fill);
@@ -77,4 +77,15 @@ export function find_boundary_el(x,y, boundary){
         }
     }
     return pos;
+}
+
+
+export function setColor( cell ){
+
+    if(cell.state == 1){
+        cell.rect.setAttributeNS(null,"fill","#000000")
+    }
+    else{
+        cell.rect.setAttributeNS(null,"fill","#ffffff")
+    }
 }

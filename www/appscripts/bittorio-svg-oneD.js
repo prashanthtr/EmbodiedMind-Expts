@@ -1,31 +1,27 @@
-
+//remember timed perturbation
 
 // Lite version of ion channels with 3 charges, membrane column, and ion
 // exchange.
 
 import {js_clock} from "./clocks.js"
-import {create_rect_fn,create_path_fn} from "./utils.js"
+import {create_rect_fn,create_path_fn, setColor} from "./utils.js"
 import {create_cell, on_boundary} from "./cell_spec_lite.js"
-
+import {bittorio} from "./boundary.js"
 
 var n = 80;
 var side = 5;
 
-var gridn = 10
+var gridn = 10;
 
 var canvas = document.getElementById( 'svgCanvas' );
 var pW = canvas.clientWidth;
 var pH = canvas.clientHeight;
 
-console.log(pW + "  " + pH);
-
 
 var percentPerturb = 0.1;
 var percentCA = 0.1;
-
-
+var pertOn = 0;
 var starting_config = [];
-
 // max 5 steps for now.
 var backward_computation = []; //stores the state of CA, and state of perturbing environment.
 
@@ -43,9 +39,8 @@ var scale_h = Math.floor(pHeight/n);
 var create_rect = create_rect_fn(scale_w, scale_h, canvas);
 var create_path = create_path_fn(scale_w, scale_h, canvas);
 
-//create_path( 0, gridn, pWidth, side, "#ff0000" );
+var cellularAutomaton = bittorio( create_rect, create_path, n );
 
-    // "M0" + " " + (gridn*scale_h) + " L" + pWidth + " " + gridn*scale_h + " L" + pWidth + " " + (gridn*scale_h + side+5) + " L" + 0 + " " + (gridn*scale_h + side + 5), "#ff0000" )
 
 var rafId = null;
 
@@ -56,7 +51,7 @@ var cells = [];
 // inititalize envrionment cells
 for (var i = 0; i < n; i++) {
 
-    cells[i] = []
+    cells[i] = [];
     for(var j = 0; j< n; j++){
 
         cells[i][j] = {}
@@ -64,45 +59,40 @@ for (var i = 0; i < n; i++) {
         cells[i][j].rect = create_rect(i,j,side, side, "#ffffff");
         cells[i][j].state = 0;
 
-        if ( j == n/2){
+        if (  j == 1 || j == n/2){
             cells[i][j].rect.setAttributeNS(null, "opacity", 0);
         }
     }
 }
 
 
-for( col = 0; col< n; col++){
+// for(var col = 0; col< n; col++){
 
-    if( Math.random() < 0.05){
-        cells[col][0].state = 1;
-    }
-    else{
-        cells[col][0].state = 0;
-    }
+//     if( Math.random() < 0.05){
+//         cells[col][0].state = 1;
+//     }
+//     else{
+//         cells[col][0].state = 0;
+//     }
+//     setColor(cells[col][0]);
+//     starting_config[col] = cells[col][0].state;
+// }
+
+
+
+var ca1 = cellularAutomaton( 1, side );
+var ca2 = cellularAutomaton( n/2, side );
+
+var starting_config = ca1.getState();
+ca2.reconfigure(starting_config);
+
+for(var col = 0; col< n; col++){
+    cells[col][0].state = starting_config[col];
     setColor(cells[col][0]);
-    starting_config[col] = cells[col][0].state;
 }
 
 
-var boundary = [];
 
-var row = gridn;
-
-for (var col = 0; col < n; col++) {
-
-    boundary[col] = {}
-    boundary[col].rect = create_rect(col, row, side, side, "#ffffff");
-    boundary[col].path = create_path(col, row, side, side,  "#ff0000");
-
-    if( Math.random() < percentCA){
-            boundary[col].state = 1
-    }
-    else{
-            boundary[col].state = 0;
-    }
-    setColor(boundary[col]);
-
-}
 
 // row = gridn + 1;
 // // inititalize envrionment cells
@@ -128,6 +118,8 @@ for (var col = 0; col < n; col++) {
 //display after every action
 var display = js_clock(40, 250);
 var sense = js_clock(20, 125);
+var t = 0;
+
 
 //console.log(cells)
 
@@ -138,121 +130,139 @@ var drawLoop = function(){
 
     sense(now, function(){
 
-        for (var bcell = 0; bcell < n; bcell++) {
+        //only for second CA
+        if( t >= n/2){
+            //activate the second CA
 
-            //console.log(gridn-1)
-
-            //1. sense and indicate perturbation - before acting
-            if ( boundary[bcell].state != cells[bcell][gridn-1].state){
-                console.log("perturbation")
-                //boundary[bcell].state = cells[bcell][gridn-1].state
-                //boundary[bcell].rect.setAttributeNS(null,"fill","red")
-                boundary[bcell].path.setAttributeNS(null, 'stroke', "#0000ff");
-                boundary[bcell].path.setAttributeNS(null, 'stroke-width', 2);
+            let perturbRow = []
+            for( var col = 0; col < n; col++ ){
+                perturbRow[col] = cells[col][n/2-1].state;
             }
-            else{
-                //no change
-                boundary[bcell].path.setAttributeNS(null, 'stroke', "#ff0000");
-                boundary[bcell].path.setAttributeNS(null, 'stroke-width', 1);
-            }
+            ca2.sense(pertOn, perturbRow);
         }
-
-
     })();
 
     //displays every 250 ms
     display(now, function(){
 
+        //Hold off from saving state yet
+        // if( backward_computation.length >= 10){
+        //     backward_computation.shift();
+        // }
+        // else{
+        //     var env = [];
+        //     row = gridn-1;
+        //     for(col = 0; col < n; col++){
+        //         env[col] = cells[col][row].state;
+        //     }
 
-        //save state
-        if( backward_computation.length >= 10){
-            backward_computation.shift();
-        }
-        else{
-            var env = [];
-            row = gridn-1;
-            for(col = 0; col < n; col++){
-                env[col] = cells[col][row].state;
-            }
+        //     var last_ca = [];
+        //     row = n-1;
+        //     for(col = 0; col < n; col++){
+        //         last_ca[col] = cells[col][row].state;
+        //     }
 
-            var last_ca = [];
-            row = n-1;
-            for(col = 0; col < n; col++){
-                last_ca[col] = cells[col][row].state;
-            }
+        //     backward_computation.push({ "ca":  boundary.map(function(f){return f.state}),
+        //                                 "env": env,
+        //                                 "last_ca": last_ca
+        //                               });
+        // }
 
-            backward_computation.push({ "ca":  boundary.map(function(f){return f.state}),
-                                        "env": env,
-                                        "last_ca": last_ca
-                                      });
-        }
 
-        //1. fall off the edge
-        row = n;
+        //1. fall off the edge before ca2
         // inititalize envrionment cells
         for (var i = 0; i < n; i++) {
-
-            for(var j = n-1; j> gridn+1; j--){
-
+            for(var j = n/2-1; j> 2; j--){
                 cells[i][j].state = cells[i][j-1].state;
                 setColor(cells[i][j]);
             }
         }
 
-        // 2. copy current state into next state.
+        //2. fall off the edge before end of line
+        // inititalize envrionment cells
         for (var i = 0; i < n; i++) {
-            cells[i][gridn+1].state = boundary[i].state;
-            setColor(cells[i][gridn+1]);
+            for(var j = n -1 ; j > n/2+1; j--){
+                cells[i][j].state = cells[i][j-1].state;
+                setColor(cells[i][j]);
+            }
         }
 
+        // 3. copy current state into next state for ca1
+        //
+        var ca1state = ca1.getState();
+        for (var i = 0; i < n; i++) {
+            cells[i][2].state = ca1state[i];
+            setColor(cells[i][2]); //start
+        }
+
+        // 2. copy current state into next state for ca2
+        var ca2state = ca2.getState()
+        for (var i = 0; i < n; i++) {
+            cells[i][n/2+1].state = ca2state[i];
+            setColor(cells[i][1]);
+        }
+
+        // reconfigure 2nd CA and activate next states
+        if( pertOn == 1){
+
+            if( ca2.checkPerturbed() == 1){
+                //do not change from already assiend cell
+
+                var perturbRow = []
+                for(var i = 0; i< n; i++){
+                    if( Math.random() < percentPerturb){
+                        perturbRow[i] = 1;
+                    }
+                    else{
+                        perturbRow[i] = 0
+                    }
+                }
+                ca2.reconfigure(perturbRow);
+                ca2.resetPerturbed();
+            }
+            else{
+                var perturbRow = [];
+                for (var col = 0; col < n; col++) {
+                    perturbRow[col] = cells[col][n/2-1].state;
+                }
+                ca2.reconfigure(perturbRow);
+            }
+
+        }
+
+        //3. static state
         //3. copy perturbation
-        for (var col = 0; col < n; col++) {
-            boundary[col].state = cells[col][gridn-1].state;
-            setColor(boundary[col]);
-        }
 
-        //4. compute next state;
-        for (var bcell = 0; bcell < boundary.length; bcell++) {
 
-            var prev = bcell -1, next = bcell + 1;
+        //4. next state
+        ca1.nextState();
+        ca2.nextState();
 
-            if( prev < 0 ){
-                prev  = n - 1
-            }
-
-            if( next == n ){
-                next = 0;
-            }
-
-            boundary[bcell].state = next_state( boundary[prev].state, boundary[bcell].state, boundary[next].state, document.getElementById("carulebinary").value);
-
-            setColor(boundary[bcell]);
-        }
+        t++;
 
 
         //5. shift existing environment
-        row = gridn-1;
-        // inititalize envrionment cells
-        for (var i = 0; i < n; i++) {
+        // var row = gridn-1;
+        // // inititalize envrionment cells
+        // for (var i = 0; i < n; i++) {
 
-            for(var j = row; j> 0; j--){
-                cells[i][j].state = cells[i][j-1].state;
-                setColor(cells[i][j])
-            }
-        }
+        //     for(var j = row; j> 0; j--){
+        //         cells[i][j].state = cells[i][j-1].state;
+        //         setColor(cells[i][j])
+        //     }
+        // }
 
+        // //6. initaite new environment
+        // for(var i = 0; i< n; i++){
 
-        //6. initaite new environment
-        for(var i = 0; i< n; i++){
-
-            if( Math.random() < percentPerturb){
-                cells[i][0].state = 1;
-            }
-            else{
-                cells[i][0].state = 0;
-            }
-            setColor(cells[i][0])
-        }
+        //     if( Math.random() < percentPerturb){
+        //         cells[i][0].state = 1;
+        //     }
+        //     else{
+        //         cells[i][0].state = 0;
+        //     }
+        //     setColor(cells[i][0])
+        // }
 
         //continue
 
@@ -264,35 +274,6 @@ var drawLoop = function(){
 
 
 
-function next_state (prev, cur, next, ruleString){
-
-    var rule = ruleString.split("");
-    rule = rule.map(function(r){ return parseInt(r);});
-
-    //console.log("carule is" + rule);
-
-    var castate = prev + "" +  cur + ""+ next;
-    console.log(castate);
-    //ca rule
-
-    var ret = -1;
-    switch(castate){
-    case "000": ret = rule[0]; break;
-    case "001": ret = rule[1];  break;
-    case "010": ret = rule[2];  break;
-    case "011": ret = rule[3];  break;
-    case "100": ret = rule[4]; break;
-    case "101": ret = rule[5];  break;
-    case "110": ret = rule[6];  break;
-    case "111": ret = rule[7];  break;
-    default: ret = -1; break;
-    };
-
-    console.log("CA state" )
-    console.log("next state is " + ret);
-
-    return ret;
-}
 
 window.addEventListener("keypress", function(c){
 
@@ -312,18 +293,20 @@ window.addEventListener("keypress", function(c){
 
 document.getElementById("reset").addEventListener("click",function(e){
 
-    starting_config.map(function(s,ind,arr){
+    // starting_config.map(function(s,ind,arr){
 
-        cells[ind][0].state = s;
-        setColor(cells[ind][0])
-    });
+    //     cells[ind][0].state = s;
+    //     setColor(cells[ind][0])
+    // });
 
-    for( row = 1; row < gridn; row++){
-        for(col = 0; col <n; col++){
+    for( var row = 2; row < n; row++){
+        for(var col = 0; col <n; col++){
             cells[col][row].state = 0;
             setColor(cells[col][row]);
         }
     }
+    ca1.reconfigure(starting_config);
+
 
 });
 
@@ -339,30 +322,20 @@ document.getElementById("start").addEventListener("click",function(e){
 
 document.getElementById("clear").addEventListener("click",function(e){
 
+    var perturbRow = []
     for(var col = 0 ; col < n; col++){
-        boundary[col].state = 0
-        setColor( boundary[col]);
-        boundary[col].path.setAttributeNS(null, 'stroke', "#ff0000");
-        boundary[col].path.setAttributeNS(null, 'stroke-width', 1);
+        perturbRow[col] = 0
     }
-
+    ca1.reconfigure(perturbRow)
+    ca1.clear();
+    ca2.reconfigure(perturbRow)
+    ca2.clear();
 });
-
 
 document.getElementById("randomConfig").addEventListener("click",function(e){
 
     //later control proportion of white and black
-    //generate new random sequence
-    for(var i = 0; i< n; i++){
-
-        if( Math.random() < percentPerturb){
-            cells[i][0].state = 1;
-        }
-        else{
-            cells[i][0].state = 0;
-        }
-        setColor(cells[i][0])
-    }
+    ca2.setPerturbed();
 
 });
 
@@ -370,110 +343,101 @@ document.getElementById("restart").addEventListener("click",function(e){
 
     //later control proportion of white and black
     //generate new random sequence
+    var perturbRow = []
     for(var i = 0; i< n; i++){
 
         if( Math.random() < percentCA){
-            boundary[i].state = 1;
+            perturbRow[i] = 1;
         }
         else{
-            boundary[i].state = 0;
+            perturbRow[i] = 0
         }
-        setColor(boundary[i]);
+        ca1.reconfigure(perturbRow);
     }
 
 });
 
 
-document.getElementById("back").addEventListener("click", function(e){
+// document.getElementById("back").addEventListener("click", function(e){
 
-    if( backward_computation.length == 0){
-        //do not pop
-    }
-    else{
+//     if( backward_computation.length == 0){
+//         //do not pop
+//     }
+//     else{
 
-        var last_state = backward_computation.pop();
+//         var last_state = backward_computation.pop();
 
-        console.log(last_state);
+//         console.log(last_state);
 
-        for(var col = 0 ; col < n; col++){
-            boundary[col].state = last_state.ca[col];
-            setColor( boundary[col]);
-        }
+//         for(var col = 0 ; col < n; col++){
+//             boundary[col].state = last_state.ca[col];
+//             setColor( boundary[col]);
+//         }
 
-        for( row = 0; row < gridn-1; row++){
-            for(col=0; col < n; col++){
-                cells[col][row].state = cells[col][row+1].state
-                setColor(cells[col][row]);
-            }
-        }
+//         for( row = 0; row < gridn-1; row++){
+//             for(col=0; col < n; col++){
+//                 cells[col][row].state = cells[col][row+1].state
+//                 setColor(cells[col][row]);
+//             }
+//         }
 
-        for(var col = 0 ; col < n; col++){
-            cells[col][gridn-1].state = last_state.env[col];
-            setColor( cells[col][gridn-1]);
-        }
+//         for(var col = 0 ; col < n; col++){
+//             cells[col][gridn-1].state = last_state.env[col];
+//             setColor( cells[col][gridn-1]);
+//         }
 
-        for( row = gridn+1; row < n-1; row++){
-            for(col=0; col < n; col++){
-                cells[col][row].state = cells[col][row+1].state
-                setColor(cells[col][row]);
-            }
-        }
+//         for( row = gridn+1; row < n-1; row++){
+//             for(col=0; col < n; col++){
+//                 cells[col][row].state = cells[col][row+1].state
+//                 setColor(cells[col][row]);
+//             }
+//         }
 
-        row = n-1;
-        for(col=0; col < n; col++){
-            cells[col][row].state = last_state.last_ca[col];
-            setColor(cells[col][row]);
-        }
-
-
-        for (var col = 0; col < boundary.length; col++) {
-
-            var prev = col -1, next = col + 1;
-
-            if( prev < 0 ){
-                prev  = n - 1
-            }
-
-            if( next == n ){
-                next = 0;
-            }
-
-            cells[col][gridn+1].state = next_state( boundary[prev].state, boundary[col].state, boundary[next].state, document.getElementById("carulebinary").value);
-            setColor(cells[col][gridn+1]);
-        }
-
-        for (var bcell = 0; bcell < n; bcell++) {
-
-            //sense perturbation
-            if ( boundary[bcell].state != cells[bcell][gridn-1].state){
-                //boundary[bcell].rect.setAttributeNS(null,"fill","red")
-                boundary[bcell].path.setAttributeNS(null, 'stroke', "#0000ff");
-                boundary[bcell].path.setAttributeNS(null, 'stroke-width', 2);
-            }
-            else{
-                //no change
-                boundary[bcell].path.setAttributeNS(null, 'stroke', "#ff0000");
-                boundary[bcell].path.setAttributeNS(null, 'stroke-width', 1);
-
-            }
-        }
+//         row = n-1;
+//         for(col=0; col < n; col++){
+//             cells[col][row].state = last_state.last_ca[col];
+//             setColor(cells[col][row]);
+//         }
 
 
-    }
+//         for (var col = 0; col < boundary.length; col++) {
+
+//             var prev = col -1, next = col + 1;
+
+//             if( prev < 0 ){
+//                 prev  = n - 1
+//             }
+
+//             if( next == n ){
+//                 next = 0;
+//             }
+
+//             cells[col][gridn+1].state = next_state( boundary[prev].state, boundary[col].state, boundary[next].state, document.getElementById("carulebinary").value);
+//             setColor(cells[col][gridn+1]);
+//         }
+
+//         for (var bcell = 0; bcell < n; bcell++) {
+
+//             //sense perturbation
+//             if ( boundary[bcell].state != cells[bcell][gridn-1].state){
+//                 //boundary[bcell].rect.setAttributeNS(null,"fill","red")
+//                 boundary[bcell].path.setAttributeNS(null, 'stroke', "#0000ff");
+//                 boundary[bcell].path.setAttributeNS(null, 'stroke-width', 2);
+//             }
+//             else{
+//                 //no change
+//                 boundary[bcell].path.setAttributeNS(null, 'stroke', "#ff0000");
+//                 boundary[bcell].path.setAttributeNS(null, 'stroke-width', 1);
+
+//             }
+//         }
 
 
-});
+//     }
 
 
-function setColor( cell ){
+// });
 
-    if(cell.state == 1){
-        cell.rect.setAttributeNS(null,"fill","#000000")
-    }
-    else{
-        cell.rect.setAttributeNS(null,"fill","#ffffff")
-    }
-}
 
 
 
@@ -481,6 +445,17 @@ document.getElementById("percentCA").addEventListener("change",function(e){
     percentCA = parseFloat(e.target.value);
 })
 
-document.getElementById("percentPerturb").addEventListener("change",function(e){
+document.getElementById("percentPert").addEventListener("change",function(e){
     percentPerturb = parseFloat(e.target.value);
+})
+
+document.getElementById("pertOn").addEventListener("click",function(e){
+    if( pertOn == 1){
+        pertOn = 0
+        e.target.value = "Perturbations are off"
+    }
+    else{
+        pertOn = 1;
+        e.target.value = "Perturbations are on"
+    }
 })

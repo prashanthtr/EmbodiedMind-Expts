@@ -3,7 +3,6 @@
 // Lite version of ion channels with 3 charges, membrane column, and ion
 // exchange.
 
-
 import {js_clock} from "./clocks.js"
 import {create_rect_fn} from "./utils.js"
 import {create_cell, on_boundary} from "./cell_spec_lite.js"
