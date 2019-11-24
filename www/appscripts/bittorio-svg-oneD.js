@@ -8,7 +8,7 @@ import {create_rect_fn,create_path_fn, setColor} from "./utils.js"
 import {create_cell, on_boundary} from "./cell_spec_lite.js"
 import {bittorio} from "./boundary.js"
 
-var n = 80;
+var n = 40;
 var side = 5;
 
 var gridn = 10;
@@ -60,12 +60,11 @@ for (var i = 0; i < n; i++) {
         cells[i][j].rect = create_rect(i,j,side, side, "#ffffff");
         cells[i][j].state = 0;
 
-        if (  j == 1 || j == n/2){
+        if (  j == n/2){
             cells[i][j].rect.setAttributeNS(null, "opacity", 0);
         }
     }
 }
-
 
 for(var col = 0; col< n; col++){
 
@@ -75,20 +74,18 @@ for(var col = 0; col< n; col++){
 }
 
 
+//var ca1 = cellularAutomaton( 1, side );
 
-var ca1 = cellularAutomaton( 1, side );
 var ca2 = cellularAutomaton( n/2, side );
+var starting_config = ca2.getState();
 
-var starting_config = ca1.getState();
-ca2.reconfigure(starting_config);
+// ca2.reconfigure(starting_config);
 ca2Perturb = starting_config;
 
 // for(var col = 0; col< n; col++){
 //     cells[col][0].state = starting_config[col];
 //     setColor(cells[col][0]);
 // }
-
-
 
 
 // row = gridn + 1;
@@ -131,12 +128,12 @@ var drawLoop = function(){
         if( t >= n/2){
             //to know places of perturbation
             //activate the second CA
-            let perturbRow = []
-            for( var col = 0; col < n; col++ ){
-                perturbRow[col] = cells[col][n/2-1].state;
-            }
-            ca2.sense(pertOn, perturbRow);
-            //ca2.sense( pertOn, ca2Perturb);
+            // let perturbRow = []
+            // for( var col = 0; col < n; col++ ){
+            //     perturbRow[col] = cells[col][n/2-1].state;
+            // }
+            //ca2.sense(pertOn, perturbRow);
+            ca2.sense( pertOn, ca2Perturb);
         }
     })();
 
@@ -167,70 +164,69 @@ var drawLoop = function(){
         // }
 
 
-        //1. fall off the edge before ca2
-        // inititalize envrionment cells
-        for (var i = 0; i < n; i++) {
-            for(var j = n/2-1; j> 2; j--){
-                cells[i][j].state = cells[i][j-1].state;
-                setColor(cells[i][j]);
-            }
-        }
-
-        //2. fall off the edge before end of line
-        // inititalize envrionment cells
-        for (var i = 0; i < n; i++) {
-            for(var j = n -1 ; j > n/2+1; j--){
-                cells[i][j].state = cells[i][j-1].state;
-                setColor(cells[i][j]);
-            }
-        }
-
-        // 3. copy current state into next state for ca1
-        //
-        var ca1state = ca1.getState();
-        for (var i = 0; i < n; i++) {
-            cells[i][2].state = ca1state[i];
-            setColor(cells[i][2]); //start
-        }
-
-        // 2. copy current state into next state for ca2
-        var ca2state = ca2.getState()
-        for (var i = 0; i < n; i++) {
-            cells[i][n/2+1].state = ca2state[i];
-            setColor(cells[i][1]);
-        }
-
-        // reconfigure 2nd CA and activate next states
+        // 2. reconfigure 2nd CA for perturbation and activate next states
         if( pertOn == 1){
             ca2.reconfigure(ca2Perturb);
         }
         else{
-            var perturbRow = [];
-            //original dynamics
-            for (var col = 0; col < n; col++) {
-                perturbRow[col] = cells[col][n/2-1].state;
-            }
-            ca2.reconfigure(perturbRow);
+            // var perturbRow = [];
+            // //original dynamics
+            // for (var col = 0; col < n; col++) {
+            //     perturbRow[col] = cells[col][n/2-1].state;
+            // }
+            // ca2.reconfigure(perturbRow);
+            // no change in state
         }
+
+        // 5. recompute and populate n next states
+        var ca2state = ca2.getState();
+
+        //3. fall off the edge before end of line
+        // inititalize envrionment cells
+        for (var col = 0; col < n; col++) {
+            ca2state = ca2.nextState(ca2state); //compute next state for future visualiation
+            for(var row = n/2+1 ; row < n; row++){
+                cells[col][row].state = ca2state[col];
+                setColor(cells[col][row]);
+            }
+        }
+
+        // 4. fall off the edge before ca2
+        // inititalize envrionment cells
+        for (var i = 0; i < n; i++) {
+            for(var j = 0; j < n/2; j++){
+                cells[i][j].state = cells[i][j+1].state;
+                setColor(cells[i][j]);
+            }
+        }
+
+        // 5. copy current state into last state
+        var ca2state = ca2.getState();
+        for (var i = 0; i < n; i++) {
+            cells[i][n/2-1].state = ca2state[i];
+            setColor(cells[i][n/2-1]); //start
+        }
+
+        ca2.change_state(); //move to the next state;
+
 
         //3. static state
         //3. copy perturbation
 
         //4. next state
-        ca1.nextState();
-        ca2.nextState();
+        // ca1.nextState();
+        // ca2.nextState();
 
-        var ca2state = ca2.getState()
+        // var ca2state = ca2.getState()
 
-        //no random perturbations between timezones, CA continues with selforiganized dynamics
-        for (var col = 0; col < n; col++) {
-            ca2Perturb[col] = ca2state[col];
-        }
+        // //no random perturbations between timezones, CA continues with selforiganized dynamics
+        // for (var col = 0; col < n; col++) {
+        //     ca2Perturb[col] = ca2state[col];
+        // }
 
         //copy to ensure that there is not perturbation without user interference
 
         t++;
-
 
         //5. shift existing environment
         // var row = gridn-1;
@@ -284,13 +280,13 @@ window.addEventListener("keypress", function(c){
 
 document.getElementById("reset").addEventListener("click",function(e){
 
-    for( var row = 2; row < n; row++){
+    for( var row = 0; row < n; row++){
         for(var col = 0; col <n; col++){
             cells[col][row].state = 0;
             setColor(cells[col][row]);
         }
     }
-    ca1.reconfigure(starting_config);
+    ca2.reconfigure(starting_config);
 
 
 });
@@ -311,8 +307,8 @@ document.getElementById("clear").addEventListener("click",function(e){
     for(var col = 0 ; col < n; col++){
         perturbRow[col] = 0
     }
-    ca1.reconfigure(perturbRow)
-    ca1.clear();
+    // ca1.reconfigure(perturbRow)
+    // ca1.clear();
     ca2.reconfigure(perturbRow)
     ca2.clear();
 });
@@ -340,9 +336,8 @@ document.getElementById("restart").addEventListener("click",function(e){
         else{
             perturbRow[i] = 0
         }
-        ca1.reconfigure(perturbRow);
     }
-
+    ca2.reconfigure(perturbRow);
 });
 
 

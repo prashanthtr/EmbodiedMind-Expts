@@ -58,13 +58,14 @@ export function bittorio ( create_rect, create_path, n ){
         };
 
 
-
-        ca.nextState = function( ){
+        ca.nextState = function( arr ){
 
             //copy prev row
             // if( pertOn == 1){
 
             // }
+
+            var new_state = [];
 
             //4. compute next state;
             for (var col = 0; col < n; col++) {
@@ -79,10 +80,19 @@ export function bittorio ( create_rect, create_path, n ){
                     next = 0;
                 }
 
-                ca.cells[col].state = next_state( ca.cells[prev].state, ca.cells[col].state, ca.cells[next].state, document.getElementById("carulebinary").value);
-                setColor(ca.cells[col]);
+                new_state[col] = next_state( arr[prev], arr[col], arr[next], document.getElementById("carulebinary").value);
+                //setColor(ca.cells[col]);
             }
+            return new_state;
         }
+
+
+        ca.change_state = function(  ){
+
+            var ns = ca.nextState( ca.cells.map(function(c){return c.state}) );
+            ca.reconfigure(ns);
+        }
+
 
         ca.getState = function(){
             return ca.cells.map(function(c){return c.state});
