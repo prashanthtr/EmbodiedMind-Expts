@@ -9,8 +9,13 @@ body {
   }
 
   #main {  /* select element with id="main" */
+<<<<<<< HEAD:www/css/appstyle.css
    min-height: 70%;
    max-height: 70%;
+=======
+   min-height: 80%;
+   max-height: 80%;
+>>>>>>> gh-pages:css/appstyle.css
    margin: 0px;
    padding: 0px;
    display:  flex;
