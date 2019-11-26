@@ -113,9 +113,17 @@ export function bittorio ( create_rect, create_path, n ){
         }
 
         ca.reconfigure = function(perturbRow){
+
             for (var col = 0; col < n; col++) {
-                ca.cells[col].state = perturbRow[col]
-                setColor(ca.cells[col]);
+                if( col < perturbRow.length){
+                    ca.cells[col].state = perturbRow[col]
+                    setColor(ca.cells[col]);
+                }
+                else{
+                    //white
+                    ca.cells[col].state = 1
+                    setColor(ca.cells[col]);
+                }
             }
         }
 

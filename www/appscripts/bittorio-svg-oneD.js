@@ -7,6 +7,8 @@ import {js_clock} from "./clocks.js"
 import {create_rect_fn,create_path_fn, setColor} from "./utils.js"
 import {bittorio} from "./boundary.js"
 
+import {start1, start2, start3, start4, start5, start6} from "./starting_config.js"
+
 var n = 80;
 var side = 5;
 
@@ -77,9 +79,15 @@ for(var col = 0; col< n; col++){
 //var ca1 = cellularAutomaton( 1, side );
 
 var ca2 = cellularAutomaton( n/2, side );
-var starting_config = ca2.getState();
 
-// ca2.reconfigure(starting_config);
+// var starting_config = ca2.getState();
+
+var starting_config = start2.split("").map((s) => {return parseInt(s)});
+
+console.log(starting_config);
+console.log(starting_config.length);
+
+ca2.reconfigure(starting_config);
 ca2Perturb = starting_config;
 
 // for(var col = 0; col< n; col++){
