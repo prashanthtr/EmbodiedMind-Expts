@@ -16,6 +16,7 @@ var canvas = document.getElementById( 'svgCanvas' );
 var pW = canvas.clientWidth;
 var pH = canvas.clientHeight;
 
+console.log(pW + "  " + pH);
 
 var percentPerturb = 0.1;
 var percentCA = 0.1;
@@ -348,7 +349,7 @@ document.getElementById("restart").addEventListener("click",function(e){
     //later control proportion of white and black
     //generate new random sequence
     var perturbRow = []
-    percentCA = 0.2 + 0.6*Math.random(); // between 0.2 and 0.8
+    percentCA = Math.random(); // between 0.2 and 0.8
 
     for(var i = 0; i< n; i++){
 
