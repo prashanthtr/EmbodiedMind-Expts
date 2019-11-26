@@ -9,8 +9,8 @@ body {
   }
 
   #main {  /* select element with id="main" */
-   min-height: 70%;
-   max-height: 70%;
+   min-height: 80%;
+   max-height: 80%;
    margin: 0px;
    padding: 0px;
    display:  flex;
@@ -23,7 +23,7 @@ body {
    border: 1px solid #cccc33;
    border-radius: 7pt;
    background: #ffffff;
-   flex: 3 1 55%;
+   flex: 3 1 50%;
    order: 2;
    overflow: scroll;
    }
@@ -34,7 +34,7 @@ body {
    border: 1px solid #cccc33;
    border-radius: 7pt;
    background: #dddd88;
-   flex: 3 1 55%;
+   flex: 3 1 50%;
    order: 2;
    overflow: scroll;
    text-align: center;
