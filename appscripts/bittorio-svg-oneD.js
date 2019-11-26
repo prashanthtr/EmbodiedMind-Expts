@@ -5,7 +5,6 @@
 
 import {js_clock} from "./clocks.js"
 import {create_rect_fn,create_path_fn, setColor} from "./utils.js"
-import {create_cell, on_boundary} from "./cell_spec_lite.js"
 import {bittorio} from "./boundary.js"
 
 var n = 80;
