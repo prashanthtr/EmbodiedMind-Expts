@@ -14,6 +14,11 @@
         aside {font-size: 12pt;}
         nav {overflow:scroll;}
 
+        table {
+          color:#ffffff;
+        }
+
+
       </style>
 
     </head>
@@ -36,8 +41,60 @@
 
         <nav>
 
-          <p id="userGuide">
-          </p>
+          <table>
+            <tbody>
+              <tr class="odd">
+                <td>Wolfram rule</td>
+                <td>Varela Rule</td>
+              </tr>
+              <tr class="even">
+                <td>:———-</td>
+                <td>:———</td>
+              </tr>
+              <tr class="odd">
+                <td>00101000</td>
+                <td>00010001</td>
+              </tr>
+              <tr class="even">
+                <td>00101100</td>
+                <td>10010001</td>
+              </tr>
+              <tr class="odd">
+                <td>10010110</td>
+                <td>10010110</td>
+              </tr>
+              <tr class="even">
+                <td>10010010</td>
+                <td>00010110</td>
+              </tr>
+              <tr class="odd">
+                <td>10101111</td>
+                <td>01101111</td>
+              </tr>
+              <tr class="even">
+                <td>01011110</td>
+                <td>01101110</td>
+              </tr>
+              <tr class="odd">
+                <td>11001001</td>
+                <td>01111000</td>
+              </tr>
+              <tr class="even">
+                <td>01001001</td>
+                <td>01101000</td>
+              </tr>
+              <tr class="odd">
+                <td>00111110</td>
+                <td>11100110</td>
+              </tr>
+              <tr class="even">
+                <td>10000100</td>
+                <td>10010001</td>
+              </tr>
+            </tbody>
+          </table>
+          <!-- <p id="userGuide"> -->
+          <!-- </p> -->
           <!-- <ul > -->
           <!--   <li> This simulation presents an interactive cellular -->
           <!--     automaton (CA) grid, that resembles, Bittorio. -->
@@ -74,7 +131,9 @@
           <input type="button" id="stop" value="stop">  </input> <br>
 
           <input type="button" id="back" value="<<Go Back">  </input>
-          <input type="button" id="forward" value=">> Go forward">  </input> <br>
+          <input type="button" id="forward" value=">> Go forward">  </input>
+          (Not available)
+          <br>
 
           <h4> CA config </h4>
 
@@ -82,9 +141,10 @@
           <input type="button" id="clear" value="Clear">  </input> <br>
 
           <input type="button" id="restart" value="New Ca state">  </input>
-          <input type="text" id="percentCA" value="0.2" style="width: 20px"> </input> <br>
+          <input type="text" id="percentCA" value="0.2" style="width: 20px" hidden> </input> <br>
 
-          <input type="text" id="carulebinary" value="00000000" style="width:75px"> (CA Rule)
+          <input type="text" id="carulebinary" value="00101000"
+          style="width:75px"> (Edit Wolfram Rule)
 
           <!-- <input type="text" id="carule" value="0" hidden> <br> -->
 
@@ -97,7 +157,9 @@
           <input type="button" id="pertOn" value="Perturbations are Off">  </input> <br>
 
           <input type="button" id="nP" value="N Perturbations">  </input>
-          <input type="text" id="percentPert" value="1" style="width: 20px"> </input> <br>
+          <input type="text" id="percentPert" value="1" style="width:
+                                                               20px"> </input>  (Edit number of perturbations)
+          <br>
 
           <!-- <input type="button" id="oneP" value="One perturb">  </input> <br> -->
           <!-- <input type="button" id="twoP" value="Two perturbation">  </input> <br> -->
@@ -112,7 +174,7 @@
           <br>
 
 
-          <b> Preset configurations </b>
+          <!-- <b> Preset configurations </b> -->
 
           <select hidden>
             <option value="None"> ---- </option>

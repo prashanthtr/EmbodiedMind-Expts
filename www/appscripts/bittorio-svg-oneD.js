@@ -5,7 +5,6 @@
 
 import {js_clock} from "./clocks.js"
 import {create_rect_fn,create_path_fn, setColor} from "./utils.js"
-import {create_cell, on_boundary} from "./cell_spec_lite.js"
 import {bittorio} from "./boundary.js"
 
 var n = 80;
@@ -17,6 +16,7 @@ var canvas = document.getElementById( 'svgCanvas' );
 var pW = canvas.clientWidth;
 var pH = canvas.clientHeight;
 
+console.log(pW + "  " + pH);
 
 var percentPerturb = 0.1;
 var percentCA = 0.1;
@@ -110,8 +110,8 @@ ca2Perturb = starting_config;
 
 
 //display after every action
-var display = js_clock(40, 600);
-var sense = js_clock(20, 300);
+var display = js_clock(40, 250);
+var sense = js_clock(20, 125);
 var t = 0;
 
 
@@ -349,6 +349,8 @@ document.getElementById("restart").addEventListener("click",function(e){
     //later control proportion of white and black
     //generate new random sequence
     var perturbRow = []
+    percentCA = Math.random(); // between 0.2 and 0.8
+
     for(var i = 0; i< n; i++){
 
         if( Math.random() < percentCA){
