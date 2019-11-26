@@ -110,8 +110,8 @@ ca2Perturb = starting_config;
 
 
 //display after every action
-var display = js_clock(40, 600);
-var sense = js_clock(20, 300);
+var display = js_clock(40, 250);
+var sense = js_clock(20, 125);
 var t = 0;
 
 
