@@ -8,7 +8,7 @@ import {create_rect_fn,create_path_fn, setColor} from "./utils.js"
 import {create_cell, on_boundary} from "./cell_spec_lite.js"
 import {bittorio} from "./boundary.js"
 
-var n = 40;
+var n = 80;
 var side = 5;
 
 var gridn = 10;
@@ -45,7 +45,7 @@ var ca2Perturb = [];
 
 var rafId = null;
 
-//cells[i][j].rect = create_rect(i,j,side, side, "#ffffff");
+// create_rect(0,0, pWidth, pHeight, "red");
 
 var cells = [];
 
@@ -110,8 +110,8 @@ ca2Perturb = starting_config;
 
 
 //display after every action
-var display = js_clock(40, 250);
-var sense = js_clock(20, 125);
+var display = js_clock(40, 600);
+var sense = js_clock(20, 300);
 var t = 0;
 
 
@@ -126,14 +126,15 @@ var drawLoop = function(){
 
         //only for second CA
         if( t >= n/2){
+
             //to know places of perturbation
             //activate the second CA
-            // let perturbRow = []
-            // for( var col = 0; col < n; col++ ){
-            //     perturbRow[col] = cells[col][n/2-1].state;
-            // }
-            //ca2.sense(pertOn, perturbRow);
-            ca2.sense( pertOn, ca2Perturb);
+            let perturbRow = []
+            for( var col = 0; col < n; col++ ){
+                perturbRow[col] = cells[col][n/2+1].state; //immediate next state
+            }
+            ca2.sense(pertOn, perturbRow);
+            //ca2.sense( pertOn, ca2Perturb);
         }
     })();
 
@@ -164,33 +165,6 @@ var drawLoop = function(){
         // }
 
 
-        // 2. reconfigure 2nd CA for perturbation and activate next states
-        if( pertOn == 1){
-            ca2.reconfigure(ca2Perturb);
-        }
-        else{
-            // var perturbRow = [];
-            // //original dynamics
-            // for (var col = 0; col < n; col++) {
-            //     perturbRow[col] = cells[col][n/2-1].state;
-            // }
-            // ca2.reconfigure(perturbRow);
-            // no change in state
-        }
-
-        // 5. recompute and populate n next states
-        var ca2state = ca2.getState();
-
-        //3. fall off the edge before end of line
-        // inititalize envrionment cells
-        for (var col = 0; col < n; col++) {
-            ca2state = ca2.nextState(ca2state); //compute next state for future visualiation
-            for(var row = n/2+1 ; row < n; row++){
-                cells[col][row].state = ca2state[col];
-                setColor(cells[col][row]);
-            }
-        }
-
         // 4. fall off the edge before ca2
         // inititalize envrionment cells
         for (var i = 0; i < n; i++) {
@@ -207,7 +181,55 @@ var drawLoop = function(){
             setColor(cells[i][n/2-1]); //start
         }
 
-        ca2.change_state(); //move to the next state;
+
+        // 2. reconfigure 2nd CA for perturbation and activate next states
+        if( pertOn == 1){
+
+            let perturbRow = []
+            for( var col = 0; col < n; col++ ){
+                perturbRow[col] = cells[col][n/2+1].state; //immediate next state
+            }
+            //ca2.sense(pertOn, perturbRow);
+            ca2.reconfigure(perturbRow);
+        }
+        else{
+
+            //do not reconfigure with perturbation
+            // i.e, let self-dynamics run
+            // compenste for perturbation
+            ca2.change_state(); //move to the next state;
+
+        }
+
+        // var perturbRow = [];
+        // //original dynamics
+        // for (var col = 0; col < n; col++) {
+        //     perturbRow[col] = cells[col][n/2-1].state;
+        // }
+        // ca2.reconfigure(perturbRow);
+        // no change in state
+
+        // var ca2state = ca2.getState();
+        // // reconfigure the perturbation to the row (no perturbation)
+        // //no random perturbations between timezones, CA continues with selforiganized dynamics
+        // for (var col = 0; col < n; col++) {
+        //     ca2Perturb[col] = ca2state[col];
+        // }
+
+        // 5. recompute and populate n next states
+        var ca2state = ca2.getState();
+
+        //3. fall off the edge before end of line
+        // inititalize envrionment cells
+        for (var row = n/2+1; row < n; row++) {
+            ca2state = ca2.nextState(ca2state); //compute next state for future visualiation
+            for(var col = 0 ; col < n; col++){
+                //console.log(cells[col][row])
+                //console.log(ca2state[col])
+                cells[col][row].state = ca2state[col];
+                setColor(cells[col][row]);
+            }
+        }
 
 
         //3. static state
@@ -217,12 +239,9 @@ var drawLoop = function(){
         // ca1.nextState();
         // ca2.nextState();
 
-        // var ca2state = ca2.getState()
+        // 4. copy state to perturbation to nullify perturbation effect
+        //var ca2state = ca2.getState()
 
-        // //no random perturbations between timezones, CA continues with selforiganized dynamics
-        // for (var col = 0; col < n; col++) {
-        //     ca2Perturb[col] = ca2state[col];
-        // }
 
         //copy to ensure that there is not perturbation without user interference
 
@@ -313,13 +332,15 @@ document.getElementById("clear").addEventListener("click",function(e){
     ca2.clear();
 });
 
-document.getElementById("randomConfig").addEventListener("click",function(e){
+// n perturbation
+document.getElementById("nP").addEventListener("click",function(e){
 
     //later control proportion of white and black
     //ca2.setPerturbed();
 
+    var numP = document.getElementById("percentPert").value;
     //with a certain pertangage flip the digits
-    gen_perturbation();
+    gen_perturbation(parseInt(numP));
 
 });
 
@@ -443,10 +464,40 @@ document.getElementById("pertOn").addEventListener("click",function(e){
 })
 
 
-function gen_perturbation(){
-    for(var i = 0; i< n; i++){
-        if( Math.random() < percentPerturb){
-            ca2Perturb[i] = (ca2Perturb[i]+1)%2;
+function gen_perturbation( npos ){
+
+    console.log(npos)
+
+    // 1. get current ca next state
+    var ca2Perturb = []
+    for( col = 0; col < n; col++){
+        ca2Perturb[col] = cells[col][n/2+1];
+    }
+
+    //2. select n distinct positions
+    var pos = []
+    var  i = 0;
+    while ( i < npos){
+        var num = Math.floor( Math.random()*n);
+        if( pos.indexOf(num) == -1){
+            pos.push(num);
+            i++;
         }
     }
+
+    console.log(pos);
+
+    //3. perturb those positions
+    var row = n/2+1;
+    for(var col = 0; col< pos.length; col++){
+        cells[pos[col]][row].state = (cells[pos[col]][row].state+1)%2;
+        console.log(cells[pos[col]][row])
+    }
+
+    for( col = 0; col < n; col++){
+        setColor(cells[col][row]);
+
+    }
+
+
 }

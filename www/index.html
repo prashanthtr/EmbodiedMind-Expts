@@ -64,25 +64,43 @@
 
           <!-- <b> Controls: </b> <br> -->
           <!-- Click the initial configuration <input type="button" id="setInitConfig" value="fix!"> </input> <br> -->
-          Run speed in milliseconds <input type="text" id="loopTime"
-          value="200" hidden>   </input> <br>
+
+          <!-- Run speed in milliseconds <input type="text" id="loopTime" -->
+          <!-- value="200" hidden>   </input> <br> -->
+
+          <h4> Simulation control </h4>
 
           <input type="button" id="start" value="Start">  </input>
-          <input type="button" id="stop" value="stop">  </input>
-          <input type="button" id="reset" value="Reset">  </input> <br> <br>
-          <input type="button" id="clear" value="Clear-CA">  </input> <br> <br>
+          <input type="button" id="stop" value="stop">  </input> <br>
+
+          <input type="button" id="back" value="<<Go Back">  </input>
+          <input type="button" id="forward" value=">> Go forward">  </input> <br>
+
+          <h4> CA config </h4>
+
+          <input type="button" id="reset" value="Reset">  </input>
+          <input type="button" id="clear" value="Clear">  </input> <br>
+
           <input type="button" id="restart" value="New Ca state">  </input>
           <input type="text" id="percentCA" value="0.2" style="width: 20px"> </input> <br>
+
+          <input type="text" id="carulebinary" value="00000000" style="width:75px"> (CA Rule)
+
+          <!-- <input type="text" id="carule" value="0" hidden> <br> -->
 
           <!-- <input type="button" id="back" value="Go forward >>">  </input> <br> -->
 
           <!-- <b> CA states </b> <br> -->
 
-          <input type="button" id="randomConfig" value="New environment">  </input>
-          <input type="text" id="percentPert" value="0.2" style="width: 20px"> </input> <br>
 
-          <input type="button" id="back" value="<<Go Back">  </input> <br>
+          <h4> Perturbations </h4>
           <input type="button" id="pertOn" value="Perturbations are Off">  </input> <br>
+
+          <input type="button" id="nP" value="N Perturbations">  </input>
+          <input type="text" id="percentPert" value="1" style="width: 20px"> </input> <br>
+
+          <!-- <input type="button" id="oneP" value="One perturb">  </input> <br> -->
+          <!-- <input type="button" id="twoP" value="Two perturbation">  </input> <br> -->
 
 
           <input type="button" id="configFix" value="setConfig"
@@ -93,9 +111,6 @@
 
           <br>
 
-          <b> CA rules </b> <br>
-           <input type="text" id="carule" value="0" hidden> <br>
-           <input type="text" id="carulebinary" value="00000000"> <br> <br>
 
           <b> Preset configurations </b>
 

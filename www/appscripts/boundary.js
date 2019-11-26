@@ -33,25 +33,38 @@ export function bittorio ( create_rect, create_path, n ){
         }
 
 
+        // perturbation is a deviation from the next state of the CA.
+
+        // Ca expects to go to a certain state based on self-organization, and
+        // perturbation is a change from that state.
+
+        // CA adjusts to that change from expected configuration - by adjusting
+        // its current configuration based on self-organized dynamics.
+
         ca.sense = function( pertOn, perturbRow ){
 
             var perturbed = 0;
-            ca.cells.map(function(cell, ind){
+
+            //1. get the next state
+            var nextState = ca.nextState(ca.cells.map(function(c){return c.state}));
+            //console.log(nextState);
+
+            nextState.map(function(ns, ind){
 
                 if( pertOn == 1){
 
                     //1. sense and indicate perturbation - before acting
-                    if ( cell.state != perturbRow[ind]){
+                    if ( ns != perturbRow[ind]){
                         //console.log("perturbation")
                         //cell.state = cells[bcell][gridn-1].state
                         //cell.rect.setAttributeNS(null,"fill","red")
-                        cell.path.setAttributeNS(null, 'stroke', "#0000ff");
-                        cell.path.setAttributeNS(null, 'stroke-width', 2);
+                        ca.cells[ind].path.setAttributeNS(null, 'stroke', "#0000ff");
+                        ca.cells[ind].path.setAttributeNS(null, 'stroke-width', 2);
                     }
                     else{
                         //no change
-                        cell.path.setAttributeNS(null, 'stroke', "#ff0000");
-                        cell.path.setAttributeNS(null, 'stroke-width', 1);
+                        ca.cells[ind].path.setAttributeNS(null, 'stroke', "#ff0000");
+                        ca.cells[ind].path.setAttributeNS(null, 'stroke-width', 1);
                     }
                 }
             });
@@ -83,6 +96,7 @@ export function bittorio ( create_rect, create_path, n ){
                 new_state[col] = next_state( arr[prev], arr[col], arr[next], document.getElementById("carulebinary").value);
                 //setColor(ca.cells[col]);
             }
+
             return new_state;
         }
 
@@ -121,6 +135,7 @@ export function bittorio ( create_rect, create_path, n ){
 
 function next_state (prev, cur, next, ruleString){
 
+    //console.log(ruleString)
     var rule = ruleString.split("");
     rule = rule.map(function(r){ return parseInt(r);});
 
@@ -132,14 +147,14 @@ function next_state (prev, cur, next, ruleString){
 
     var ret = -1;
     switch(castate){
-    case "000": ret = rule[0]; break;
-    case "001": ret = rule[1];  break;
-    case "010": ret = rule[2];  break;
-    case "011": ret = rule[3];  break;
-    case "100": ret = rule[4]; break;
-    case "101": ret = rule[5];  break;
-    case "110": ret = rule[6];  break;
-    case "111": ret = rule[7];  break;
+    case "000": ret = rule[7]; break;
+    case "001": ret = rule[6];  break;
+    case "010": ret = rule[5];  break;
+    case "011": ret = rule[4];  break;
+    case "100": ret = rule[3]; break;
+    case "101": ret = rule[2];  break;
+    case "110": ret = rule[1];  break;
+    case "111": ret = rule[0];  break;
     default: ret = -1; break;
     };
 
