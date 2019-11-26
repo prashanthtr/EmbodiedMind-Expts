@@ -2,27 +2,37 @@
 
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="css/appstyle.css">
-        <!--  Include the raphael library from the jslibs directory  -->
-        <!-- <script type="text/javascript" src="jslibs/raphael.js"></script> -->
-        <!--  Use the require.js module loader, and tell it where our main JavaScript file is  -->
-        <script type="text/javascript" data-main="appscripts/bittorio-oneDimension.js" src="jslibs/require.js"> </script>
-        <title> 1D cellular automata </title>
-        <style type="text/css">
-        </style>
+
+      <link rel="stylesheet" type="text/css" href="css/appstyle.css">
+      <script type="module" src="appscripts/bittorio-svg-oneD.js"></script>
+
+      <title> 1D cellular automata </title>
+      <style type="text/css">
+        ul { font-size: 11pt; }
+        ol { font-size: 11pt; }
+        p { font-size: 11pt; }
+        aside {font-size: 12pt;}
+        nav {overflow:scroll;}
+
+      </style>
 
     </head>
 
-  <body bg-color="#000000">
-    <header> 1D cellular automata - <br> explorations in operational closure and structural coupling </header>
-    <div id='main'>
+    <body bg-color="#000000">
 
-      <div id="centerDiv">
+      <header> 1D cellular automata - explorations in operational closure and structural coupling </header>
 
-        <svg id="mysvg" width="100%" height="100%">
-        </svg>
+      <div id='main'>
 
-        </div>  <!--  <article>   article  </article> -->
+        <!-- <div id="centerDiv"> -->
+        <!--   <svg id="svgCanvas" width="100%" height="100%"> -->
+        <!--   </svg> -->
+        <!-- </div> -->
+
+        <article>
+          <svg id="svgCanvas" width="100%" height="100%">
+          </svg>
+        </article>
 
         <nav>
 
@@ -52,75 +62,65 @@
 
         <aside>
 
-          <b> Controls: </b> <br>
+          <!-- <b> Controls: </b> <br> -->
           <!-- Click the initial configuration <input type="button" id="setInitConfig" value="fix!"> </input> <br> -->
-          Rate(in ms) <input type="text" id="loopTime" value="200">  </input>
 
-          <input type="button" id="step" value="step">  </input>
+          <!-- Run speed in milliseconds <input type="text" id="loopTime" -->
+          <!-- value="200" hidden>   </input> <br> -->
 
+          <h4> Simulation control </h4>
 
           <input type="button" id="start" value="Start">  </input>
-          <input type="button" id="stop" value="stop">  </input>
+          <input type="button" id="stop" value="stop">  </input> <br>
+
+          <input type="button" id="back" value="<<Go Back">  </input>
+          <input type="button" id="forward" value=">> Go forward">  </input> <br>
+
+          <h4> CA config </h4>
+
           <input type="button" id="reset" value="Reset">  </input>
-          <input type="button" id="clearFirst" value="Clear">  </input>
+          <input type="button" id="clear" value="Clear">  </input> <br>
+
+          <input type="button" id="restart" value="New Ca state">  </input>
+          <input type="text" id="percentCA" value="0.2" style="width: 20px"> </input> <br>
+
+          <input type="text" id="carulebinary" value="00000000" style="width:75px"> (CA Rule)
+
+          <!-- <input type="text" id="carule" value="0" hidden> <br> -->
+
+          <!-- <input type="button" id="back" value="Go forward >>">  </input> <br> -->
+
+          <!-- <b> CA states </b> <br> -->
+
+
+          <h4> Perturbations </h4>
+          <input type="button" id="pertOn" value="Perturbations are Off">  </input> <br>
+
+          <input type="button" id="nP" value="N Perturbations">  </input>
+          <input type="text" id="percentPert" value="1" style="width: 20px"> </input> <br>
+
+          <!-- <input type="button" id="oneP" value="One perturb">  </input> <br> -->
+          <!-- <input type="button" id="twoP" value="Two perturbation">  </input> <br> -->
+
+
+          <input type="button" id="configFix" value="setConfig"
+          hidden>  </input> <input type="text" id="configNum" value="0"
+          size="14" hidden>  </input>
           <br>
 
-          Rows <input type="text" id="gridRow" value="15"> <br>
-          Columns <input type="text" id="gridCol" value="15">
+
           <br>
 
-          Wrap <input type="button" id="wrapCells" value="NO">
-          Ctrl <input type="text" id="wrapSetting" value="0" style = "width:20px"> <br>
 
-          <b> Initial configuration </b> <br>
+          <b> Preset configurations </b>
 
-          <input type="button" id="storeConfig" value="store">  </input>
-          <input type="button" id="clearConfig" value="clear">  </input>
-          <input type="button" id="restoreConfig" value="restore">  </input> <br>
-          <input type="text" id="initConfig" value="">  </input> <br>
-
-          <input type="button" id="randomConfig" value="randomize">  </input> <br>
-
-          <input type="button" id="configFix" value="Decimal number">  </input> <input type="text" id="configNum" value="0" size="10">  </input> <br>
-          Set nth bit <input type="text" id="inputBit" value="0" size="6">  </input>
-          <br>
-
-          <b> Perturbations </b> <br>
-          <input type="button" id="toggle" value="Toggle">  </input>
-          Row <input type="text" id="r" value="31" size="2">  </input>
-          Col <input type="text" id="c" value="39" size="2">  </input>
-          <br>
-
-          <b> CA rules </b> <br>
-
-          CA Rule Number (0-255) <input type="text" id="carule" value="0"> <br>
-          CA Rule Binary <input type="text" id="carulebinary" value="00000000"> <br> <br>
-
-          <b> Preset rules </b>
-
-          <select id="preset">
+          <select hidden>
             <option value="None"> ---- </option>
-            <option value="oddSequence"> Odd sequence recognizer(Rule 132) </option>
-            <option value="doublePerturb"> Double perturbations recognizer(Rule 133) </option>
-            <option value="Rule204"> Imitation </option>
-            <option value="Rule160"> Varela Rule 00010001 </option>
-            <option value="Rule73"> Varela Rule 01101000 </option>
-            <option value="Rule146"> Varela Rule 000010110 </option>
-            <option value="Rule164"> Varela Rule 10010001 </option>
-            <option value="Rule123"> Varela Rule 01101111 </option>
-            <option value="Rule150"> Varela Rule 10010110 </option>
+            <option value="odd sequence recognizer"> Odd sequence recognizer </option>
+            <option value="even sequence recognizer"> Even sequence recognizer </option>
           </select>
           <!-- Bond disintegration factor <input type="text" id="disintegration" value="0.2">  </input> -->
           <!-- Bond formation factor <input type="text" id="formation" value="0.6">  </input> -->
-
-          <b> Sound controls </b> <br>
-
-          Turn sound <input type="button" id="soundToggle" value="OFF">  </input> <br>
-          Gain <input type="text" id="gain" value="0.25">  </input>
-          <br>
-          <!-- Live interaction <input type="button" id="live" value="NO">   </input> -->
-
-
 
         </aside>
 

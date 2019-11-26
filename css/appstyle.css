@@ -4,13 +4,13 @@ html, body {  /* Select and size the outermost elements so other elements can be
 }
 
 body {
-   font: 12px Helvetica;
+   font: 24px Helvetica;
    background-color: grey;
   }
 
   #main {  /* select element with id="main" */
-   min-height: 87%;
-   max-height: 95%;
+   min-height: 70%;
+   max-height: 70%;
    margin: 0px;
    padding: 0px;
    display:  flex;
@@ -22,48 +22,51 @@ body {
    padding: 5px;
    border: 1px solid #cccc33;
    border-radius: 7pt;
-   background: #dddd88;
+   background: #ffffff;
    flex: 3 1 50%;
    order: 2;
-   font: 9px Helvetica;
+   overflow: scroll;
    }
 
   #main > #centerDiv {
-      margin: 1px;
-      padding: 4px;
-      border: 1px solid #8888bb;
-      background: #0000FF;
-      flex: 3 1 50%;
-      order: 2;
-  }
+   margin: 4px;
+   padding: 5px;
+   border: 1px solid #cccc33;
+   border-radius: 7pt;
+   background: #dddd88;
+   flex: 3 1 50%;
+   order: 2;
+   overflow: scroll;
+   text-align: center;
+   }
 
   #main > nav {
    margin: 4px;
    padding: 5px;
    border: 1px solid #8888bb;
    border-radius: 7pt;
-   background: #ccccff;
-   flex: 1 6 15%;
-   order: 1;
-   font: 7pt Helvetica;
-   }
+   background: #000000;
+           flex: 1 6 20%;
+           order: 1;
+  }
 
   #main > aside {
-   margin: 3px;
-   padding: 7px;
+   margin: 4px;
+   padding: 5px;
    border: 1px solid #8888bb;
-   border-radius: 5pt;
-   background: #ccccff;
-   flex: 1 6 20%;
-   order: 3;
-   font: 8pt Helvetica;
+   border-radius: 7pt;
+   color: #ffffff;
+   background: #000000;
+           flex: 1 6 20%;
+           order: 3;
+
    }
 
 #player {
     width: 200px;
    }
 
-  header {  /* select all header and footer elements */
+  header, footer {  /* select all header and footer elements */
    display: block;
    margin: 4px;
    padding: 5px;
@@ -72,7 +75,11 @@ body {
    border-radius: 7pt;
    background: #ffeebb;
    text-align: center;
-   font: 24px Helvetica;
+   }
+
+  footer {    /* override these attributes just for the footer elements */
+   font-size: 10pt;
+   text-align: left;
    }
 
 
