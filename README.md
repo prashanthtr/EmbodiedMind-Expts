@@ -27,6 +27,7 @@ accompanying code (also hosted as github.io/prashanthtr/bittorio)
 | 10000100     | 10010001    |
 
 
+More notes on perturbations to come.
 
 <!-- operational closure and structural coupling in a 1D cellular automaton (CA). -->
 
