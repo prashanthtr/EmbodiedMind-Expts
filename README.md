@@ -11,7 +11,7 @@ each cell - as as well find ways to extend its abilities.
 
 The table presents unique Wolfram rules that are equivalent to the Bittorio
 rules. These rules can be tested through simulation that is run by the
-accompanying code (also hosted as https://prashanthtr.github.io/bittorio/)
+accompanying code (also hosted as https://prashanthtr.github.io/bittorio/www/)
 
 | Wolfram rule | Varela Rule |
 | :----------  | :---------  |
