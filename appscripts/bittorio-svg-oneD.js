@@ -348,6 +348,8 @@ document.getElementById("restart").addEventListener("click",function(e){
     //later control proportion of white and black
     //generate new random sequence
     var perturbRow = []
+    percentCA = 0.2 + 0.6*Math.random(); // between 0.2 and 0.8
+
     for(var i = 0; i< n; i++){
 
         if( Math.random() < percentCA){

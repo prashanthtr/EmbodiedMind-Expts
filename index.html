@@ -131,7 +131,9 @@
           <input type="button" id="stop" value="stop">  </input> <br>
 
           <input type="button" id="back" value="<<Go Back">  </input>
-          <input type="button" id="forward" value=">> Go forward">  </input> <br>
+          <input type="button" id="forward" value=">> Go forward">  </input>
+          (Not available)
+          <br>
 
           <h4> CA config </h4>
 
@@ -139,9 +141,10 @@
           <input type="button" id="clear" value="Clear">  </input> <br>
 
           <input type="button" id="restart" value="New Ca state">  </input>
-          <input type="text" id="percentCA" value="0.2" style="width: 20px"> </input> <br>
+          <input type="text" id="percentCA" value="0.2" style="width: 20px" hidden> </input> <br>
 
-          <input type="text" id="carulebinary" value="00000000" style="width:75px"> (Wolfram Rule)
+          <input type="text" id="carulebinary" value="00101000"
+          style="width:75px"> (Edit Wolfram Rule)
 
           <!-- <input type="text" id="carule" value="0" hidden> <br> -->
 
@@ -154,7 +157,9 @@
           <input type="button" id="pertOn" value="Perturbations are Off">  </input> <br>
 
           <input type="button" id="nP" value="N Perturbations">  </input>
-          <input type="text" id="percentPert" value="1" style="width: 20px"> </input> <br>
+          <input type="text" id="percentPert" value="1" style="width:
+                                                               20px"> </input>  (Edit number of perturbations)
+          <br>
 
           <!-- <input type="button" id="oneP" value="One perturb">  </input> <br> -->
           <!-- <input type="button" id="twoP" value="Two perturbation">  </input> <br> -->
@@ -169,7 +174,7 @@
           <br>
 
 
-          <b> Preset configurations </b>
+          <!-- <b> Preset configurations </b> -->
 
           <select hidden>
             <option value="None"> ---- </option>
