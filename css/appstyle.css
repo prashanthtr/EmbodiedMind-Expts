@@ -23,7 +23,7 @@ body {
    border: 1px solid #cccc33;
    border-radius: 7pt;
    background: #ffffff;
-   flex: 3 1 50%;
+   flex: 3 1 55%;
    order: 2;
    overflow: scroll;
    }
@@ -34,7 +34,7 @@ body {
    border: 1px solid #cccc33;
    border-radius: 7pt;
    background: #dddd88;
-   flex: 3 1 50%;
+   flex: 3 1 55%;
    order: 2;
    overflow: scroll;
    text-align: center;
