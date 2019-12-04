@@ -7,10 +7,12 @@ import {js_clock} from "./clocks.js"
 import {create_rect_fn,create_path_fn, setColor} from "./utils.js"
 import {bittorio} from "./boundary.js"
 
-import {start1, start2, start3, start4, start5, start6} from "./starting_config.js"
+import {start1, start2, start3, start4, start5, start6, start} from "./starting_config.js"
 
-var n = 80;
-var side = 5;
+
+
+var n = 18;
+var side = 10;
 
 var gridn = 10;
 
@@ -41,11 +43,13 @@ var scale_h = Math.floor(pHeight/n);
 var create_rect = create_rect_fn(scale_w, scale_h, canvas);
 var create_path = create_path_fn(scale_w, scale_h, canvas);
 
-var cellularAutomaton = bittorio( create_rect, create_path, n );
+var cellularAutomaton = bittorio( create_rect, create_path, scale_w, n );
 
 var ca2Perturb = [];
-
 var rafId = null;
+
+var store_config = "";
+var st = 0, end = 80;
 
 // create_rect(0,0, pWidth, pHeight, "red");
 
@@ -82,7 +86,9 @@ var ca2 = cellularAutomaton( n/2, side );
 
 // var starting_config = ca2.getState();
 
-var starting_config = start2.split("").map((s) => {return parseInt(s)});
+var starting_config = start.split("").map((s) => {return parseInt(s)});
+
+store_config = start5;
 
 console.log(starting_config);
 console.log(starting_config.length);
@@ -118,8 +124,8 @@ ca2Perturb = starting_config;
 
 
 //display after every action
-var display = js_clock(40, 250);
-var sense = js_clock(20, 125);
+var display = js_clock(40, 600);
+var sense = js_clock(20, 200);
 var t = 0;
 
 
@@ -208,6 +214,8 @@ var drawLoop = function(){
             ca2.change_state(); //move to the next state;
 
         }
+
+        //check_cycle( store_config );
 
         // var perturbRow = [];
         // //original dynamics
@@ -310,6 +318,11 @@ document.getElementById("reset").addEventListener("click",function(e){
     for( var row = 0; row < n; row++){
         for(var col = 0; col <n; col++){
             cells[col][row].state = 0;
+            if( cells[col][row].path){
+                var parent = cells[col][row].path.parentNode
+                parent.removeChild(cells[col][row].path);
+                cells[col][row].path = null
+            }
             setColor(cells[col][row]);
         }
     }
@@ -346,9 +359,9 @@ document.getElementById("nP").addEventListener("click",function(e){
     //later control proportion of white and black
     //ca2.setPerturbed();
 
-    var numP = document.getElementById("percentPert").value;
+    var ploc = document.getElementById("ploc").value;
     //with a certain pertangage flip the digits
-    gen_perturbation(parseInt(numP));
+    gen_perturbation(ploc);
 
 });
 
@@ -474,39 +487,82 @@ document.getElementById("pertOn").addEventListener("click",function(e){
 })
 
 
+document.getElementById("store").addEventListener("click",function(e){
+    st = parseInt(document.getElementById("st_pos").value);
+    end = parseInt(document.getElementById("end_pos").value);
+    store_config = ca2.getState().slice(st, end).join("");
+
+});
+
+
+function check_cycle( stored  ){
+
+    var setCycle = 0;
+
+    for(var row = n/2+1; row<n; row++){
+        var cur = [];
+        for(var col = st; col < end; col++){
+            cur[col-st] = cells[col][row].state
+        }
+        var curStr = cur.join("");
+
+        if( setCycle == 0 && stored == curStr ){
+
+            for(var col = 0; col < n; col++){
+                cells[col][row].path = create_path(col, row+0.5, side, side-2,  "#0000ff");
+            }
+            setCycle = 1;
+        }
+        else{
+            for(var col = 0; col < n; col++){
+                if(cells[col][row].path){
+                    var parent = cells[col][row].path.parentNode
+                    parent.removeChild(cells[col][row].path);
+                    cells[col][row].path = null
+                }
+            }
+
+        }
+    }
+}
+
+
+
+
 function gen_perturbation( npos ){
 
     console.log(npos)
+    var perturbArray = npos.split(",").map(function(s){ return parseInt(s)});
+    console.log(perturbArray)
 
     // 1. get current ca next state
-    var ca2Perturb = []
-    for( col = 0; col < n; col++){
-        ca2Perturb[col] = cells[col][n/2+1];
-    }
+    // var ca2Perturb = []
+    // for( col = 0; col < n; col++){
+    //     ca2Perturb[col] = cells[col][n/2+1];
+    // }
 
-    //2. select n distinct positions
-    var pos = []
-    var  i = 0;
-    while ( i < npos){
-        var num = Math.floor( Math.random()*n);
-        if( pos.indexOf(num) == -1){
-            pos.push(num);
-            i++;
-        }
-    }
+    // //2. select n distinct positions
+    // var pos = []
+    // var  i = 0;
+    // while ( i < npos){
+    //     var num = Math.floor( Math.random()*n);
+    //     if( pos.indexOf(num) == -1){
+    //         pos.push(num);
+    //         i++;
+    //     }
+    // }
 
-    console.log(pos);
+    // console.log(pos);
 
     //3. perturb those positions
     var row = n/2+1;
-    for(var col = 0; col< pos.length; col++){
-        cells[pos[col]][row].state = (cells[pos[col]][row].state+1)%2;
-        console.log(cells[pos[col]][row])
+    for(var col = 0; col< perturbArray.length; col++){
+        cells[perturbArray[col]][row].state = (cells[perturbArray[col]][row].state+1)%2;
+        console.log(cells[perturbArray[col]][row])
     }
 
     for( col = 0; col < n; col++){
         setColor(cells[col][row]);
-
     }
 
 

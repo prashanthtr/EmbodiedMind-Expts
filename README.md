@@ -27,7 +27,7 @@ accompanying code (also hosted as https://prashanthtr.github.io/bittorio/www/)
 | 10000100     | 10010001    |
 
 
-More notes on perturbations to come.
+More notes on scheduling perturbations to come.
 
 <!-- operational closure and structural coupling in a 1D cellular automaton (CA). -->
 

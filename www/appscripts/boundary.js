@@ -5,7 +5,7 @@
 
 import {setColor} from "./utils.js"
 
-export function bittorio ( create_rect, create_path, n ){
+export function bittorio ( create_rect, create_path, scale_w, n ){
 
 
     return function(row, side ){
@@ -30,6 +30,13 @@ export function bittorio ( create_rect, create_path, n ){
                 ca.cells[col].state = 0;
             }
             setColor(ca.cells[col]);
+
+            //context
+            ca.cells[col].rect.addEventListener("click", function(e){
+
+                var x = parseFloat(this.getAttribute("x"));
+                document.getElementById("pertLoc").innerHTML = "Loc is : " + (parseInt(x/scale_w));
+            });
         }
 
 

@@ -66,7 +66,7 @@
                 <td>10010001</td>
               </tr>
               <tr class="odd">
-                <td>011111011</td>
+                <td>01111011</td>
                 <td>01101111</td>
               </tr>
               <tr class="even">
@@ -89,7 +89,7 @@
                 <td>01111000</td>
               </tr>
               <tr class="odd">
-                <td>00111110</td>
+                <td>01011110</td>
                 <td>11100110</td>
               </tr>
 
@@ -107,7 +107,7 @@
               </tr>
               <tr class="odd">
                 <td>01011110</td>
-                <td>01011110* </td>
+                <td>11100110* </td>
               </tr>
             </tbody>
           </table>
@@ -163,7 +163,9 @@
           <input type="button" id="clear" value="Clear">  </input> <br>
 
           <input type="button" id="restart" value="New Ca state">  </input>
-          <input type="text" id="percentCA" value="0.2" style="width: 20px" hidden> </input> <br>
+          <input type="text" id="percentCA" value="0.2" style="width: 20px"
+                 hidden> </input> <br>
+
 
           <input type="text" id="carulebinary" value="00101000"
           style="width:75px"> (Edit Wolfram Rule)
@@ -179,9 +181,18 @@
           <input type="button" id="pertOn" value="Perturbations are Off">  </input> <br>
 
           <input type="button" id="nP" value="N Perturbations">  </input>
-          <input type="text" id="percentPert" value="1" style="width:
-                                                               20px"> </input>  (Edit number of perturbations)
+          <input type="text" id="ploc" value="33" style="width:
+                                                               20px"> </input>
+                                                               (Edit
+                                                               perturbation locations
           <br>
+          <p id="pertLoc" >  </p>
+          <input type="text" id="percentPert" value="0.2" style="width: 20px" hidden> </input>
+
+          <h4> Check cycle </h4>
+          <input type="button" id="store" value="Store"> </input>
+          <input type="text" id="st_pos" value="0" style="width: 20px">  </input>
+          <input type="text" id="end_pos" value="80" style="width: 20px">  </input>
 
           <!-- <input type="button" id="oneP" value="One perturb">  </input> <br> -->
           <!-- <input type="button" id="twoP" value="Two perturbation">  </input> <br> -->
@@ -192,8 +203,6 @@
           size="14" hidden>  </input>
           <br>
 
-
-          <br>
 
 
           <!-- <b> Preset configurations </b> -->
